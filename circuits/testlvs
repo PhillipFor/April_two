@@ -1,0 +1,16 @@
+[ts1]
+version=2.0
+name=test
+author=Phillip
+boardtimer=100
+colors=8,7, 6, 5, 4, 3, 2, 1, 0
+launchtime=2
+maxmarbles=3
+score=ts1
+g1=|   |   |   |   |   |   |   |   |
+g2=|   |   |   |   |   |   |   |   |
+g3=|   |   |   |   |   |   |   |   |
+g4=|   |   |   |   |   |   |   |   |
+g5=|   |   |   |   |   |   |   |   |
+g6=|   |   |   |   |   |   |   |   |
+
