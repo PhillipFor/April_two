@@ -3,7 +3,7 @@ Copyright Phillip Forrestal 2024
 Program name: april two
 GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
-
+base on
 
 ::Version
 3.00 - 9 Dec 2025 Edit' & Menu in popup
@@ -2192,7 +2192,7 @@ class MainLoop:
 			mainmenu = 'Serial Level','Radom Level', 'Exit', 'Options','Edit'
 		# no option
 			menu_music()
-			menu = TheMenu(self.screen, base.background, mainmenu ,'')
+			menu = TheMenu(self.screen, base.background, mainmenu, '')
 
 			menu.from_top(100)
 
@@ -2556,13 +2556,13 @@ class Editor():
 	def editmenu(self):
 		cycle = True
 
-
+		idmenu = ('n', 'q')
 
 		while cycle:
 			#   New main menu
-			mainmenu = ('Name: ' + self.tsname, 'q: Exit')
+			mainmenu = ('level Name: ' + self.tsname, 'Exit')
 			# no option
-			menu = MainMenu(self.screen, base.background, mainmenu , '',True)
+			menu = MainMenu(self.screen, base.background, mainmenu , '',idmenu)
 			menu.from_top(100)
 
 			menu.draw_menu()  # Menu line to start

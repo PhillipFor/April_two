@@ -57,29 +57,16 @@ from pygame.locals import *
 
 
 class MainMenu:
-	def __init__(self, in_screen, in_background, in_menu_text, in_option_text="", id_text=True):
+	def __init__(self, in_screen, in_background, in_menu_text, in_option_text="", id_text=''):
 		self.screen = in_screen
 		self.cursor_down = -1  # double click count
 
-		#self.id = list(id_text)
-		self.idflag = id_text
-		#if id_text == '':
-		#	self.idflag = False
+		self.id = list(id_text)
+		self.idflag = True
+		if id_text == '':
+			self.idflag = False
 		#  What to display in menu
 		self.menu_text = list(in_menu_text)
-		self.id = ''
-		if self.idflag:
-			for i in range(len(self.menu_text)):
-				j = self.menu_text[i][0]
-				j = j.lower()
-				self.id += j
-				if not  self.menu_text[i][1] == ':':
-					self.menu_text[i] = j + ': ' + self.menu_text[i]
-
-
-
-
-
 		self.menu_option = list(in_option_text)
 		if in_option_text == "":
 			self.option_used = False
@@ -238,7 +225,6 @@ class MainMenu:
 				elif event.type == KEYDOWN:   #  ~~~~~~~~~~~~~~~ need override to turn off  THINK ABOUT 0A15
 					if event.key == K_ESCAPE:
 						return -2
-
 
 					elif event.key == K_DOWN:
 						self.select_extra()
