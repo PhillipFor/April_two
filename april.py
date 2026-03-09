@@ -2556,20 +2556,18 @@ class Editor():
 	def editmenu(self):
 		cycle = True
 
-		idmenu = ('n', 'q')
-
 		while cycle:
 			#   New main menu
 			mainmenu = ('level Name: ' + self.tsname, 'Exit')
 			# no option
-			menu = MainMenu(self.screen, base.background, mainmenu , '',idmenu)
+			menu = MainMenu(self.screen, base.background, mainmenu )
 			menu.from_top(100)
 
 			menu.draw_menu()  # Menu line to start
 			what2do = menu.select()
-			if what2do == 'q':
+			if what2do == 2:
 				cycle = False
-			elif what2do == 'n':
+			elif what2do == 1:
 				self.tsname = menu.key_input(self.tsname)
 				BS.circuit.set(self.circuit, 'name', self.tsname )
 

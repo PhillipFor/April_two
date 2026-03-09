@@ -291,8 +291,6 @@ class MainMenu:
 										self.text_rend[self.cursor] = self.menu_font.render(txt, 1, self.menu_text_color)
 										self._draw_cursor()
 									else:
-										if self.idflag:
-											return self.id[hit]
 										return	(hit + 1)
 								else:
 									self.cursor_down = 15  # Tick cound 1 sec is 15
@@ -301,8 +299,6 @@ class MainMenu:
 								self._draw_cursor()
 								self.cursor_down = 15  # Tick cound 1 sec is 15
 						else:
-							if self.idflag:
-								return self.id[hit]
 							return (hit + 1)
 
 
