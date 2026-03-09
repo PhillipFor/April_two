@@ -1718,7 +1718,7 @@ class HighScore:
 
 
 	def start(self):
-		maxdays = 10
+		maxdays = 30
 		if not BS.score.has_section(base.level):
 			BS.score.add_section(base.level)
 
@@ -2352,9 +2352,9 @@ class TheMenu(MainMenu):
 		font = pygame.font.SysFont('arial', 22)
 
 		text = font.render(
-			"Copyright © 2025  Phillip Forrestal   Version: " + ver.number + " " + ver.date + " " + ver.text +
+			"Copyright © 2025-26  Phillip Forrestal   Version: " + ver.number + " " + ver.date + " " + ver.text +
 			" - Conversion for pygame " + f"{pygame.version.ver}" + " SDL  " +  f'{pygame.version.SDL}'
-			+ " , Python " + f"{sys.version_info.major}" + f"{sys.version_info.minor}" + f'{sys.version_info.micro}' + ")    ", 1, (40, 40, 40))
+			+ " , Python (" + f"{sys.version_info.major}" + '.' + f"{sys.version_info.minor}" + ")    ", 1, (40, 40, 40))
 		self.second = ScrollText(self.screen, text, y, 2)
 
 		y = 525
@@ -2633,11 +2633,11 @@ class Editor():
 
 # This should the last lines in the program.
 class VersionPF:
-		number = '2.99a'
-		date = '18 Dec 25'
-		text = 'score delete'
+		number = '2.99b'
+		date = '9 Mar 26'
+		text = 'keep score long'
 		'2.99a - 18 Dec 25 score delete'
-
+		'2.99b - 9 Mar 26 keep score long'
 class VersionPF1:
 		number = "3.00"
 		date = '4 Jan 2026'
