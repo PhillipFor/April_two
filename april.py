@@ -12,6 +12,7 @@ base on
 
 
 ::Version
+3.02 27 May 2026 Show
 3.01 - 4 Jan 2026 Name'
 3.00 - 9 Dec 2025 Start Edit
 2.99a - 18 Dec 25 score delete
