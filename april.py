@@ -5,7 +5,8 @@ GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 base on
 
-::Version
+::Versio
+3.01 25 May 2026 Show
 3.00 - 9 Dec 2025 Edit' & Menu in popup
 2.99a - 18 Dec 25 score delete
 2.99 16 Dec 2025 fix score
@@ -280,7 +281,7 @@ class BS:
 		self.std_list = BS.circuit.sections()
 		self.std_list.append('-')
 		self.std_level = self.ex.getint('sys', 'stdlevel', fallback=0)
-
+		self.ed_level = 0
 
 		items = self.ex.get('sys', 'ranlist', fallback='-')
 		self.ran_list = str.split(items,',')
@@ -334,7 +335,9 @@ class BS:
 
 			self.ex.set('sys', 'ranlevel', str(self.ran_level))
 			a = self.ran_list[self.ran_level]
-
+		elif type1 == 2:
+			a = self.ed_level
+			a = 0
 
 		return a
 
@@ -2558,7 +2561,7 @@ class Editor():
 
 		while cycle:
 			#   New main menu
-			mainmenu = ('level Name: ' + self.tsname, 'Exit')
+			mainmenu = ('level Name: ' + self.tsname, 'Exit', 'Show')
 			# no option
 			menu = MainMenu(self.screen, base.background, mainmenu )
 			menu.from_top(100)
@@ -2571,9 +2574,18 @@ class Editor():
 				self.tsname = menu.key_input(self.tsname)
 				BS.circuit.set(self.circuit, 'name', self.tsname )
 
+			elif what2do == 3:
+				self.show()
+
+
 		self.type = 0
 		exit()
 
+	def show(self):
+		pass
+		game = Game(self.screen, 2)
+		game.play()
+		pass
 
 
 		# BS.ex
@@ -2632,18 +2644,20 @@ class Editor():
 # name=The Game - The name of the level - Required must be a unique id
 
 # This should the last lines in the program.
-class VersionPF:
+class VersionPF2:
 		number = '2.99b'
 		date = '9 Mar 26'
 		text = 'keep score long'
 		'2.99a - 18 Dec 25 score delete'
 		'2.99b - 9 Mar 26 keep score long'
-class VersionPF1:
-		number = "3.00"
-		date = '4 Jan 2026'
-		text = "Start Edit"
+class VersionPF:
+		number = "3.01"
+		date = '25 May 2026'
+		text = "Show"
+		'''
+		3.01 25 May 2026 Show
 		'3.00 - 9 Dec 2025 Edit'
-
+		'''
 
 if __name__ == "__main__":
 	main()
