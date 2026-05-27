@@ -4,7 +4,7 @@ class VersionPF:
 	text = 'Show'
 
 """
-Copyright Phillip Forrestal 2024
+Copyright Phillip Forrestal 2020-2026
 Program name: april two
 GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
