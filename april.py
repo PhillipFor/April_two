@@ -343,6 +343,9 @@ class BS:
 			self.ex.set('sys', 'ranlevel', str(self.ran_level))
 			a = self.ran_list[self.ran_level]
 
+		elif type1 == 2:
+			ed_list = self.circuit.sections()
+			a = ed_list[0]
 
 		return a
 
@@ -1649,11 +1652,12 @@ class Board:
 					running = False
 				if event.type == MOUSEBUTTONDOWN:
 					a = False
-				# elif event.type == KEYDOWN:
-					# if event.key == ord('n'):
-					#	return 2
-					# elif event.key == ord('b'):
-					#	return 3
+				elif event.type == KEYDOWN:
+					if event.key == ord('n'):
+						return 2
+					elif event.key == ord('b'):
+						return 3
+					a = False
 
 		# Game Loop
 		base.gameloop = 0  #time to  play the game
@@ -2162,10 +2166,12 @@ class MainLoop:
 		self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), base.fullscreen * FULLSCREEN)
 		base.screen = self.screen  # 15Dec23
 		icon = pygame.image.load(os.path.join('graphics', 'icon.png'))
-		pygame.display.set_icon(icon)  # Needed both before and after set_mode
-		pygame.display.set_caption('April Two moving balls')
+		pygame.display.set_icon(icon)
 		icon.set_colorkey(icon.get_at((0, 0)), RLEACCEL)
-		pygame.display.set_icon(icon)  # Needed both before and after set_mode
+
+		VersionPF()
+		pygame.display.set_caption(
+			'Aspril Two moving ball -- Version ' + VersionPF.number + ' ' + VersionPF.date + '  ' + VersionPF.text)
 
 		base.sound_on = BS.ex.getboolean('sys',"Effect", fallback=True) # True
 
@@ -2566,7 +2572,7 @@ class Editor():
 
 		while cycle:
 			#   New main menu
-			mainmenu = ('level Name: ' + self.tsname, 'Exit')
+			mainmenu = ('level Name: ' + self.tsname, 'Exit', 'Show')
 			# no option
 			menu = MainMenu(self.screen, base.background, mainmenu )
 			menu.from_top(100)
@@ -2578,6 +2584,10 @@ class Editor():
 			elif what2do == 1:
 				self.tsname = menu.key_input(self.tsname)
 				BS.circuit.set(self.circuit, 'name', self.tsname )
+			elif what2do == 3:
+				game = Game(self.screen, 2)
+				game.play()
+				pass
 
 		self.type = 0
 		exit()
