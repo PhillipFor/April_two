@@ -1,3 +1,8 @@
+class VersionPF:
+	number = "3.02"
+	date = '27 May 2026'
+	text = 'Show'
+
 """
 Copyright Phillip Forrestal 2024
 Program name: april two
@@ -5,8 +10,10 @@ GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 base on
 
+
 ::Version
-3.00 - 9 Dec 2025 Edit' & Menu in popup
+3.01 - 4 Jan 2026 Name'
+3.00 - 9 Dec 2025 Start Edit
 2.99a - 18 Dec 25 score delete
 2.99 16 Dec 2025 fix score
 2.98 9  Dec 2025 new type of score
@@ -2631,18 +2638,8 @@ class Editor():
 
 # name=The Game - The name of the level - Required must be a unique id
 
-# This should the last lines in the program.
-class VersionPF:
-		number = '2.99b'
-		date = '9 Mar 26'
-		text = 'keep score long'
-		'2.99a - 18 Dec 25 score delete'
-		'2.99b - 9 Mar 26 keep score long'
-class VersionPF1:
-		number = "3.00"
-		date = '4 Jan 2026'
-		text = "Start Edit"
-		'3.00 - 9 Dec 2025 Edit'
+
+
 
 
 if __name__ == "__main__":
