@@ -1,7 +1,7 @@
 class VersionPF:
 	number = "3.02"
-	date = '27 May 2026'
-	text = 'Show'
+	date = '28 May 2026'
+	text = 'Show menu'
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -388,6 +388,8 @@ class base:
 	gamemusic = None
 	furelise = None
 	background = None
+	background2 = None  #use in edit
+	sr = 0
 	menu_scroll = None
 	background_on = None
 	sound_on = None
@@ -1646,6 +1648,9 @@ class Board:
 
 		a = True
 		pygame.event.clear()
+		if self.game.type == 2:
+			a = False
+
 		while a:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -1657,7 +1662,6 @@ class Board:
 						return 2
 					elif event.key == ord('b'):
 						return 3
-					a = False
 
 		# Game Loop
 		base.gameloop = 0  #time to  play the game
@@ -1711,6 +1715,8 @@ class Board:
 
 		# Play the end sound
 		self.count_holes()
+		if self.game.type == 2:
+			return -9
 		if self.board_complete > 0:
 			play_sound(base.levelfinish)
 			hi=HighScore(self.game.score)
@@ -1991,6 +1997,12 @@ class Game:
 
 			rc = board.play_level()
 
+			# Check for edit game
+			if rc == -9:
+				time.sleep(1)
+				Editor.editplaymenu(self)
+				return -4
+
 			# Check for the user closing the window
 			if rc == -4:
 				return -4
@@ -2178,6 +2190,7 @@ class MainLoop:
 		base.music_on = BS.ex.getint('sys',"Music", fallback=0)  # 1  # 0 off, 1 fur elise, 2 normal
 		base.background_on = BS.ex.getint('sys',"Background", fallback=0)  # 0 off, 1 fur elise, 2 normal
 		base.board_time_sw = BS.ex.getint('sys', "board_time_sw", fallback=True)
+		base.sr = SRscreen(base.screen)
 
 		# self.mu = Music()
 		#base()
@@ -2459,6 +2472,24 @@ class Sound:
 		base.menu_select = load_sound('switch.wav')
 
 
+class SRscreen:
+	def __init__(self, screen):
+		self.screen = screen
+		base.background2 = 0
+		self.winrect = 0
+
+
+	def save(self):
+		self.winrect = self.screen.get_rect()
+		base.background2 = pygame.Surface(self.winrect.size).convert()
+		base.background2.blit(self.screen, (0, 0), self.winrect)
+
+
+	def restore(self):
+		self.screen.blit(base.background2, self.winrect)
+		pygame.display.update(self.winrect)
+
+
 class Editor():
 	"""
 	9 Dec 2025
@@ -2472,6 +2503,7 @@ class Editor():
 		self.tsname = ''
 
 		self.screen = screen
+
 		BS.ex.set('sys','normal','False')
 		BS.ex.set('sys', 'normal', 'False')
 		BS.ex.set('sys', 'circuits', 'testlvs')
@@ -2523,7 +2555,7 @@ class Editor():
 	def doedit(self ):
 		self.tsname = BS.circuit.get(self.circuit, 'name', fallback='test1')
 		self.editmenu()
-		self.save_level()
+		#self.save_level()
 
 		pass
 		exit()
@@ -2567,6 +2599,28 @@ class Editor():
 	# maxmarbles  - The maximum number of active marbles (default: 10)
 	# stoplight   - The colors in the stoplight (default: 6,4,3)
 
+
+	def editplaymenu(self):  # Game
+		cycle = True
+		base.sr.save()
+
+		while cycle:
+			#   New main menu
+			mainmenu = ('Main Edit Menu', 'Exit', 'Show')
+			# no option
+			menu = MainMenu(self.screen, base.background2, mainmenu) # base.background
+			menu.from_top(100)
+
+			menu.draw_menu()  # Menu line to start
+			what2do = menu.select()
+			if what2do == 1:
+				return -9
+			elif what2do == 1:
+				pass
+			elif what2do == 3:
+				pass
+
+
 	def editmenu(self):
 		cycle = True
 
@@ -2587,13 +2641,13 @@ class Editor():
 			elif what2do == 3:
 				game = Game(self.screen, 2)
 				game.play()
-				pass
+				cycle = True
 
 		self.type = 0
-		exit()
 
 
 
+'''
 		# BS.ex
 		# BS.circuit
 		# BS.score
@@ -2649,7 +2703,7 @@ class Editor():
 
 # name=The Game - The name of the level - Required must be a unique id
 
-
+'''
 
 
 
