@@ -1477,6 +1477,9 @@ class Board:
 			tile = self.tiles[tile_y][tile_x]
 			tile.click(self, tile_xr, tile_yr, tile_x, tile_y)
 
+
+
+
 	def _load(self,section1): #(self, circuit, level):
 
 		#circuit.get(section1, )
@@ -2000,7 +2003,7 @@ class Game:
 			# Check for edit game
 			if rc == -9:
 				time.sleep(1)
-				Editor.editplaymenu(self)
+				self.editplaymenu()
 				return -4
 
 			# Check for the user closing the window
@@ -2040,6 +2043,41 @@ class Game:
 
 				if a != -3:
 					return a
+
+	def editplaymenu(self):  # Game
+		cycle = True
+		base.sr.save()
+
+		while cycle:
+			#   New main menu
+			mainmenu = ('Return to Edit Menu', 'Set 0,0', '')
+			# no option
+			menu = MainMenu(self.screen, base.background2, mainmenu)  # base.background
+			menu.from_top(100)
+
+			menu.draw_menu()  # Menu line to start
+			what2do = menu.select()
+			if what2do == 1:
+				return -9
+			elif what2do == 2:  # set 0 0
+				base.sr.restore()
+				for event in pygame.event.get():
+					if event.type == QUIT:
+						pygame.quit()
+						sys.exit()
+
+					if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+						break
+
+				ps = BOARD_POS
+				pos = pygame.mouse.get_pos()
+				tile_x = int((pos[0] - ps[0]) / TILE_SIZE)
+				tile_y = int((pos[1] - ps[1]) / TILE_SIZE)
+				if 0 <= tile_x < HORIZ_TILES and 0 <= tile_y < VERT_TILES:
+					pass
+				pass
+			elif what2do == 3:
+				pass
 
 
 def main():
@@ -2600,25 +2638,7 @@ class Editor():
 	# stoplight   - The colors in the stoplight (default: 6,4,3)
 
 
-	def editplaymenu(self):  # Game
-		cycle = True
-		base.sr.save()
 
-		while cycle:
-			#   New main menu
-			mainmenu = ('Main Edit Menu', 'Exit', 'Show')
-			# no option
-			menu = MainMenu(self.screen, base.background2, mainmenu) # base.background
-			menu.from_top(100)
-
-			menu.draw_menu()  # Menu line to start
-			what2do = menu.select()
-			if what2do == 1:
-				return -9
-			elif what2do == 1:
-				pass
-			elif what2do == 3:
-				pass
 
 
 	def editmenu(self):
@@ -2626,7 +2646,7 @@ class Editor():
 
 		while cycle:
 			#   New main menu
-			mainmenu = ('level Name: ' + self.tsname, 'Exit', 'Show')
+			mainmenu = ('level Name: ' + self.tsname, 'Exit Program', 'Show')
 			# no option
 			menu = MainMenu(self.screen, base.background, mainmenu )
 			menu.from_top(100)
