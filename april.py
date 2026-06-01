@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.02"
-	date = '28 May 2026'
+	date = '31 May 2026'
 	text = 'Show menu'
 
 """
@@ -255,6 +255,8 @@ class BS:
 	ex = configparser.ConfigParser()
 	circuit = configparser.ConfigParser()
 	score = configparser.ConfigParser()
+	section1 = ''
+
 	# getboolean
 	#
 
@@ -1483,7 +1485,7 @@ class Board:
 	def _load(self,section1): #(self, circuit, level):
 
 		#circuit.get(section1, )
-
+		BS.section1 = section1 # editor use in Game
 		teleporters = []
 		teleporter_names = []
 		stoplight = DEFAULT_STOPLIGHT
@@ -2003,7 +2005,7 @@ class Game:
 			# Check for edit game
 			if rc == -9:
 				time.sleep(1)
-				self.editplaymenu()
+				self.editboard()
 				return -4
 
 			# Check for the user closing the window
@@ -2044,7 +2046,7 @@ class Game:
 				if a != -3:
 					return a
 
-	def editplaymenu(self):  # Game
+	def editplaymenu(self):   #not use maybbe later
 		cycle = True
 		base.sr.save()
 
@@ -2061,23 +2063,190 @@ class Game:
 				return -9
 			elif what2do == 2:  # set 0 0
 				base.sr.restore()
-				for event in pygame.event.get():
-					if event.type == QUIT:
-						pygame.quit()
-						sys.exit()
 
-					if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-						break
 
-				ps = BOARD_POS
+
+	def editboard(self):
+		ps = BOARD_POS
+		pygame.event.clear
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				pygame.quit()
+				sys.exit()
+
+			if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
 				pos = pygame.mouse.get_pos()
-				tile_x = int((pos[0] - ps[0]) / TILE_SIZE)
-				tile_y = int((pos[1] - ps[1]) / TILE_SIZE)
-				if 0 <= tile_x < HORIZ_TILES and 0 <= tile_y < VERT_TILES:
-					pass
-				pass
-			elif what2do == 3:
-				pass
+				x = 1 + int((pos[0] - ps[0]) / TILE_SIZE)
+				y = 1 + int((pos[1] - ps[1]) / TILE_SIZE)
+				if 0 <= x < HORIZ_TILES and 0 <= y < VERT_TILES:
+					break
+
+		line = BS.circuit.get(BS.section1, 'g' + str(y))
+		j = y
+		for i in range(len(line)) :
+			if line[i] == '|':
+				j =-1
+				if j == 0:
+					break
+		line_pos = i + 1
+
+		types = line[line_pos + 1]
+		paths = line[line_pos + 2]
+		control = line[line_pos + 3]
+
+		pass
+		self.x_load(types,paths,control)
+		pass
+
+def x_load(self,types,paths,control): #(self, circuit, level):
+		teleporters = []
+		teleporter_names = []
+		stoplight = DEFAULT_STOPLIGHT
+
+		base.numwheels = 0
+		# boardtimer = -1
+
+
+		#self.name = BS.circuit.get(section1,'name')
+		#base.scfilename = BS.circuit.get(section1,'score',fallback=section1)
+		#self.live_marbles_limit = BS.circuit.getint(section1,'maxmarbles',fallback=10)
+		#self.set_launch_timer( BS.circuit.getint(section1,'launchtimer',fallback=DEFAULT_LAUNCH_TIMER))
+		#boardtimer = BS.circuit.getint(section1,'boardtimer',fallback=-1)
+		#a = BS.circuit.get(section1,'colors',fallback=DEFAULT_COLORS)
+		self.colors = []
+		'''
+		for i in a: # one char at time
+			if '0' <= i <= '7':
+				self.colors.append(int(i))
+				self.colors.append(int(i))
+				self.colors.append(int(i))
+			elif i == '8':
+				# Crazy marbles are one-third as common
+				self.colors.append(8)
+		a = BS.circuit.get(section1,'stoplight',fallback=DEFAULT_STOPLIGHT)
+		stoplight = []
+		for i in a:
+			if '0' <= i <= '7':
+				stoplight.append(int(i))
+		'''
+		#for x in range(1, 7):
+		#	line = BS.circuit.get(section1, 'g' + str(x))
+		#	j = x - 1
+
+		#for i in range(HORIZ_TILES):
+
+		#types = line[i * 4 + 1]
+		#paths = line[i * 4 + 2]
+		if paths == ' ':
+			pathsint = 0
+		elif paths >= 'a':
+			pathsint = ord(paths) - ord('a') + 10
+		elif '0' <= paths <= '9':
+			pathsint = int(paths)
+		else:
+			pathsint = int(paths)
+		# control some times color, other time something some else
+		#control = line[i * 4 + 3]
+		if control == ' ':
+			colorint = 0
+		elif control >= 'a':
+			colorint = ord(control) - ord('a') + 10
+		elif '0' <= control <= '9':
+			colorint = int(control)
+		else:
+			colorint = 0
+
+		tile = 0
+		if types == 'O':
+			tile = Wheel(pathsint)
+			base.numwheels += 1
+		elif types == '+':
+			tile = Trigger(self.colors)
+		elif types == '!':
+			tile = Stoplight(stoplight)
+		elif types == '&':
+			tile = Painter(pathsint, colorint)
+		elif types == '#':
+			tile = Filter(pathsint, colorint)
+		elif types == '@':
+			if control == ' ':
+				tile = Buffer(pathsint)
+			else:
+				tile = Buffer(pathsint, colorint)
+		elif types == ' ' or ('0' <= types <= '8'):
+			tile = Tile(pathsint)
+		elif types == 'X':
+			tile = Shredder(pathsint)
+		elif types == '*':
+			tile = Replicator(pathsint, colorint)
+		elif types == '^':
+			if control == ' ':
+				tile = Director(pathsint, 0)
+			elif control == '>':
+				tile = Switch(pathsint, 0, 1)
+			elif control == 'v':
+				tile = Switch(pathsint, 0, 2)
+			elif control == '<':
+				tile = Switch(pathsint, 0, 3)
+		elif types == '>':
+			if control == ' ':
+				tile = Director(pathsint, 1)
+			elif control == '^':
+				tile = Switch(pathsint, 1, 0)
+			elif control == 'v':
+				tile = Switch(pathsint, 1, 2)
+			elif control == '<':
+				tile = Switch(pathsint, 1, 3)
+		elif types == 'v':
+			if control == ' ':
+				tile = Director(pathsint, 2)
+			elif control == '^':
+				tile = Switch(pathsint, 2, 0)
+			elif control == '>':
+				tile = Switch(pathsint, 2, 1)
+			elif control == '<':
+				tile = Switch(pathsint, 2, 3)
+		elif types == '<':
+			if control == ' ':
+				tile = Director(pathsint, 3)
+			elif control == '^':
+				tile = Switch(pathsint, 3, 0)
+			elif control == '>':
+				tile = Switch(pathsint, 3, 1)
+			elif control == 'v':
+				tile = Switch(pathsint, 3, 2)
+		elif types == '=':
+			if control in teleporter_names:
+				other = teleporters[teleporter_names.index(control)]
+				tile = Teleporter(pathsint, other)
+			else:
+				tile = Teleporter(pathsint)
+				teleporters.append(tile)
+				teleporter_names.append(control)
+
+		self.set_tile(i, j, tile)
+
+		if '0' <= types <= '8':
+			if control == '^':
+				direction = 0
+			elif control == '>':
+				direction = 1
+			elif control == 'v':
+				direction = 2
+			else:
+				direction = 3
+			self.marbles.append(
+				Marble(int(types), tile.rect.center, direction))
+
+		'''
+		if boardtimer < 0:
+			boardtimer = DEFAULT_BOARD_TIMER * base.numwheels
+		self.set_board_timer(boardtimer, section1)
+		'''
+		pygame.display.update()
+
+		return 1
+
 
 
 def main():
@@ -2139,7 +2308,7 @@ def play_sound(mixersound):
 
 
 #  STATIC Function 29 Sep 2020
-# Load all of the images for the various game classes.
+# Load all the images for the various game classes.
 # The images are stored as class variables in the corresponding classes.
 def ImageLoad(name, colorkey=-1, size=-1):
 	fullname = os.path.join('graphics', name)
