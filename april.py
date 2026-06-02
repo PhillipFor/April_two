@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.02"
-	date = '31 May 2026'
+	date = '1 Jun 2026'
 	text = 'Show menu'
 
 """
@@ -1291,6 +1291,8 @@ class Board:
 				if tile.draw_fore(self.screen):
 					dirty_rects.append(tile.rect)
 
+
+
 	def update(self):
 		# Create the list of dirty rectangles
 		dirty_rects = []
@@ -1985,7 +1987,7 @@ class Game:
 		self.pop = PopWindow(self.screen)
 		self.level = 0 #in_level
 		self.score = 0
-
+		self.board = 0
 		self.gamestart = time.time()
 
 
@@ -1998,9 +2000,9 @@ class Game:
 
 		while 1:
 			# Play a level
-			board = Board(self, BOARD_POS)
+			self.board = Board(self, BOARD_POS)
 
-			rc = board.play_level()
+			rc = self.board.play_level()
 
 			# Check for edit game
 			if rc == -9:
@@ -2069,36 +2071,38 @@ class Game:
 	def editboard(self):
 		ps = BOARD_POS
 		pygame.event.clear
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				pygame.quit()
-				sys.exit()
+		a = True
+		while a:
+			for event in pygame.event.get():
+				if event.type == QUIT:
+					pygame.quit()
+					sys.exit()
 
-			if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-				pos = pygame.mouse.get_pos()
-				x = 1 + int((pos[0] - ps[0]) / TILE_SIZE)
-				y = 1 + int((pos[1] - ps[1]) / TILE_SIZE)
-				if 0 <= x < HORIZ_TILES and 0 <= y < VERT_TILES:
-					break
-
-		line = BS.circuit.get(BS.section1, 'g' + str(y))
-		j = y
-		for i in range(len(line)) :
-			if line[i] == '|':
-				j =-1
+				if event.type == pygame.MOUSEBUTTONDOWN:
+					if event.button == 1:
+						pos = pygame.mouse.get_pos()
+						x = int((pos[0] - ps[0]) / TILE_SIZE)
+						y = int((pos[1] - ps[1]) / TILE_SIZE)
+						if 0 <= x < HORIZ_TILES and 0 <= y < VERT_TILES:
+							a = False
+		self.gline = 'g' + str(y + 1)
+		self.gline_val = BS.circuit.get(BS.section1, self.gline)
+		j = x + 1
+		for i in range(len(self.gline_val )) :
+			if self.gline_val [i] == '|':
+				j -= 1
 				if j == 0:
 					break
-		line_pos = i + 1
-
-		types = line[line_pos + 1]
-		paths = line[line_pos + 2]
-		control = line[line_pos + 3]
+		self.gline_pos  = i
+		types = self.gline_val[i + 1]
+		paths = self.gline_val[i + 2]
+		control = self.gline_val[i + 3]
 
 		pass
 		self.x_load(types,paths,control)
 		pass
 
-def x_load(self,types,paths,control): #(self, circuit, level):
+	def x_load(self,types,paths,control): #(self, circuit, level):
 		teleporters = []
 		teleporter_names = []
 		stoplight = DEFAULT_STOPLIGHT
@@ -2224,7 +2228,7 @@ def x_load(self,types,paths,control): #(self, circuit, level):
 				teleporters.append(tile)
 				teleporter_names.append(control)
 
-		self.set_tile(i, j, tile)
+		self.board.set_tile(0, 3, tile)
 
 		if '0' <= types <= '8':
 			if control == '^':
@@ -2246,6 +2250,7 @@ def x_load(self,types,paths,control): #(self, circuit, level):
 		pygame.display.update()
 
 		return 1
+
 
 
 
