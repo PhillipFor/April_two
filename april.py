@@ -1,7 +1,7 @@
 class VersionPF:
 	number = "3.02"
-	date = '2 Jun 2026'
-	text = 'Editor - pick square'
+	date = '3 Jun 2026'
+	text = 'Editor - selection menu'
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -372,6 +372,7 @@ staf = BS()
 
 class base:
 	edit_act = False
+	edit_play = False
 	gameloop = 0  # 27Dec23
 	gamelooptext = ""  # 27Dec23
 	save = 0  # level for continue
@@ -1137,10 +1138,9 @@ class Board:
 
 		self._load(base.level)
 
-
-
-
-
+		# Create The Background
+		self.background = pygame.Surface(self.screen.get_size()).convert()
+		self.background.fill((200, 200, 200))  # Color of Info Bar
 
 		# Create the launch timer text object
 		self.run_time = 0
@@ -1153,9 +1153,6 @@ class Board:
 		for i in range(int(VERT_TILES * TILE_SIZE / MARBLE_SIZE + 2)):
 			self.launch_queue.append(random.choice(self.colors))
 
-		# Create The Background
-		self.background = pygame.Surface(self.screen.get_size()).convert()
-		self.background.fill((200, 200, 200))  # Color of Info Bar
 
 		# Draw the backdrop
 		# backdrop = load_image('backdrop.jpg', -2, (HORIZ_TILES * TILE_SIZE, VERT_TILES * TILE_SIZE))
@@ -1362,6 +1359,7 @@ class Board:
 
 		# Flip the display
 		pygame.display.update(dirty_rects)
+		pass
 
 
 	def count_holes(self):
@@ -1647,17 +1645,22 @@ class Board:
 		# Perform the first render
 		self.update()
 
+		if base.edit_act:
+			if not base.edit_play:
+				return
 		# Launch the first marble
 		self.launch_marble()
 
 		# Do the first update
 		pygame.display.update()
 
+		if base.edit_act:
+			pass
+
 		a = True
-		pygame.event.clear()
 		if self.game.type == 2:
 			a = False
-
+		pygame.event.clear()
 		while a:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -2099,12 +2102,29 @@ class Game:
 		pass
 		self.x_load(types,paths,control)
 		pass
+		base.sr.save()
+
+		cycle = True
+		while cycle:
+			#   New main menu
+			mainmenu = ('Wheel','Painter','Filter','Teleporter','Trigger','Stoplights','Buffer','Shredder','Replicator')
+			menu = MainMenu(self.screen, base.background2, mainmenu)
+
+			menu.from_top(150)
+
+			menu.draw_menu()  # Menu line to start
+			what2do = menu.select()
+			pass
+
 		a = True
 		while a:
 			for event in pygame.event.get():
 				if event.type == QUIT:
 					pygame.quit()
 					sys.exit()
+
+
+
 
 	def x_load(self,types,paths,control): #(self, circuit, level):
 		teleporters = []
@@ -2249,7 +2269,7 @@ class Game:
 		'''
 		self.screen.blit(base.backdrop, (0, 0))
 		pygame.display.update()
-		#self.board.draw_back(dirty_rects)
+		self.board.draw_back(dirty_rects)
 
 
 		# Draw the foreground
@@ -2728,6 +2748,7 @@ class Editor():
 		"""
 		staf.save()
 		base.edit_act = True
+		base.edit_play= False
 		self.tsname = ''
 
 		self.screen = screen
@@ -2836,7 +2857,7 @@ class Editor():
 
 		while cycle:
 			#   New main menu
-			mainmenu = ('level Name: ' + self.tsname, 'Exit Program', 'Show')
+			mainmenu = ('level Name: ' + self.tsname, 'Exit Program', 'Show', 'Play')
 			# no option
 			menu = MainMenu(self.screen, base.background, mainmenu )
 			menu.from_top(100)
@@ -2849,6 +2870,11 @@ class Editor():
 				self.tsname = menu.key_input(self.tsname)
 				BS.circuit.set(self.circuit, 'name', self.tsname )
 			elif what2do == 3:
+				game = Game(self.screen, 2)
+				game.play()
+				cycle = True
+			elif what2do == 4:
+				base.edit_play = True
 				game = Game(self.screen, 2)
 				game.play()
 				cycle = True
