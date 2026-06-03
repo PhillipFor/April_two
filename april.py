@@ -1,7 +1,7 @@
 class VersionPF:
 	number = "3.02"
-	date = '1 Jun 2026'
-	text = 'Show menu'
+	date = '2 Jun 2026'
+	text = 'Editor - pick square'
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -371,7 +371,7 @@ staf = BS()
 
 
 class base:
-
+	edit_act = False
 	gameloop = 0  # 27Dec23
 	gamelooptext = ""  # 27Dec23
 	save = 0  # level for continue
@@ -2001,13 +2001,11 @@ class Game:
 		while 1:
 			# Play a level
 			self.board = Board(self, BOARD_POS)
-
 			rc = self.board.play_level()
-
-			# Check for edit game
-			if rc == -9:
+			if base.edit_act:
 				time.sleep(1)
 				self.editboard()
+				pass
 				return -4
 
 			# Check for the user closing the window
@@ -2101,6 +2099,12 @@ class Game:
 		pass
 		self.x_load(types,paths,control)
 		pass
+		a = True
+		while a:
+			for event in pygame.event.get():
+				if event.type == QUIT:
+					pygame.quit()
+					sys.exit()
 
 	def x_load(self,types,paths,control): #(self, circuit, level):
 		teleporters = []
@@ -2109,7 +2113,7 @@ class Game:
 
 		base.numwheels = 0
 		# boardtimer = -1
-
+		dirty_rects = []
 
 		#self.name = BS.circuit.get(section1,'name')
 		#base.scfilename = BS.circuit.get(section1,'score',fallback=section1)
@@ -2141,6 +2145,7 @@ class Game:
 
 		#types = line[i * 4 + 1]
 		#paths = line[i * 4 + 2]
+
 		if paths == ' ':
 			pathsint = 0
 		elif paths >= 'a':
@@ -2228,8 +2233,8 @@ class Game:
 				teleporters.append(tile)
 				teleporter_names.append(control)
 
-		self.board.set_tile(0, 3, tile)
-
+		self.board.set_tile(3, 0, tile)
+		'''
 		if '0' <= types <= '8':
 			if control == '^':
 				direction = 0
@@ -2241,13 +2246,24 @@ class Game:
 				direction = 3
 			self.marbles.append(
 				Marble(int(types), tile.rect.center, direction))
+		'''
+		self.screen.blit(base.backdrop, (0, 0))
+		pygame.display.update()
+		#self.board.draw_back(dirty_rects)
+
+
+		# Draw the foreground
+		self.board.draw_fore(dirty_rects)
+
+		# Flip the display
+		pygame.display.update(dirty_rects)
 
 		'''
 		if boardtimer < 0:
 			boardtimer = DEFAULT_BOARD_TIMER * base.numwheels
 		self.set_board_timer(boardtimer, section1)
 		'''
-		pygame.display.update()
+		#pygame.display.update()
 
 		return 1
 
@@ -2387,7 +2403,7 @@ class MainLoop:
 
 		Options()
 
-		self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), base.fullscreen * FULLSCREEN)
+		self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 		base.screen = self.screen  # 15Dec23
 		icon = pygame.image.load(os.path.join('graphics', 'icon.png'))
 		pygame.display.set_icon(icon)
@@ -2395,7 +2411,7 @@ class MainLoop:
 
 		VersionPF()
 		pygame.display.set_caption(
-			'Aspril Two moving ball -- Version ' + VersionPF.number + ' ' + VersionPF.date + '  ' + VersionPF.text)
+			'April Two moving balls -- Version ' + VersionPF.number + ' ' + VersionPF.date + '  ' + VersionPF.text)
 
 		base.sound_on = BS.ex.getboolean('sys',"Effect", fallback=True) # True
 
@@ -2711,7 +2727,7 @@ class Editor():
 		"""
 		"""
 		staf.save()
-
+		base.edit_act = True
 		self.tsname = ''
 
 		self.screen = screen
