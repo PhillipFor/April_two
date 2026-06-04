@@ -1654,11 +1654,8 @@ class Board:
 		# Do the first update
 		pygame.display.update()
 
-		if base.edit_act:
-			pass
-
 		a = True
-		if self.game.type == 2:
+		if base.edit_act:
 			a = False
 		pygame.event.clear()
 		while a:
@@ -1723,10 +1720,12 @@ class Board:
 				base.gameloop += 1 #time to  play the game
 				self.update()
 
+
+
+		if base.edit_act:
+			return -9
 		# Play the end sound
 		self.count_holes()
-		if self.game.type == 2:
-			return -9
 		if self.board_complete > 0:
 			play_sound(base.levelfinish)
 			hi=HighScore(self.game.score)
