@@ -2106,7 +2106,8 @@ class Game:
 		cycle = True
 		while cycle:
 			#   New main menu
-			mainmenu = ('Wheel','Painter','Filter','Teleporter','Trigger','Stoplights','Buffer','Shredder','Replicator')
+			mainmenu = ('Wheel','Painter','Filter','Teleporter','Trigger','Stoplights',
+			            'Buffer','Shredder','Replicator','Switch','next')
 			menu = MainMenu(self.screen, base.background2, mainmenu)
 
 			menu.from_top(150)
@@ -2129,10 +2130,12 @@ class Game:
 		teleporters = []
 		teleporter_names = []
 		stoplight = DEFAULT_STOPLIGHT
-
-		base.numwheels = 0
-		# boardtimer = -1
 		dirty_rects = []
+
+
+
+		rect = pygame.Rect((0, 0, TILE_SIZE, TILE_SIZE))
+		surface = pygame.Surface((TILE_SIZE, TILE_SIZE))
 
 		#self.name = BS.circuit.get(section1,'name')
 		#base.scfilename = BS.circuit.get(section1,'score',fallback=section1)
@@ -2141,29 +2144,6 @@ class Game:
 		#boardtimer = BS.circuit.getint(section1,'boardtimer',fallback=-1)
 		#a = BS.circuit.get(section1,'colors',fallback=DEFAULT_COLORS)
 		self.colors = []
-		'''
-		for i in a: # one char at time
-			if '0' <= i <= '7':
-				self.colors.append(int(i))
-				self.colors.append(int(i))
-				self.colors.append(int(i))
-			elif i == '8':
-				# Crazy marbles are one-third as common
-				self.colors.append(8)
-		a = BS.circuit.get(section1,'stoplight',fallback=DEFAULT_STOPLIGHT)
-		stoplight = []
-		for i in a:
-			if '0' <= i <= '7':
-				stoplight.append(int(i))
-		'''
-		#for x in range(1, 7):
-		#	line = BS.circuit.get(section1, 'g' + str(x))
-		#	j = x - 1
-
-		#for i in range(HORIZ_TILES):
-
-		#types = line[i * 4 + 1]
-		#paths = line[i * 4 + 2]
 
 		if paths == ' ':
 			pathsint = 0
@@ -2275,7 +2255,7 @@ class Game:
 		self.board.draw_fore(dirty_rects)
 
 		# Flip the display
-		pygame.display.update(dirty_rects)
+		#pygame.display.update(dirty_rects)
 
 		'''
 		if boardtimer < 0:
