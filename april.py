@@ -2255,14 +2255,14 @@ class Game:
 		self.board.draw_fore(dirty_rects)
 
 		# Flip the display
-		#pygame.display.update(dirty_rects)
+		pygame.display.update(dirty_rects)
 
 		'''
 		if boardtimer < 0:
 			boardtimer = DEFAULT_BOARD_TIMER * base.numwheels
 		self.set_board_timer(boardtimer, section1)
 		'''
-		#pygame.display.update()
+		pygame.display.update()
 
 		return 1
 
