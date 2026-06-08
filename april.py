@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.02"
-	date = '7 Jun 2026'
+	date = '8 Jun 2026'
 	text = 'Editor - selection menu'
 
 """
