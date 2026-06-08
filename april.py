@@ -473,7 +473,6 @@ class Images:
 			tile.blit(path, (0, 0))
 			base.Tile_plains.append(tile)
 			base.Tile_tunnels.append(ImageLoad('tunnel-' + repr(i) + '.png', -1, (TILE_SIZE, TILE_SIZE)))
-		#  Tile.paths = 0  # not sure why this is here  define in class Tile PF
 
 		#  Wheel.images
 		base.Wheel_images = (
@@ -2097,42 +2096,87 @@ class Game:
 		types = self.gline_val[i + 1]
 		paths = self.gline_val[i + 2]
 		control = self.gline_val[i + 3]
-
-		pass
-		self.x_load(types,paths,control)
-		pass
-		base.sr.save()
-
 		cycle = True
+		basemenu = 1
+
 		while cycle:
+			p0 = paths
+			t0 = types
+			c0 = control
+			self.x_load(types, paths, control)
+			base.sr.save()
+			paths = p0
+			types = t0
+			control = c0
+
+			if paths == ' ':
+				pathsint = 0
+			else:
+				pathsint = int(paths, 16)
+
+			pone = pathsint & 1
+			ptwo = pathsint & 2
+			pthe = pathsint & 4
+			pfor = pathsint & 8
+
+
 			#   New main menu
-			mainmenu = ('Wheel','Painter','Filter','Teleporter','Trigger','Stoplights',
+			if basemenu == 1:
+				main = ('Direction','Wheel','Painter','Filter','Teleporter','Trigger','Stoplights',
 			            'Buffer','Shredder','Replicator','Switch','next')
-			menu = MainMenu(self.screen, base.background2, mainmenu)
+			elif basemenu == 2:
+				main = ('Up','Right','Down','Left','Main')
+
+
+			#  base.background2
+			menu = MainMenu(self.screen, base.background2, main)
 
 			menu.from_top(150)
 
 			menu.draw_menu()  # Menu line to start
 			what2do = menu.select()
-			pass
 
-		a = True
-		while a:
 			for event in pygame.event.get():
 				if event.type == QUIT:
 					pygame.quit()
 					sys.exit()
-		if what2do == 1: #wheel
-			types = ('O')
-		elif what2do == 2:
-			pass
+			if basemenu == 1:
+				if what2do == 1:
+					basemenu = 2
+				if what2do == 2: #wheel
+					types =  'O'
+					control = ' '
+				elif what2do == 3:
+					pass
 
+			elif basemenu == 2:
+				if what2do == 1:
+					pone = not pone
+				elif what2do == 2:  # wheel
+					ptwo = not ptwo
+				elif what2do == 3:
+					pthe = not pthe
+				elif what2do == 4:
+					pfor = not pfor
+				elif what2do == 5:
+					basemenu = 1
+				pathsint = 0
+				if pone:
+					pathsint += 1
+				if ptwo:
+					pathsint += 2
+				if pthe:
+					pathsint += 4
+				if pfor:
+					pathsint += 8
+				paths = hex(pathsint)[2:]
+				types = ' '
 
 	def x_load(self, types, paths, control): #(self, circuit, level):
 		teleporters = []
 		teleporter_names = []
 		stoplight = DEFAULT_STOPLIGHT
-		dirty_rects = []
+		#dirty_rects = []
 
 		rect = pygame.Rect((350, 40, TILE_SIZE, TILE_SIZE))
 
@@ -2149,22 +2193,17 @@ class Game:
 
 		if paths == ' ':
 			pathsint = 0
-		elif paths >= 'a':
-			pathsint = ord(paths) - ord('a') + 10
-		elif '0' <= paths <= '9':
-			pathsint = int(paths)
 		else:
-			pathsint = int(paths)
-		if not pathsint ==  0:
-			base.screen.blit(base.Tile_plains[pathsint], rect)
+			pathsint = int(paths, 16)
+
+		base.screen.blit(base.Tile_plains[pathsint], rect)
+
 		# control some times color, other time something some else
 		#control = line[i * 4 + 3]
 		if control == ' ':
 			colorint = 0
-		elif control >= 'a':
-			colorint = ord(control) - ord('a') + 10
 		elif '0' <= control <= '9':
-			colorint = int(control)
+			colorint = int(paths)
 		else:
 			colorint = 0
 
@@ -2186,7 +2225,8 @@ class Game:
 			else:
 				tile = Buffer(pathsint, colorint)
 		elif types == ' ' or ('0' <= types <= '8'):
-			tile = Tile(pathsint)
+			base.screen.blit(base.Tile_plains[pathsint], rect)
+			#tile = Tile(pathsint)
 		elif types == 'X':
 			tile = Shredder(pathsint)
 		elif types == '*':
