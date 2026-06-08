@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.02"
-	date = '3 Jun 2026'
+	date = '7 Jun 2026'
 	text = 'Editor - selection menu'
 
 """
@@ -2122,20 +2122,22 @@ class Game:
 				if event.type == QUIT:
 					pygame.quit()
 					sys.exit()
+		if what2do == 1: #wheel
+			types = ('O')
+		elif what2do == 2:
+			pass
 
 
-
-
-	def x_load(self,types,paths,control): #(self, circuit, level):
+	def x_load(self, types, paths, control): #(self, circuit, level):
 		teleporters = []
 		teleporter_names = []
 		stoplight = DEFAULT_STOPLIGHT
 		dirty_rects = []
 
+		rect = pygame.Rect((350, 40, TILE_SIZE, TILE_SIZE))
 
-
-		rect = pygame.Rect((0, 0, TILE_SIZE, TILE_SIZE))
-		surface = pygame.Surface((TILE_SIZE, TILE_SIZE))
+		base.screen.blit(base.backdrop, (0, 0))
+		pygame.display.update()
 
 		#self.name = BS.circuit.get(section1,'name')
 		#base.scfilename = BS.circuit.get(section1,'score',fallback=section1)
@@ -2153,6 +2155,8 @@ class Game:
 			pathsint = int(paths)
 		else:
 			pathsint = int(paths)
+		if not pathsint ==  0:
+			base.screen.blit(base.Tile_plains[pathsint], rect)
 		# control some times color, other time something some else
 		#control = line[i * 4 + 3]
 		if control == ' ':
@@ -2166,7 +2170,7 @@ class Game:
 
 		tile = 0
 		if types == 'O':
-			tile = Wheel(pathsint)
+			base.screen.blit(base.Wheel_images[0], rect)
 			base.numwheels += 1
 		elif types == '+':
 			tile = Trigger(self.colors)
@@ -2232,7 +2236,9 @@ class Game:
 				teleporters.append(tile)
 				teleporter_names.append(control)
 
-		self.board.set_tile(3, 0, tile)
+		#self.board.set_tile(3, 0, tile)
+
+
 		'''
 		if '0' <= types <= '8':
 			if control == '^':
@@ -2246,23 +2252,21 @@ class Game:
 			self.marbles.append(
 				Marble(int(types), tile.rect.center, direction))
 		'''
-		self.screen.blit(base.backdrop, (0, 0))
-		pygame.display.update()
-		self.board.draw_back(dirty_rects)
 
+		#self.board.draw_back(dirty_rects)
 
 		# Draw the foreground
-		self.board.draw_fore(dirty_rects)
+		#self.board.draw_fore(dirty_rects)
 
 		# Flip the display
-		pygame.display.update(dirty_rects)
+		pygame.display.flip()
 
 		'''
 		if boardtimer < 0:
 			boardtimer = DEFAULT_BOARD_TIMER * base.numwheels
 		self.set_board_timer(boardtimer, section1)
 		'''
-		pygame.display.update()
+		#pygame.display.update()
 
 		return 1
 
@@ -2859,7 +2863,7 @@ class Editor():
 				cycle = True
 
 		self.type = 0
-
+		sys.exit
 
 
 '''
