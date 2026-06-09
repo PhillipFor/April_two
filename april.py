@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.02"
-	date = '8 Jun 2026'
+	date = '9 Jun 2026'
 	text = 'Editor - selection menu'
 
 """
@@ -2097,7 +2097,7 @@ class Game:
 		paths = self.gline_val[i + 2]
 		control = self.gline_val[i + 3]
 		cycle = True
-		basemenu = 1
+		basemenu = 2
 
 		while cycle:
 			p0 = paths
@@ -2122,10 +2122,12 @@ class Game:
 
 			#   New main menu
 			if basemenu == 1:
-				main = ('Direction','Wheel','Painter','Filter','Teleporter','Trigger','Stoplights',
-			            'Buffer','Shredder','Replicator','Switch','next')
+				main = ('Wheel','Painter','Filter','Teleporter','Trigger','Stoplights',
+			            'Buffer','Shredder','Replicator','Switch','done')
 			elif basemenu == 2:
-				main = ('Up','Right','Down','Left','Main')
+				main = ('Up','Right','Down','Left','main')
+			elif basemenu == 3:
+				main = ('Save', 'cancel')
 
 
 			#  base.background2
@@ -2141,13 +2143,11 @@ class Game:
 					pygame.quit()
 					sys.exit()
 			if basemenu == 1:
-				if what2do == 1:
-					basemenu = 2
-				if what2do == 2: #wheel
+				if what2do == 1: #wheel
 					types =  'O'
 					control = ' '
-				elif what2do == 3:
-					pass
+				elif what2do == 11:
+					basemenu = 3
 
 			elif basemenu == 2:
 				if what2do == 1:
@@ -2171,6 +2171,24 @@ class Game:
 					pathsint += 8
 				paths = hex(pathsint)[2:]
 				types = ' '
+
+			elif basemenu == 3:
+				if what2do == 1:
+					i = self.gline_pos + 1
+					char_list = list(self.gline_val)
+					char_list[i] = types
+					char_list[i + 1] = paths
+					char_list[i +2] = control
+					self.gline_val = "".join(char_list)
+					BS.circuit.set(BS.section1, self.gline, self.gline_val)
+					with open(BS.circuitspath, 'w') as configfile:
+						BS.circuit.write(configfile, False)
+					cycle = False
+
+				elif what2do == 2:  # wheel
+					pass
+				elif what2do == 3:
+					pass
 
 	def x_load(self, types, paths, control): #(self, circuit, level):
 		teleporters = []
@@ -2780,14 +2798,14 @@ class Editor():
 		BS.ex.set('sys', 'normal', 'False')
 		BS.ex.set('sys', 'circuits', 'testlvs')
 		self.circuit = 'ts1'
-		self.circuitfile = os.path.join(BS.circuitspath, 'testlvs')
+		BS.circuitspath = os.path.join(BS.circuitspath, 'testlvs')
 		BS.circuit = 0
 		BS.circuit = configparser.ConfigParser()
 
 		flag = False
-		if os.path.isfile(self.circuitfile):
-			a = self.circuitfile
-			BS.circuit.read(self.circuitfile)
+		if os.path.isfile(BS.circuitspath):
+			a = BS.circuitspath
+			BS.circuit.read(BS.circuitspath)
 			a = BS.circuit.has_section(self.circuit)
 			if not BS.circuit.has_section(self.circuit):
 				BS.circuit.add_section(self.circuit)
@@ -2808,7 +2826,7 @@ class Editor():
 			BS.circuit.set(self.circuit, 'score', self.circuit)
 			self.clrlevel()
 			self.save_level()
-		BS.circuit.read(self.circuitfile)
+		BS.circuit.read(BS.circuitspath)
 		self.doedit()
 
 	def clrlevel(self):
@@ -2820,7 +2838,7 @@ class Editor():
 			BS.circuit.set(self.circuit, 'g' + str(i + 1), line)
 
 	def save_level(self):
-		with open(self.circuitfile, 'w') as configfile:
+		with open(BS.circuitfile, 'w') as configfile:
 			BS.circuit.write(configfile, False)
 
 
