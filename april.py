@@ -1227,7 +1227,7 @@ class Board:
 		rect.left = self.board_timer_pos
 		self.screen.blit(text, rect)
 
-		temp = int((base.gameloop) * 1 + FRAMES_PER_SEC - 1) / FRAMES_PER_SEC
+		temp = int(base.gameloop * 1 + FRAMES_PER_SEC - 1) / FRAMES_PER_SEC
 		base.gamelooptext = temp
 
 		# Draw the lives counter
@@ -2097,7 +2097,7 @@ class Game:
 		paths = self.gline_val[i + 2]
 		control = self.gline_val[i + 3]
 		cycle = True
-		basemenu = 2
+		basemenu = 1
 
 		while cycle:
 			p0 = paths
@@ -2122,13 +2122,14 @@ class Game:
 
 			#   New main menu
 			if basemenu == 1:
-				main = ('Wheel','Painter','Filter','Teleporter','Trigger','Stoplights',
-			            'Buffer','Shredder','Replicator','Switch','done')
+				main = ('Wheel','Painter','Buffer','Filter','Teleporter','Trigger','Stoplights',
+			            'Shredder','Replicator','Switch','done')
 			elif basemenu == 2:
 				main = ('Up','Right','Down','Left','main')
 			elif basemenu == 3:
 				main = ('Save', 'cancel')
-
+			elif basemenu == 4:
+				main = ('Black','White','Blue','Green','Yellow','Purple','Red','Orange','Crazy (wildcard)')
 
 			#  base.background2
 			menu = MainMenu(self.screen, base.background2, main)
@@ -2143,9 +2144,16 @@ class Game:
 					pygame.quit()
 					sys.exit()
 			if basemenu == 1:
-				if what2do == 1: #wheel
+				if what2do == 1: # Wheel
 					types =  'O'
 					control = ' '
+				elif what2do == 2: # Painter
+					types = '&'
+					basemenu = 4
+				elif what2do == 3: # Buffer
+					types = '@'
+					basemenu = 4
+
 				elif what2do == 11:
 					basemenu = 3
 
@@ -2170,7 +2178,7 @@ class Game:
 				if pfor:
 					pathsint += 8
 				paths = hex(pathsint)[2:]
-				types = ' '
+
 
 			elif basemenu == 3:
 				if what2do == 1:
@@ -2190,6 +2198,13 @@ class Game:
 				elif what2do == 3:
 					pass
 
+			elif basemenu == 4:
+				colorint = what2do - 1
+				control = str(colorint )
+				basemenu = 2
+
+
+
 	def x_load(self, types, paths, control): #(self, circuit, level):
 		teleporters = []
 		teleporter_names = []
@@ -2200,6 +2215,7 @@ class Game:
 
 		base.screen.blit(base.backdrop, (0, 0))
 		pygame.display.update()
+		pathsint = colorint = 0
 
 		#self.name = BS.circuit.get(section1,'name')
 		#base.scfilename = BS.circuit.get(section1,'score',fallback=section1)
@@ -2207,7 +2223,7 @@ class Game:
 		#self.set_launch_timer( BS.circuit.getint(section1,'launchtimer',fallback=DEFAULT_LAUNCH_TIMER))
 		#boardtimer = BS.circuit.getint(section1,'boardtimer',fallback=-1)
 		#a = BS.circuit.get(section1,'colors',fallback=DEFAULT_COLORS)
-		self.colors = []
+		#self.colors = []
 
 		if paths == ' ':
 			pathsint = 0
@@ -2221,7 +2237,7 @@ class Game:
 		if control == ' ':
 			colorint = 0
 		elif '0' <= control <= '9':
-			colorint = int(paths)
+			colorint = int(control)
 		else:
 			colorint = 0
 
@@ -2234,12 +2250,17 @@ class Game:
 		elif types == '!':
 			tile = Stoplight(stoplight)
 		elif types == '&':
-			tile = Painter(pathsint, colorint)
+			#tile = Painter(pathsint, colorint)
+			base.screen.blit(base.Tile_tunnels[pathsint], rect)
+			base.screen.blit(base.Painter_images[colorint], rect)
 		elif types == '#':
 			tile = Filter(pathsint, colorint)
 		elif types == '@':
 			if control == ' ':
-				tile = Buffer(pathsint)
+				#tile = Buffer(pathsint)
+				base.screen.blit(base.Tile_tunnels[pathsint], rect)
+				base.screen.blit(base.Buffer_top, rect)
+				base.screen.blit(base.Buffer_bottom, rect)
 			else:
 				tile = Buffer(pathsint, colorint)
 		elif types == ' ' or ('0' <= types <= '8'):
@@ -2889,10 +2910,6 @@ class Editor():
 	# maxmarbles  - The maximum number of active marbles (default: 10)
 	# stoplight   - The colors in the stoplight (default: 6,4,3)
 
-
-
-
-
 	def editmenu(self):
 		cycle = True
 
@@ -2923,51 +2940,8 @@ class Editor():
 		self.type = 0
 		sys.exit
 
-
-'''
-		# BS.ex
-		# BS.circuit
-		# BS.score
-
-
-		#self.std_list = BS.circuit.sections()
-		#self.std_list.append('-')
-		#self.std_level = BS.ex.getint('sys', 'testlevel', fallback=0)
-
-		#items = BS.ex.get('sys', 'ranlist', fallback='-')
-		#self.ran_list = str.split(items, ',')
-		#self.ran_level = BS.ex.getint('sys', 'ranlevel', fallback=0)
-		#with open(self.circuit_file, 'w') as configfile:
-		#	BS.circuit.write(configfile, False)
-
-
-		#os.makedirs(aa,"score", exist_ok=True)  # succeeds even if directory exist.
-		#self.scorefile = os.path.join(aa, 'score', 'scores.txt')
-
-		# score
-
-
-
-
-
-
-
-
-
-
-
-
-
+"""
 ####################################################################
-		pass
-		exit(99)
-
-	def blank(self):
-		q=0
-
-	def read(self):
-		w=0
-
 # Level parameters:
 # -----------------
 # name        - The name of the level - Required must be a unique id
@@ -2979,9 +2953,6 @@ class Editor():
 # stoplight   - The colors in the stoplight (default: 6,4,3)
 
 # name=The Game - The name of the level - Required must be a unique id
-
-'''
-
-
+"""
 if __name__ == "__main__":
 	main()
