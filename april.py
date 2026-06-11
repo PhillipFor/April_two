@@ -1,7 +1,7 @@
 class VersionPF:
 	number = "3.02"
-	date = '9 Jun 2026'
-	text = 'Editor - selection menu'
+	date = '10 Jun 2026'
+	text = 'Editor - selection menu Buffer'
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -2093,26 +2093,22 @@ class Game:
 				if j == 0:
 					break
 		self.gline_pos  = i
-		types = self.gline_val[i + 1]
-		paths = self.gline_val[i + 2]
-		control = self.gline_val[i + 3]
-		cycle = True
+		self.types = self.gline_val[i + 1]
+		self.paths = self.gline_val[i + 2]
+		self.control = self.gline_val[i + 3]
+		self.cycle = True
 		basemenu = 1
+		sec = 0
 
-		while cycle:
-			p0 = paths
-			t0 = types
-			c0 = control
-			self.x_load(types, paths, control)
+		while self.cycle:
+			self.x_load(self.types, self.paths, self.control)
 			base.sr.save()
-			paths = p0
-			types = t0
-			control = c0
 
-			if paths == ' ':
+
+			if self.paths == ' ':
 				pathsint = 0
 			else:
-				pathsint = int(paths, 16)
+				pathsint = int(self.paths, 16)
 
 			pone = pathsint & 1
 			ptwo = pathsint & 2
@@ -2121,8 +2117,9 @@ class Game:
 
 
 			#   New main menu
+
 			if basemenu == 1:
-				main = ('Wheel','Painter','Buffer','Filter','Teleporter','Trigger','Stoplights',
+				main = ('Pipe','Wheel','Painter','Buffer','Filter','Teleporter','Trigger','Stoplights',
 			            'Shredder','Replicator','Switch','done')
 			elif basemenu == 2:
 				main = ('Up','Right','Down','Left','main')
@@ -2130,8 +2127,12 @@ class Game:
 				main = ('Save', 'cancel')
 			elif basemenu == 4:
 				main = ('Black','White','Blue','Green','Yellow','Purple','Red','Orange','Crazy (wildcard)')
+			elif basemenu == 5:
+				main = ('none', 'Black','White','Blue','Green','Yellow','Purple','Red','Orange')
+
 
 			#  base.background2
+
 			menu = MainMenu(self.screen, base.background2, main)
 
 			menu.from_top(150)
@@ -2143,20 +2144,30 @@ class Game:
 				if event.type == QUIT:
 					pygame.quit()
 					sys.exit()
+
+
+		################################
 			if basemenu == 1:
-				if what2do == 1: # Wheel
-					types =  'O'
-					control = ' '
-				elif what2do == 2: # Painter
-					types = '&'
-					basemenu = 4
-				elif what2do == 3: # Buffer
-					types = '@'
-					basemenu = 4
+				if what2do == 1:
+					self.types = ' '
+					basemenu = 2
+				elif what2do == 2: # Wheel
+					self.types =  'O'
+					self.control = ' '
+					basemenu = 2
+				elif what2do == 3: # Painter
+					self.types = '&'
+					basemenu = 2
+					sec = 4
+				elif what2do == 4: # Buffer
+					self.types = '@'
+					basemenu = 2
+					sec = 5
 
-				elif what2do == 11:
+
+				elif what2do == 12:
 					basemenu = 3
-
+#################################################
 			elif basemenu == 2:
 				if what2do == 1:
 					pone = not pone
@@ -2168,6 +2179,10 @@ class Game:
 					pfor = not pfor
 				elif what2do == 5:
 					basemenu = 1
+					if not sec == 0:
+						basemenu = sec
+						sec = 0
+
 				pathsint = 0
 				if pone:
 					pathsint += 1
@@ -2177,31 +2192,42 @@ class Game:
 					pathsint += 4
 				if pfor:
 					pathsint += 8
-				paths = hex(pathsint)[2:]
+				self.paths = hex(pathsint)[2:]
 
-
+			############################################
 			elif basemenu == 3:
 				if what2do == 1:
 					i = self.gline_pos + 1
 					char_list = list(self.gline_val)
-					char_list[i] = types
-					char_list[i + 1] = paths
-					char_list[i +2] = control
+					char_list[i] = self.types
+					char_list[i + 1] = self.paths
+					char_list[i +2] = self.control
 					self.gline_val = "".join(char_list)
 					BS.circuit.set(BS.section1, self.gline, self.gline_val)
 					with open(BS.circuitspath, 'w') as configfile:
 						BS.circuit.write(configfile, False)
-					cycle = False
+					self.cycle = False
 
-				elif what2do == 2:  # wheel
+				elif what2do == 2:
 					pass
 				elif what2do == 3:
 					pass
 
-			elif basemenu == 4:
-				colorint = what2do - 1
-				control = str(colorint )
-				basemenu = 2
+####################################################################
+			elif  basemenu == 4:
+				self.control = str(what2do - 1)
+				basemenu = 1
+
+###################################
+			elif basemenu == 5:
+				if what2do == 1:
+					self.control = ' '
+				else:
+					self.control = str(what2do - 2)
+				#if not sec == 0:
+				basemenu = 1
+
+
 
 
 
@@ -2242,14 +2268,14 @@ class Game:
 			colorint = 0
 
 		tile = 0
-		if types == 'O':
+		if types == 'O':  #wheel
 			base.screen.blit(base.Wheel_images[0], rect)
 			base.numwheels += 1
 		elif types == '+':
 			tile = Trigger(self.colors)
 		elif types == '!':
 			tile = Stoplight(stoplight)
-		elif types == '&':
+		elif types == '&': #paint
 			#tile = Painter(pathsint, colorint)
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			base.screen.blit(base.Painter_images[colorint], rect)
@@ -2262,7 +2288,10 @@ class Game:
 				base.screen.blit(base.Buffer_top, rect)
 				base.screen.blit(base.Buffer_bottom, rect)
 			else:
-				tile = Buffer(pathsint, colorint)
+				base.screen.blit(base.Tile_tunnels[pathsint], rect)
+				base.screen.blit(base.Buffer_top, rect)
+				base.screen.blit(base.Filter_images[colorint], rect)
+				#tile = Buffer(pathsint, colorint)
 		elif types == ' ' or ('0' <= types <= '8'):
 			base.screen.blit(base.Tile_plains[pathsint], rect)
 			#tile = Tile(pathsint)
@@ -2859,7 +2888,7 @@ class Editor():
 			BS.circuit.set(self.circuit, 'g' + str(i + 1), line)
 
 	def save_level(self):
-		with open(BS.circuitfile, 'w') as configfile:
+		with open(BS.circuitspath, 'w') as configfile:
 			BS.circuit.write(configfile, False)
 
 
