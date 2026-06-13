@@ -1016,7 +1016,8 @@ class Teleporter(Tile):
 
 	def affect_marble(self, board, marble, rpos):
 		if rpos == (TILE_SIZE / 2, TILE_SIZE / 2):
-			marble.rect.center = self.other.rect.center
+			if not base.edit_act:
+				marble.rect.center = self.other.rect.center
 			play_sound(base.teleport)
 
 
@@ -2119,8 +2120,8 @@ class Game:
 			#   New main menu
 
 			if basemenu == 1:
-				main = ('Pipe','Wheel','Painter','Buffer','Filter','Teleporter','Trigger','Stoplights',
-			            'Shredder','Replicator','Switch','done')
+				main = ('Pipe','Wheel','Painter','Buffer','Filter','Teleporter',
+			            'Shredder','Replicator','Switch','Trigger','Stoplights','done')
 			elif basemenu == 2:
 				main = ('Up','Right','Down','Left','main')
 			elif basemenu == 3:
@@ -2129,10 +2130,13 @@ class Game:
 				main = ('Black','White','Blue','Green','Yellow','Purple','Red','Orange','Crazy (wildcard)')
 			elif basemenu == 5:
 				main = ('none', 'Black','White','Blue','Green','Yellow','Purple','Red','Orange')
+			elif basemenu == 6:
+				main = ('a','b','c','d','e','g')
+
+
 
 
 			#  base.background2
-
 			menu = MainMenu(self.screen, base.background2, main)
 
 			menu.from_top(150)
@@ -2163,10 +2167,26 @@ class Game:
 					self.types = '@'
 					basemenu = 2
 					sec = 5
-
+				elif what2do == 5:
+					self.types = '#'  # Filter
+					basemenu = 2
+					sec = 4
+				elif what2do == 6:
+					self.types = '='  # Teleporter  does not show right or play but store is right
+					basemenu = 2
+					sec = 6
+				elif what2do == 7:    # Shredder
+					self.types = 'X'
+					basemenu = 2
+				elif what2do == 8:   # Replicator
+					self.types = '*'
+					basemenu = 2
 
 				elif what2do == 12:
 					basemenu = 3
+
+
+
 #################################################
 			elif basemenu == 2:
 				if what2do == 1:
@@ -2227,8 +2247,10 @@ class Game:
 				#if not sec == 0:
 				basemenu = 1
 
-
-
+#######################  does not show right or play but store is right
+			elif basemenu == 6:
+				self.control = chr(ord('a') + (what2do - 1))
+				basemenu = 1
 
 
 	def x_load(self, types, paths, control): #(self, circuit, level):
@@ -2281,6 +2303,8 @@ class Game:
 			base.screen.blit(base.Painter_images[colorint], rect)
 		elif types == '#':
 			tile = Filter(pathsint, colorint)
+			base.screen.blit(base.Tile_tunnels[pathsint], rect)
+			base.screen.blit(base.Filter_images[colorint], rect)
 		elif types == '@':
 			if control == ' ':
 				#tile = Buffer(pathsint)
@@ -2296,9 +2320,15 @@ class Game:
 			base.screen.blit(base.Tile_plains[pathsint], rect)
 			#tile = Tile(pathsint)
 		elif types == 'X':
-			tile = Shredder(pathsint)
+			#tile = Shredder(pathsint)
+			base.screen.blit(base.Tile_tunnels[pathsint], rect)
+			base.screen.blit(Shredder.image, rect)
 		elif types == '*':
-			tile = Replicator(pathsint, colorint)
+			#tile = Replicator(pathsint, colorint)
+			base.screen.blit(base.Tile_tunnels[pathsint], rect)
+			base.screen.blit(Replicator.image, rect)
+
+
 		elif types == '^':
 			if control == ' ':
 				tile = Director(pathsint, 0)
@@ -2336,15 +2366,22 @@ class Game:
 			elif control == 'v':
 				tile = Switch(pathsint, 3, 2)
 		elif types == '=':
-			if control in teleporter_names:
-				other = teleporters[teleporter_names.index(control)]
-				tile = Teleporter(pathsint, other)
-			else:
-				tile = Teleporter(pathsint)
-				teleporters.append(tile)
-				teleporter_names.append(control)
+			if pathsint == 0:
+				pathsint = 5
 
-		#self.board.set_tile(3, 0, tile)
+			if pathsint & 5:
+				tel = Teleporter.image_v
+			else:
+				tel = Teleporter.image_h
+			if not self.control == ' ':
+				text = base.info_font.render(self.control, True, pygame.Color(
+					'green'), pygame.Color('blue'))
+				textRect = text.get_rect()
+				tel.blit(text, textRect)
+
+			base.screen.blit(tel, rect)
+
+	#self.board.set_tile(3, 0, tile)
 
 
 		'''
