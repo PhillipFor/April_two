@@ -2132,9 +2132,12 @@ class Game:
 				main = ('none', 'Black','White','Blue','Green','Yellow','Purple','Red','Orange')
 			elif basemenu == 6:
 				main = ('a','b','c','d','e','g')
-
-
-
+			elif basemenu == 7:
+				main = ('Pick one, Enter path', 'Top', 'Left', 'Right', 'Botton')
+				pass
+			elif basemenu == 8:
+				main = ('Pick one, Enter path', 'Top', 'Left', 'Right', 'Botton', 'None = Director')
+				pass
 
 			#  base.background2
 			menu = MainMenu(self.screen, base.background2, main)
@@ -2181,6 +2184,12 @@ class Game:
 				elif what2do == 8:   # Replicator
 					self.types = '*'
 					basemenu = 2
+				elif what2do == 9:
+					self.types = '.'   # Switch
+					basemenu = 2
+					sec = 7
+
+
 
 				elif what2do == 12:
 					basemenu = 3
@@ -2202,6 +2211,7 @@ class Game:
 					if not sec == 0:
 						basemenu = sec
 						sec = 0
+
 
 				pathsint = 0
 				if pone:
@@ -2251,6 +2261,31 @@ class Game:
 			elif basemenu == 6:
 				self.control = chr(ord('a') + (what2do - 1))
 				basemenu = 1
+#####################
+			elif basemenu == 7 or basemenu == 8:
+				a = 0
+				if what2do == 1:
+					continue
+				elif what2do == 2:
+					a = '^'
+				elif what2do == 3:
+					a = '>'
+				elif what2do == 4:
+					a = 'v'
+				elif what2do == 5:
+					a = '<'
+				elif what2do == 6 and basemenu == 8:
+					a = ' '
+
+				if basemenu == 7:
+					self.types = a
+					basemenu = 8
+				else:
+					self.control = a
+					basemenu = 1
+
+
+
 
 
 	def x_load(self, types, paths, control): #(self, circuit, level):

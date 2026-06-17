@@ -1,16 +1,13 @@
 [ts1]
-version=2.0
-name=test
-author=Phillip
-boardtimer=100
-colors=8,7, 6, 5, 4, 3, 2, 1, 0
-launchtime=2
-maxmarbles=3
-score=ts1
-g1=|   |   |   | 5 | 0a|   |   |   |
-g2=|   |   |*2 |Of |@a4|X8 |   |   |
-g3=|   |   |   |&54|   |   |   |   |
-g4=|   |   |   |#54|=2b|   |   |   |
-g5=|   |   |   |=1a|   |   |   |   |
-g6=|   |   |   |   |   |   |   |   |
+name=Tick Tock
+author=John-Paul Gignac <jp@gignac.org>
+launchtimer=6
+boardtimer=120
+score=lv43
+g1=|>7<|   |   |   | 3 | a |&c3|   |
+g2=|   | 6 | a | a | a | a | f | c |
+g3=|v6 | f |ve<|ve<|ve<|&a4|vd<| 5 |
+g4=| 5 | 3 |vf<|vf<|vf<|ve<|vf<| 9 |
+g5=|O1 |   |O7 |Of |Of |Of |Od |   |
+g6=|   |   |O3 |Ob |Ob |Ob |O9 |   |
 
