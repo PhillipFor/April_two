@@ -2123,7 +2123,7 @@ class Game:
 				main = ('Pipe','Wheel','Painter','Buffer','Filter','Teleporter',
 			            'Shredder','Replicator','Switch','Trigger','Stoplights','done')
 			elif basemenu == 2:
-				main = ('Up','Right','Down','Left','main')
+				main = ('Up','> Right','Down','< Left','main')
 			elif basemenu == 3:
 				main = ('Save', 'cancel')
 			elif basemenu == 4:
@@ -2133,10 +2133,10 @@ class Game:
 			elif basemenu == 6:
 				main = ('a','b','c','d','e','g')
 			elif basemenu == 7:
-				main = ('Pick one, Enter path', 'Top', 'Left', 'Right', 'Botton')
+				main = ('Pick one, Main path', 'Up', '> Right','Down','< Left')
 				pass
 			elif basemenu == 8:
-				main = ('Pick one, Enter path', 'Top', 'Left', 'Right', 'Botton', 'None = Director')
+				main = ('Pick one, Second path', 'Up', '> Right','Down','< Left', 'None = Director')
 				pass
 
 			#  base.background2
@@ -2271,9 +2271,9 @@ class Game:
 				elif what2do == 3:
 					a = '>'
 				elif what2do == 4:
-					a = 'v'
-				elif what2do == 5:
 					a = '<'
+				elif what2do == 5:
+					a = 'v'
 				elif what2do == 6 and basemenu == 8:
 					a = ' '
 
@@ -2362,6 +2362,7 @@ class Game:
 			#tile = Replicator(pathsint, colorint)
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			base.screen.blit(Replicator.image, rect)
+
 
 
 		elif types == '^':
