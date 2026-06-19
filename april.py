@@ -1,3 +1,6 @@
+from pygame.draw import aalines
+
+
 class VersionPF:
 	number = "3.02"
 	date = '10 Jun 2026'
@@ -2271,9 +2274,9 @@ class Game:
 				elif what2do == 3:
 					a = '>'
 				elif what2do == 4:
-					a = '<'
-				elif what2do == 5:
 					a = 'v'
+				elif what2do == 5:
+					a = '<'
 				elif what2do == 6 and basemenu == 8:
 					a = ' '
 
@@ -2325,6 +2328,7 @@ class Game:
 			colorint = 0
 
 		tile = 0
+		aa = 0
 		if types == 'O':  #wheel
 			base.screen.blit(base.Wheel_images[0], rect)
 			base.numwheels += 1
@@ -2364,8 +2368,24 @@ class Game:
 			base.screen.blit(Replicator.image, rect)
 
 
+		elif types == '^' or types == '>' or types == '<' or types == 'v':
+			if self.control == ' ':
+				aa = 0
+				if types == '^':
+					aa = 0
+				elif types == '>':
+					aa = 1
+				elif types == '<':
+					aa = 3
+				elif types == 'v':
+					aa = 2
+				base.screen.blit(base.Tile_tunnels[pathsint], rect)
+				base.screen.blit(base.Director_images[aa], rect)
 
-		elif types == '^':
+
+
+
+			'''
 			if control == ' ':
 				tile = Director(pathsint, 0)
 			elif control == '>':
@@ -2401,6 +2421,7 @@ class Game:
 				tile = Switch(pathsint, 3, 1)
 			elif control == 'v':
 				tile = Switch(pathsint, 3, 2)
+		'''
 		elif types == '=':
 			if pathsint == 0:
 				pathsint = 5
