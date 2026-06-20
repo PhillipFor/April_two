@@ -1,9 +1,6 @@
-from pygame.draw import aalines
-
-
 class VersionPF:
 	number = "3.02"
-	date = '10 Jun 2026'
+	date = '19 Jun 2026'
 	text = 'Editor - selection menu Buffer'
 
 """
@@ -1710,11 +1707,11 @@ class Board:
 						else:
 							self.pop.popdown()
 					elif event.key == K_F2:
-						a = 0 				# toggle_fullscreen()
+						pass 				# toggle_fullscreen()
 					elif event.key == K_F3:
-						a = 0  # base.toggle_music()
+						pass  # base.toggle_music()
 					elif event.key == K_F4:
-						a = 0  # toggle_sound()
+						pass  # toggle_sound()
 
 				elif event.type == MOUSEBUTTONDOWN:
 					self.click(pygame.mouse.get_pos())
@@ -1857,7 +1854,7 @@ class HighScore:
 		else:
 			mess = 'Time: ' + cur[2] + '   Score:' + cur[1] + ' - ' + cur[0] + '\n'
 		if not opp[1] == '':
-			mess += ('Failed:          Score:') + opp[1] + ' - ' + opp[0] + '\n'
+			mess += 'Failed:          Score:' + opp[1] + ' - ' + opp[0] + '\n'
 		mess += '\nLowest TIME\n'
 		for i in range(6):
 			if not ti[i][2] == self.fail:
@@ -2075,6 +2072,8 @@ class Game:
 		ps = BOARD_POS
 		pygame.event.clear
 		a = True
+		y = x = 0
+
 		while a:
 			for event in pygame.event.get():
 				if event.type == QUIT:
@@ -2124,7 +2123,8 @@ class Game:
 
 			if basemenu == 1:
 				main = ('Pipe','Wheel','Painter','Buffer','Filter','Teleporter',
-			            'Shredder','Replicator','Switch','Trigger','Stoplights','done')
+			            'Shredder','Replicator','Switch or Director','Trigger',
+			            'Stoplights','done')
 			elif basemenu == 2:
 				main = ('Up','> Right','Down','< Left','main')
 			elif basemenu == 3:
@@ -2242,7 +2242,8 @@ class Game:
 					self.cycle = False
 
 				elif what2do == 2:
-					pass
+					return
+
 				elif what2do == 3:
 					pass
 
@@ -2369,6 +2370,7 @@ class Game:
 
 
 		elif types == '^' or types == '>' or types == '<' or types == 'v':
+			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			if self.control == ' ':
 				aa = 0
 				if types == '^':
@@ -2379,11 +2381,27 @@ class Game:
 					aa = 3
 				elif types == 'v':
 					aa = 2
-				base.screen.blit(base.Tile_tunnels[pathsint], rect)
 				base.screen.blit(base.Director_images[aa], rect)
-
-
-
+			else: # Switch
+				aa = 0
+				if types == '^':
+					aa = 0
+				elif types == '>':
+					aa = 1
+				elif types == '<':
+					aa = 3
+				elif types == 'v':
+					aa = 2
+				bb = 0
+				if self.control == '^':
+					bb = 0
+				elif self.control == '>':
+					bb = 1
+				elif self.control == '<':
+					bb = 3
+				elif self.control == 'v':
+					bb = 2
+				base.screen.blit(Switch.images[aa][bb], rect)
 
 			'''
 			if control == ' ':
