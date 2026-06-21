@@ -1,7 +1,7 @@
 class VersionPF:
-	number = "3.02"
-	date = '19 Jun 2026'
-	text = 'Editor - selection menu Buffer'
+	number = "3.03"
+	date = '20 Jun 2026'
+	text = ''
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -12,7 +12,7 @@ base on
 
 
 ::Version
-3.02 27 May 2026 Show
+3.02 27 May 2026 - 20 Jun 26 Show
 3.01 - 4 Jan 2026 Name'
 3.00 - 9 Dec 2025 Start Edit
 2.99a - 18 Dec 25 score delete
@@ -2165,6 +2165,7 @@ class Game:
 					self.types =  'O'
 					self.control = ' '
 					basemenu = 2
+
 				elif what2do == 3: # Painter
 					self.types = '&'
 					basemenu = 2
@@ -2191,7 +2192,14 @@ class Game:
 					self.types = '.'   # Switch
 					basemenu = 2
 					sec = 7
-
+				elif what2do == 10:  # Trigger
+					self.types = '+'
+					self.control = ' '
+					basemenu = 1
+				elif what2do == 11:  # Trigger
+					self.types = '!'
+					self.control = ' '
+					basemenu = 1
 
 
 				elif what2do == 12:
@@ -2333,10 +2341,13 @@ class Game:
 		if types == 'O':  #wheel
 			base.screen.blit(base.Wheel_images[0], rect)
 			base.numwheels += 1
+
 		elif types == '+':
-			tile = Trigger(self.colors)
+			#tile = Trigger(self.colors)
+			base.screen.blit(base.Trigger_image, rect)
 		elif types == '!':
-			tile = Stoplight(stoplight)
+			#tile = Stoplight(stoplight)
+			base.screen.blit(Stoplight.image, rect)
 		elif types == '&': #paint
 			#tile = Painter(pathsint, colorint)
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
@@ -2402,6 +2413,12 @@ class Game:
 				elif self.control == 'v':
 					bb = 2
 				base.screen.blit(Switch.images[aa][bb], rect)
+
+		elif types == '+':  # Trigger
+			base.screen.blit(base.Trigger_image, rect)
+
+		elif types == '!':  # wheel
+			base.screen.blit(base.Wheel_images[0], rect)
 
 			'''
 			if control == ' ':
