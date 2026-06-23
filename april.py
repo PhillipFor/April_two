@@ -1,7 +1,7 @@
 class VersionPF:
-	number = "3.03"
-	date = '20 Jun 2026'
-	text = ''
+	number = "3.02"
+	date = '22 Jun 2026'
+	text = 'Show - numbers'
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -12,7 +12,8 @@ base on
 
 
 ::Version
-3.02 27 May 2026 - 20 Jun 26 Show
+3.03 xx Jun 2026 
+3.02 27 May 2026 - 22 Jun 26 Show
 3.01 - 4 Jan 2026 Name'
 3.00 - 9 Dec 2025 Start Edit
 2.99a - 18 Dec 25 score delete
@@ -1016,7 +1017,7 @@ class Teleporter(Tile):
 
 	def affect_marble(self, board, marble, rpos):
 		if rpos == (TILE_SIZE / 2, TILE_SIZE / 2):
-			if not base.edit_act:
+			if not self.other is None:
 				marble.rect.center = self.other.rect.center
 			play_sound(base.teleport)
 
@@ -2107,7 +2108,6 @@ class Game:
 			self.x_load(self.types, self.paths, self.control)
 			base.sr.save()
 
-
 			if self.paths == ' ':
 				pathsint = 0
 			else:
@@ -2118,38 +2118,32 @@ class Game:
 			pthe = pathsint & 4
 			pfor = pathsint & 8
 
-
 			#   New main menu
-
 			if basemenu == 1:
-				main = ('Pipe','Wheel','Painter','Buffer','Filter','Teleporter',
+				main = ('SELECT One','Pipe','Wheel','Painter','Buffer','Filter','Teleporter',
 			            'Shredder','Replicator','Switch or Director','Trigger',
 			            'Stoplights','done')
 			elif basemenu == 2:
-				main = ('Up','> Right','Down','< Left','main')
+				main = ('TURN ON Path','Up','> Right','Down','< Left','next')
 			elif basemenu == 3:
-				main = ('Save', 'cancel')
+				main = ('PICK ONE','Save', 'cancel')
 			elif basemenu == 4:
-				main = ('Black','White','Blue','Green','Yellow','Purple','Red','Orange','Crazy (wildcard)')
+				main = ('PICK A COLOR','Black','White','Blue','Green','Yellow','Purple','Red','Orange')
 			elif basemenu == 5:
-				main = ('none', 'Black','White','Blue','Green','Yellow','Purple','Red','Orange')
+				main = ('PICK A COLOR or NONE','none', 'Black','White','Blue','Green','Yellow','Purple','Red','Orange')
 			elif basemenu == 6:
-				main = ('a','b','c','d','e','g')
+				main = ('PICK A PARE','a','b','c','d','e','g')
 			elif basemenu == 7:
 				main = ('Pick one, Main path', 'Up', '> Right','Down','< Left')
-				pass
 			elif basemenu == 8:
 				main = ('Pick one, Second path', 'Up', '> Right','Down','< Left', 'None = Director')
-				pass
-
-			#  base.background2
+			what2do = 1
 			menu = MainMenu(self.screen, base.background2, main)
-
 			menu.from_top(150)
-
 			menu.draw_menu()  # Menu line to start
-			what2do = menu.select()
-
+			while what2do == 1:
+				what2do = menu.select()
+			what2do -= 1
 			for event in pygame.event.get():
 				if event.type == QUIT:
 					pygame.quit()
@@ -2161,11 +2155,12 @@ class Game:
 				if what2do == 1:
 					self.types = ' '
 					basemenu = 2
+					sec = 3
 				elif what2do == 2: # Wheel
 					self.types =  'O'
 					self.control = ' '
 					basemenu = 2
-
+					sec = 3
 				elif what2do == 3: # Painter
 					self.types = '&'
 					basemenu = 2
@@ -2276,17 +2271,16 @@ class Game:
 #####################
 			elif basemenu == 7 or basemenu == 8:
 				a = 0
+
 				if what2do == 1:
-					continue
-				elif what2do == 2:
 					a = '^'
-				elif what2do == 3:
+				elif what2do == 2:
 					a = '>'
-				elif what2do == 4:
+				elif what2do == 3:
 					a = 'v'
-				elif what2do == 5:
+				elif what2do == 4:
 					a = '<'
-				elif what2do == 6 and basemenu == 8:
+				elif what2do == 5 and basemenu == 8:
 					a = ' '
 
 				if basemenu == 7:
@@ -2294,7 +2288,7 @@ class Game:
 					basemenu = 8
 				else:
 					self.control = a
-					basemenu = 1
+					basemenu = 3
 
 
 
