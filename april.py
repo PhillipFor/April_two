@@ -1,7 +1,7 @@
 class VersionPF:
 	number = "3.02"
 	date = '24 Jun 2026'
-	text = 'Show - numbers'
+	text = 'Show - cleanup'
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -13,7 +13,7 @@ base on
 
 ::Version
 3.03 xx yyy 2026 
-3.02 27 May 2026 - 22 Jun 26 Show
+3.02 27 May 2026 - 24 Jun 26 Show
 3.01 - 4 Jan 2026 Name'
 3.00 - 9 Dec 2025 Start Edit
 2.99a - 18 Dec 25 score delete
@@ -1795,7 +1795,7 @@ class HighScore:
 			BS.score.set(base.level, 'ti' + repr(i), ','.join(aa[i]))
 
 
-		aa = []
+
 		aa = [[0 for i in range(4)] for j in range(7)]
 
 		for i in range(6):
@@ -2071,7 +2071,7 @@ class Game:
 
 	def editboard(self):
 		ps = BOARD_POS
-		pygame.event.clear
+		pygame.event.clear()
 		a = True
 		y = x = 0
 
@@ -2192,14 +2192,13 @@ class Game:
 				elif what2do == 10:  # Trigger
 					self.types = '+'
 					self.control = ' '
-					basemenu = 1
-				elif what2do == 11:  # Trigger
+					basemenu = 3
+				elif what2do == 11:  # stop
 					self.types = '!'
 					self.control = ' '
-					basemenu = 1
+					basemenu = 3
 
-
-				elif what2do == 12:
+				elif what2do == 12: # exit
 					basemenu = 3
 
 
@@ -2250,9 +2249,6 @@ class Game:
 
 				elif what2do == 2:
 					return
-
-
-
 
 ####################################################################
 			elif  basemenu == 4:
@@ -2308,9 +2304,6 @@ class Game:
 					basemenu = 3
 
 
-
-
-
 	def x_load(self, types, paths, control): #(self, circuit, level):
 		teleporters = []
 		teleporter_names = []
@@ -2338,8 +2331,6 @@ class Game:
 
 		base.screen.blit(base.Tile_plains[pathsint], rect)
 
-		# control some times color, other time something some else
-		#control = line[i * 4 + 3]
 		if control == ' ':
 			colorint = 0
 		elif '0' <= control <= '9':
@@ -2392,7 +2383,6 @@ class Game:
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			base.screen.blit(Replicator.image, rect)
 
-
 		elif types == '^' or types == '>' or types == '<' or types == 'v':
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			if self.control == ' ':
@@ -2433,43 +2423,6 @@ class Game:
 		elif types == '!':  # wheel
 			base.screen.blit(base.Wheel_images[0], rect)
 
-			'''
-			if control == ' ':
-				tile = Director(pathsint, 0)
-			elif control == '>':
-				tile = Switch(pathsint, 0, 1)
-			elif control == 'v':
-				tile = Switch(pathsint, 0, 2)
-			elif control == '<':
-				tile = Switch(pathsint, 0, 3)
-		elif types == '>':
-			if control == ' ':
-				tile = Director(pathsint, 1)
-			elif control == '^':
-				tile = Switch(pathsint, 1, 0)
-			elif control == 'v':
-				tile = Switch(pathsint, 1, 2)
-			elif control == '<':
-				tile = Switch(pathsint, 1, 3)
-		elif types == 'v':
-			if control == ' ':
-				tile = Director(pathsint, 2)
-			elif control == '^':
-				tile = Switch(pathsint, 2, 0)
-			elif control == '>':
-				tile = Switch(pathsint, 2, 1)
-			elif control == '<':
-				tile = Switch(pathsint, 2, 3)
-		elif types == '<':
-			if control == ' ':
-				tile = Director(pathsint, 3)
-			elif control == '^':
-				tile = Switch(pathsint, 3, 0)
-			elif control == '>':
-				tile = Switch(pathsint, 3, 1)
-			elif control == 'v':
-				tile = Switch(pathsint, 3, 2)
-		'''
 		elif types == '=':
 			if pathsint == 0:
 				pathsint = 5
@@ -2485,42 +2438,10 @@ class Game:
 				tel.blit(text, textRect)
 
 			base.screen.blit(tel, rect)
-
-	#self.board.set_tile(3, 0, tile)
-
-
-		'''
-		if '0' <= types <= '8':
-			if control == '^':
-				direction = 0
-			elif control == '>':
-				direction = 1
-			elif control == 'v':
-				direction = 2
-			else:
-				direction = 3
-			self.marbles.append(
-				Marble(int(types), tile.rect.center, direction))
-		'''
-
-		#self.board.draw_back(dirty_rects)
-
-		# Draw the foreground
-		#self.board.draw_fore(dirty_rects)
-
 		# Flip the display
 		pygame.display.flip()
 
-		'''
-		if boardtimer < 0:
-			boardtimer = DEFAULT_BOARD_TIMER * base.numwheels
-		self.set_board_timer(boardtimer, section1)
-		'''
-		#pygame.display.update()
-
-		return 1
-
-
+		#return 1
 
 
 def main():
@@ -2547,25 +2468,9 @@ def main():
 	pygame.quit()
 
 
-# Static 17 Oct 2020
-#def convert(seconds):
-	return
-
-	minus = ""
-	if seconds < 0:
-		minus = "-"
-	seconds %= 3600
-	minutes = (seconds // 60)
-	seconds %= 60
-	# return "%d:%02d:%02d" % (hour, minutes, seconds)
-	#return "f"{%s%d}:%02d" % (minus, minutes, seconds)
-
-
 # Static 24 Jan 2021
 def convert1(seconds):
-
 	s = int(seconds)
-
 	minus = ""
 	if seconds < 0:
 		minus = "-"
