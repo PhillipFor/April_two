@@ -2984,34 +2984,52 @@ class Editor():
 	# colors      - The colors that will be served on this level (default: 2,3,4,6)
 	# maxmarbles  - The maximum number of active marbles (default: 10)
 	# stoplight   - The colors in the stoplight (default: 6,4,3)
+	def editop(self):
+		cycle = True
+		while cycle:
+			opmenu = ('Main MENU', 'level Name: ' + self.tsname)
+			menu = MainMenu( self.screen, base.background, opmenu)
+			menu.from_top(100)
+			menu.draw_menu()  # Menu line to start
+			what2do = menu.select()
+			if what2do == 1:
+				cycle = False
+			elif what2do == 2:
+				self.tsname = menu.key_input(self.tsname)
+				BS.circuit.set(self.circuit, 'name', self.tsname)
 
 	def editmenu(self):
 		cycle = True
 
 		while cycle:
 			#   New main menu
-			mainmenu = ('level Name: ' + self.tsname, 'Exit Program', 'Show', 'Play')
+			mainmenu = ('level Name: ' + self.tsname,'Options', 'Exit Program', 'Show', 'Play')
 			# no option
 			menu = MainMenu(self.screen, base.background, mainmenu )
 			menu.from_top(100)
 
 			menu.draw_menu()  # Menu line to start
 			what2do = menu.select()
-			if what2do == 2:
+			if what2do == 3:
 				cycle = False
 			elif what2do == 1:
 				self.tsname = menu.key_input(self.tsname)
 				BS.circuit.set(self.circuit, 'name', self.tsname )
-			elif what2do == 3:
+			elif what2do == 4:
 				base.edit_play = False
 				game = Game(self.screen, 2)
 				game.play()
 				cycle = True
-			elif what2do == 4:
+			elif what2do == 5:
 				base.edit_play = True
 				game = Game(self.screen, 2)
 				game.play()
 				cycle = True
+			elif what2do == 2:
+				self.editop()
+
+
+
 
 		self.type = 0
 		sys.exit
