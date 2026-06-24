@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.02"
-	date = '22 Jun 2026'
+	date = '23 Jun 2026'
 	text = 'Show - numbers'
 
 """
@@ -12,7 +12,7 @@ base on
 
 
 ::Version
-3.03 xx Jun 2026 
+3.03 xx yyy 2026 
 3.02 27 May 2026 - 22 Jun 26 Show
 3.01 - 4 Jan 2026 Name'
 3.00 - 9 Dec 2025 Start Edit
@@ -2102,7 +2102,7 @@ class Game:
 		self.control = self.gline_val[i + 3]
 		self.cycle = True
 		basemenu = 1
-		sec = 0
+		sec = thr = 0
 
 		while self.cycle:
 			self.x_load(self.types, self.paths, self.control)
@@ -2120,13 +2120,13 @@ class Game:
 
 			#   New main menu
 			if basemenu == 1:
-				main = ('SELECT One','Pipe','Wheel','Painter','Buffer','Filter','Teleporter',
+				main = ('SELECT One','Pipe - Ball start','Wheel','Painter','Buffer','Filter','Teleporter',
 			            'Shredder','Replicator','Switch or Director','Trigger',
 			            'Stoplights','done')
 			elif basemenu == 2:
 				main = ('TURN ON Path','Up','> Right','Down','< Left','next')
 			elif basemenu == 3:
-				main = ('PICK ONE','Save', 'cancel')
+				main = ('PICK ONE','Save', 'cancel', 'Clear')
 			elif basemenu == 4:
 				main = ('PICK A COLOR','Black','White','Blue','Green','Yellow','Purple','Red','Orange')
 			elif basemenu == 5:
@@ -2152,10 +2152,11 @@ class Game:
 
 		################################
 			if basemenu == 1:
-				if what2do == 1:
+				if what2do == 1: #pipe and where a ball starts
 					self.types = ' '
 					basemenu = 2
-					sec = 3
+					sec = 5
+					thr = 7
 				elif what2do == 2: # Wheel
 					self.types =  'O'
 					self.control = ' '
@@ -2180,6 +2181,7 @@ class Game:
 				elif what2do == 7:    # Shredder
 					self.types = 'X'
 					basemenu = 2
+					sec = 3
 				elif what2do == 8:   # Replicator
 					self.types = '*'
 					basemenu = 2
@@ -2216,9 +2218,8 @@ class Game:
 					basemenu = 1
 					if not sec == 0:
 						basemenu = sec
-						sec = 0
-
-
+						sec = thr
+						thr = 0
 				pathsint = 0
 				if pone:
 					pathsint += 1
@@ -2232,6 +2233,9 @@ class Game:
 
 			############################################
 			elif basemenu == 3:
+				if what2do == 3:
+					self.types = self.control = self.paths = ' '
+					what2do = 1
 				if what2do == 1:
 					i = self.gline_pos + 1
 					char_list = list(self.gline_val)
@@ -2247,22 +2251,31 @@ class Game:
 				elif what2do == 2:
 					return
 
-				elif what2do == 3:
-					pass
+
+
 
 ####################################################################
 			elif  basemenu == 4:
 				self.control = str(what2do - 1)
-				basemenu = 1
+				basemenu = 3
 
 ###################################
 			elif basemenu == 5:
 				if what2do == 1:
 					self.control = ' '
+					basemenu = 3
 				else:
 					self.control = str(what2do - 2)
-				#if not sec == 0:
-				basemenu = 1
+					if self.types == ' ':
+						self.types = self.control
+						self.control = ' '
+						basemenu = 7
+					else:
+						basemenu = 3
+						if not sec == 0:
+							basemenu = sec
+							sec = thr
+							thr = 0
 
 #######################  does not show right or play but store is right
 			elif basemenu == 6:
@@ -2284,8 +2297,12 @@ class Game:
 					a = ' '
 
 				if basemenu == 7:
-					self.types = a
-					basemenu = 8
+					if  ('0' <= self.types <= '8'):
+						self.control = a
+						basemenu = 3
+					else:
+						self.types = a
+						basemenu = 8
 				else:
 					self.control = a
 					basemenu = 3
@@ -2363,6 +2380,8 @@ class Game:
 				#tile = Buffer(pathsint, colorint)
 		elif types == ' ' or ('0' <= types <= '8'):
 			base.screen.blit(base.Tile_plains[pathsint], rect)
+			if self.types != ' ':
+				base.screen.blit(base.marble_images[int(self.types)], rect.center)
 			#tile = Tile(pathsint)
 		elif types == 'X':
 			#tile = Shredder(pathsint)
@@ -3080,6 +3099,7 @@ class Editor():
 				self.tsname = menu.key_input(self.tsname)
 				BS.circuit.set(self.circuit, 'name', self.tsname )
 			elif what2do == 3:
+				base.edit_play = False
 				game = Game(self.screen, 2)
 				game.play()
 				cycle = True
