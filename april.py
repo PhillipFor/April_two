@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.02"
-	date = '23 Jun 2026'
+	date = '24 Jun 2026'
 	text = 'Show - numbers'
 
 """
