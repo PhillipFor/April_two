@@ -190,7 +190,6 @@ class CONS:  # Data constants
 	Max = 22
 
 
-
 # Game constants
 WHEEL_STEPS = 9
 FRAMES_PER_SEC = 100
