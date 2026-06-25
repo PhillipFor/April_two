@@ -1,7 +1,7 @@
 class VersionPF:
-	number = "3.02"
+	number = "3.03"
 	date = '24 Jun 2026'
-	text = 'Show - cleanup'
+	text = 'Options'
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -12,7 +12,7 @@ base on
 
 
 ::Version
-3.03 xx yyy 2026 
+3.03 24 Jun 2026 options
 3.02 27 May 2026 - 24 Jun 26 Show
 3.01 - 4 Jan 2026 Name'
 3.00 - 9 Dec 2025 Start Edit
@@ -2886,9 +2886,9 @@ class Editor():
 		staf.save()
 		base.edit_act = True
 		base.edit_play= False
-		self.tsname = ''
-
 		self.screen = screen
+		self.tsname = ''
+		self.tsauthor = ''
 
 		BS.ex.set('sys','normal','False')
 		BS.ex.set('sys', 'normal', 'False')
@@ -2940,6 +2940,7 @@ class Editor():
 
 	def doedit(self ):
 		self.tsname = BS.circuit.get(self.circuit, 'name', fallback='test1')
+
 		self.editmenu()
 		#self.save_level()
 
@@ -2986,8 +2987,17 @@ class Editor():
 	# stoplight   - The colors in the stoplight (default: 6,4,3)
 	def editop(self):
 		cycle = True
+		tsversion = BS.circuit.get(self.circuit, 'version',  fallback='2.0')
+		author = BS.circuit.get(self.circuit, 'author', fallback='PRF')
+		live_marbles_limit = BS.circuit.getint(self.circuit, 'maxmarbles', fallback=10)
+		set_launch_timer = BS.circuit.getint(self.circuit, 'launchtimer', fallback=DEFAULT_LAUNCH_TIMER)
+		boardtimer = BS.circuit.getint(self.circuit, 'boardtimer', fallback=-1)
+		colors = BS.circuit.get(self.circuit, 'colors', fallback=DEFAULT_COLORS)
+		stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
+
+
 		while cycle:
-			opmenu = ('Main MENU', 'level Name: ' + self.tsname)
+			opmenu = ('Main MENU', 'level Name: ' + self.tsname, 'author')
 			menu = MainMenu( self.screen, base.background, opmenu)
 			menu.from_top(100)
 			menu.draw_menu()  # Menu line to start
@@ -2997,6 +3007,9 @@ class Editor():
 			elif what2do == 2:
 				self.tsname = menu.key_input(self.tsname)
 				BS.circuit.set(self.circuit, 'name', self.tsname)
+			elif what2do == 3:	# author
+				author = menu.key_input(author)
+				BS.circuit.set(self.circuit, 'author',  author)
 
 	def editmenu(self):
 		cycle = True
