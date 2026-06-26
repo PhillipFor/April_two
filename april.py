@@ -2989,15 +2989,15 @@ class Editor():
 		cycle = True
 		tsversion = BS.circuit.get(self.circuit, 'version',  fallback='2.0')
 		author = BS.circuit.get(self.circuit, 'author', fallback='PRF')
-		live_marbles_limit = BS.circuit.getint(self.circuit, 'maxmarbles', fallback=10)
-		set_launch_timer = BS.circuit.getint(self.circuit, 'launchtimer', fallback=DEFAULT_LAUNCH_TIMER)
+		maxmarbles = BS.circuit.get(self.circuit, 'maxmarbles', fallback='10')
+		launchtimer = BS.circuit.getint(self.circuit, 'launchtimer', fallback=DEFAULT_LAUNCH_TIMER)
 		boardtimer = BS.circuit.getint(self.circuit, 'boardtimer', fallback=-1)
 		colors = BS.circuit.get(self.circuit, 'colors', fallback=DEFAULT_COLORS)
 		stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
 
 
 		while cycle:
-			opmenu = ('Main MENU', 'level Name: ' + self.tsname, 'author')
+			opmenu = ('Main MENU', 'level Name: ' + self.tsname, 'author', 'Max active marbles')
 			menu = MainMenu( self.screen, base.background, opmenu)
 			menu.from_top(100)
 			menu.draw_menu()  # Menu line to start
@@ -3009,7 +3009,11 @@ class Editor():
 				BS.circuit.set(self.circuit, 'name', self.tsname)
 			elif what2do == 3:	# author
 				author = menu.key_input(author)
-				BS.circuit.set(self.circuit, 'author',  author)
+				BS.circuit.set(self.circuit, 'author', author)
+			elif what2do == 4: # maxmarbles
+				maxmarbles = menu.key_input(maxmarbles, True)
+				BS.circuit.set(self.circuit, 'maxmarbles', maxmarbles)
+
 
 	def editmenu(self):
 		cycle = True

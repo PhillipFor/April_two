@@ -1,3 +1,13 @@
+
+class VersionPF:
+	"""
+	version 1.06 16 Oct 2020 Finish adding option choice
+	"""
+	def __init__(self):
+		self.number = "1.11"
+		self.date = "26 Jun 2026"
+		self.text = "add int_input"
+
 """
 Copyright Phillip Forrestal 2023
 Program name: menu mouse
@@ -6,6 +16,7 @@ Version 3, 29 June 2007
 
 Finish adding option choice
 ::Version
+1.11 26 Jun 2026 add int_input
 1.10 = 2 Jan 2026 add key_input
 1.09 24 Dec 2025 id
 1.08 15 Jan 2024 With * can a both 
@@ -79,7 +90,7 @@ class MainMenu:
 
 		# Font
 		self.menu_font_height = 24
-		self.menu_font = pygame.font.SysFont("Arial", self.menu_font_height)
+		self.menu_font = pygame.font.SysFont("Consolas", self.menu_font_height) # Arial Consolas Courier
 
 		self.cursor_lr_margin = 5
 		self.cursor_tb_margin = 2
@@ -398,13 +409,17 @@ class MainMenu:
 		return -1
 
 
-	def key_input(self, in_text):
+	def key_input(self, in_text, flagint=False):
 		clock = pygame.time.Clock()
+		flag = flagint
 		ttt, lll = self.screen.get_size()
 		ttt = ttt // 2
 		lll = lll // 2
 		insert = False
 		self._draw_background()
+		if flag:
+			if not in_text.isdecimal():
+				in_text = ''
 		user_text = in_text + ' '   #
 
 		color0 = pygame.Color('white')
@@ -471,6 +486,9 @@ class MainMenu:
 					# formation
 					else:
 						a = event.unicode
+						if flag:
+							if not a.isdecimal():
+								continue
 						b =	self.menu_font.render(a, 1, color_text)
 
 						if cursur == len(wws) - 1:
@@ -504,13 +522,3 @@ class MainMenu:
 			pygame.display.flip()
 			clock.tick(60)
 
-# This should the last lines in the program.
-class VersionPF:
-	"""
-	version 1.06 16 Oct 2020 Finish adding option choice
-	"""
-
-	def __init__(self):
-		self.number = "1.10"
-		self.date = "2 Jan 2026"
-		self.text = "add key_input"
