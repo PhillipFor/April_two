@@ -1625,7 +1625,7 @@ class Board:
 						Marble(int(types), tile.rect.center, direction))
 
 
-		if boardtimer < 0:
+		if boardtimer <= 0:
 			boardtimer = DEFAULT_BOARD_TIMER * base.numwheels
 		self.set_board_timer(boardtimer, section1)
 
@@ -2916,7 +2916,7 @@ class Editor():
 			BS.circuit.set(self.circuit, 'name', 'test')
 			BS.circuit.set(self.circuit, 'author', 'Phillip')
 			BS.circuit.set(self.circuit, 'boardtimer', '100')
-			BS.circuit.set(self.circuit, 'colors', '8,7, 6, 5, 4, 3, 2, 1, 0')
+			BS.circuit.set(self.circuit, 'colors', '8, 7, 6, 5, 4, 3, 2, 1, 0')
 			BS.circuit.set(self.circuit, 'launchtime', '2')
 			BS.circuit.set(self.circuit, 'maxmarbles', '3')
 			BS.circuit.set(self.circuit, 'score', self.circuit)
@@ -2988,18 +2988,28 @@ class Editor():
 	def editop(self):
 		cycle = True
 		tsversion = BS.circuit.get(self.circuit, 'version',  fallback='2.0')
+		score = BS.circuit.get(self.circuit, 'score', fallback='')
 		author = BS.circuit.get(self.circuit, 'author', fallback='PRF')
 		maxmarbles = BS.circuit.get(self.circuit, 'maxmarbles', fallback='10')
-		launchtimer = BS.circuit.getint(self.circuit, 'launchtimer', fallback=DEFAULT_LAUNCH_TIMER)
-		boardtimer = BS.circuit.getint(self.circuit, 'boardtimer', fallback=-1)
+		launchtimer = BS.circuit.get(self.circuit, 'launchtimer', fallback='6')
+		boardtimer = BS.circuit.get(self.circuit, 'boardtimer', fallback='0')
 		colors = BS.circuit.get(self.circuit, 'colors', fallback=DEFAULT_COLORS)
 		stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
 
 
 		while cycle:
-			opmenu = ('Main MENU', 'level Name: ' + self.tsname, 'author', 'Max active marbles')
+			bb = boardtimer
+			if int(boardtimer) <= 0:
+				bb = 'default'
+			opmenu = ('Main MENU', 'level Name: ' + self.tsname,
+			          'Score: ' + score,'Author: ' + author,
+			          'Max active marbles [default: 10] ' + maxmarbles,
+			          'Launch Timer [default: 6] ' + launchtimer,
+			          'Board Timer [default: 30 * number of wheels] ' + bb,
+			          'colors [default: 2,3,4,6] ' + colors,
+			          'stoplight [default: 6,4,3] ' + stoplight,)
 			menu = MainMenu( self.screen, base.background, opmenu)
-			menu.from_top(100)
+			menu.from_top(10)
 			menu.draw_menu()  # Menu line to start
 			what2do = menu.select()
 			if what2do == 1:
@@ -3007,12 +3017,27 @@ class Editor():
 			elif what2do == 2:
 				self.tsname = menu.key_input(self.tsname)
 				BS.circuit.set(self.circuit, 'name', self.tsname)
-			elif what2do == 3:	# author
+			elif what2do == 3: # score
+				self.score = menu.key_input(self.score)
+				BS.circuit.set(self.circuit, 'name', self.score)
+			elif what2do == 4:	# author
 				author = menu.key_input(author)
 				BS.circuit.set(self.circuit, 'author', author)
-			elif what2do == 4: # maxmarbles
+			elif what2do == 5: # maxmarbles
 				maxmarbles = menu.key_input(maxmarbles, True)
 				BS.circuit.set(self.circuit, 'maxmarbles', maxmarbles)
+			elif what2do == 6:
+				launchtimer = menu.key_input(launchtimer, True)
+				BS.circuit.set(self.circuit, 'launchtimer', launchtimer)
+			elif what2do == 7:
+				boardtimer = menu.key_input(boardtimer, True)
+				BS.circuit.set(self.circuit, 'boardtimer', boardtimer)
+			elif what2do == 8:
+				colors = m#enu.key_input(launchtimer, True)
+				BS.circuit.set(self.circuit, 'colors', colors)
+			elif what2do == 9:
+				stoplight = me#nu.key_input(boardtimer, True)
+				BS.circuit.set(self.circuit, 'stoplight', stoplight)
 
 
 	def editmenu(self):
