@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.03"
-	date = '24 Jun 2026'
+	date = '27 Jun 2026'
 	text = 'Options'
 
 """
@@ -371,6 +371,7 @@ staf = BS()
 
 
 class base:
+	transfer = None
 	edit_act = False
 	edit_play = False
 	gameloop = 0  # 27Dec23
@@ -1168,9 +1169,7 @@ class Board:
 			int(BOARD_POS[0] + HORIZ_TILES * TILE_SIZE - (TILE_SIZE - MARBLE_SIZE) / 2), BOARD_POS[1] - MARBLE_SIZE))
 
 		# Draw the board name
-		board_name =  self.name
-		#if self.game.level >= self.game.numlevels:
-		#	board_name += " (Random)"
+		board_name = self.name + ' - ' + base.scfilename
 		text = base.info_font.render(board_name, 1, (0, 0, 0))
 		rect = text.get_rect()
 		rect.left = 8
@@ -1492,9 +1491,6 @@ class Board:
 
 		base.numwheels = 0
 		# boardtimer = -1
-
-
-
 		self.name = BS.circuit.get(section1,'name')
 		base.scfilename = BS.circuit.get(section1,'score',fallback=section1)
 		self.live_marbles_limit = BS.circuit.getint(section1,'maxmarbles',fallback=10)
@@ -1653,23 +1649,23 @@ class Board:
 
 		# Do the first update
 		pygame.display.update()
-
-		a = True
-		if base.edit_act:
-			a = False
 		pygame.event.clear()
-		while a:
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					running = False
-				if event.type == MOUSEBUTTONDOWN:
-					a = False
-				elif event.type == KEYDOWN:
-					if event.key == ord('n'):
-						return 2
-					elif event.key == ord('b'):
-						return 3
-
+		if not base.edit_act:
+			a = True
+			while a:
+				for event in pygame.event.get():
+					if event.type == pygame.QUIT:
+						running = False
+					if event.type == MOUSEBUTTONDOWN:
+						a = False
+					elif event.type == KEYDOWN:
+						if event.key == ord('n'):
+							return 2
+						elif event.key == ord('b'):
+							return 3
+			hi = HighScore(self.game.score)
+			hi.display()
+			base.transfer = base.scfilename  # set only here used in editor and set skip
 		# Game Loop
 		base.gameloop = 0  #time to  play the game
 		sptime = 10 * FRAMES_PER_SEC
@@ -1745,7 +1741,7 @@ class HighScore:
 
 
 	def start(self):
-		maxdays = 30
+		maxdays = 20
 		if not BS.score.has_section(base.level):
 			BS.score.add_section(base.level)
 
