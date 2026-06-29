@@ -10,6 +10,14 @@ GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 base on
 
+to do:
+a. transfer map to test area - move map back to end
+b. how to select color in editor
+c. better way the select color in stoplight
+d. how to skip so maps
+e. highscore score  remove old to the begin - it at the end now
+f. 
+
 
 ::Version
 3.03 24 Jun 2026 options
@@ -1741,7 +1749,7 @@ class HighScore:
 
 
 	def start(self):
-		maxdays = 20
+		maxdays = 25
 		if not BS.score.has_section(base.level):
 			BS.score.add_section(base.level)
 
@@ -3029,10 +3037,10 @@ class Editor():
 				boardtimer = menu.key_input(boardtimer, True)
 				BS.circuit.set(self.circuit, 'boardtimer', boardtimer)
 			elif what2do == 8:
-				colors = m#enu.key_input(launchtimer, True)
+				colors = menu.key_input(colors)  # , True)
 				BS.circuit.set(self.circuit, 'colors', colors)
 			elif what2do == 9:
-				stoplight = me#nu.key_input(boardtimer, True)
+				stoplight = menu.key_input(stoplight)  #, True)
 				BS.circuit.set(self.circuit, 'stoplight', stoplight)
 
 
