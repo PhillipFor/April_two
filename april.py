@@ -1,7 +1,7 @@
 class VersionPF:
-	number = "3.03"
-	date = '28 Jun 2026'
-	text = 'Options'
+	number = "3.04"
+	date = '29 Jun 2026'
+	text = 'Skip maps - fix menus'
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -15,12 +15,13 @@ a. transfer map to test area - move map back to end
 b. how to select color in editor
 c. better way the select color in stoplight
 d. how to skip so maps
-e. highscore score  remove old to the begin - it at the end now
+e. did 29 highscore score  remove old to the begin - it at the end now
 f. 
 
 
 ::Version
-3.03 24 Jun 2026 options
+3.04 29 Jun 2026 skip maps which a to hard or easy for one hand person
+3.03 25 Jun - 28 Jun 2026 options
 3.02 27 May 2026 - 24 Jun 26 Show
 3.01 - 4 Jan 2026 Name'
 3.00 - 9 Dec 2025 Start Edit
@@ -1144,6 +1145,12 @@ class Board:
 		self.tiles = [[0] * HORIZ_TILES for i in range(VERT_TILES)]  # Added 2 Jul 2020
 
 		base.level = staf.lev(0, game.type)
+		if not BS.score.has_section(base.level):
+			BS.score.add_section(base.level)
+			aa = ['99999', '1', '99999', '0']
+			for i in range(6):
+				BS.score.set(base.level, 'ti' + repr(i), ','.join(aa))
+				BS.score.set(base.level, 'sc' + repr(i), ','.join(aa))
 
 		self._load(base.level)
 
@@ -1679,6 +1686,7 @@ class Board:
 		sptime = 10 * FRAMES_PER_SEC
 
 		clock = pygame.time.Clock()
+		self.board_complete = base.skip
 		while not self.board_complete:
 			clock.tick(FRAMES_PER_SEC)
 
@@ -1749,12 +1757,13 @@ class HighScore:
 
 
 	def start(self):
-		maxdays = 25
-		if not BS.score.has_section(base.level):
-			BS.score.add_section(base.level)
+		maxdays = 28
 
 		# last
 		cur = []
+		cc = [self.fail, '1', self.fail, '0']
+
+
 
 		cur.append(datetime.now().strftime('%d/%b/%y %H:%M'))
 
@@ -1768,14 +1777,22 @@ class HighScore:
 		cur.append(datetime.now().strftime('%Y%m%d'))
 
 
+
 		aa = []
 		aa = [[0 for i in range(4)] for j in range(7)]
-		cc = [self.fail,'1',self.fail,'0']
+
+
+
 		for i in range(6):
 			if not BS.score.has_option(base.level, 'ti' + repr(i)):
 				aa[i] = [self.fail,'1',self.fail,'0']
 			else:
 				aa[i] = BS.score.get(base.level, 'ti' + repr(i)).split(',')
+
+		for i in range(6):
+			bb = (datetime.now() - timedelta(days=(6 - i) * maxdays)).strftime('%Y%m%d')
+			if bb >= aa[i][3]:
+				aa[i] = cc
 
 		aa[6] = cur
 
@@ -1790,16 +1807,16 @@ class HighScore:
 						aa[i + 1] = temp
 
 		for i in range(6):
-
-			bb = (datetime.now() - timedelta(days=(6 - i) * maxdays)).strftime('%Y%m%d')
-			if bb >= aa[i][3]:
-				aa[i] = cc
+			#bb = (datetime.now() - timedelta(days=(6 - i) * maxdays)).strftime('%Y%m%d')
+			#if bb >= aa[i][3]:
+			#	aa[i] = cc
 
 			BS.score.set(base.level, 'ti' + repr(i), ','.join(aa[i]))
 
 
 
 		aa = [[0 for i in range(4)] for j in range(7)]
+
 
 		for i in range(6):
 			if not BS.score.has_option(base.level, 'sc' + repr(i)):
@@ -1808,6 +1825,10 @@ class HighScore:
 				aa[i] = BS.score.get(base.level, 'sc' + repr(i)).split(',')
 
 		aa[6] = cur
+		for i in range(6):
+			bb = (datetime.now() - timedelta(days=(6 - i) * maxdays)).strftime('%Y%m%d')
+			if bb >= aa[i][3]:
+				aa[i] = cc
 
 		for _ in range(6):
 			for i in range(6):
@@ -1877,7 +1898,7 @@ class HighScore:
 
 		pop = PopWindow(base.screen)
 		pop.popup(mess)
-		pop.popwait()
+		pop.popwait(True)  # fix me later
 		pop.popdown()
 
 def wait_one_sec():
@@ -1931,10 +1952,19 @@ class PopWindow:
 		self.screen.blit(self.backbuf, self.winrect)
 		pygame.display.update(self.winrect)
 
-	def popwait(self):  # 15Dec23 22dec
+	def popwait(self, flag = False):  # 15Dec23 30Jun2026
+		base.skip = BS.score.getint(base.level, 'skip', fallback=0)
 		wait_one_sec()
 		while 1:
 			www = pygame.event.poll()
+			if flag:
+				if www.type == KEYDOWN:
+					if www.key == K_F1:
+						BS.score.set(base.level, 'skip', '1')
+						base.skip = 1
+					if www.key == K_F2:
+						BS.score.set(base.level, 'skip', '0')
+						base.skip = 0
 			if www.type == MOUSEBUTTONDOWN:
 				break
 		pygame.event.clear()
@@ -2036,7 +2066,7 @@ class Game:
 				else:
 					message = 'The launch timer has expired.'
 
-				message += '.\nR=Retry\nT=10 sec longer\nY=1 cycle longer\n\n'
+				message += '.\nR=Retry\nT=10 sec longer\nN=next\nA = Abort\n\n'
 					# '.\nPress C to continue\nPress Q to quit level\n Press N next level\n\n'
 				pop = PopWindow(base.screen)
 				pop.popup(message)
@@ -2623,8 +2653,6 @@ class MainLoop:
 				if a == -4:
 					self.ExitGame()
 					exit(0)
-
-
 				menu_music()
 
 
@@ -2641,7 +2669,6 @@ class MainLoop:
 
 			elif what2do == 5:
 				Editor(base.screen)
-
 				pass
 
 			else:
@@ -2650,14 +2677,10 @@ class MainLoop:
 
 	def menu_opt(self):
 		opti_text = ("", "Off|Fur Elise|Normal", "Off|Fur Elise|Normal",
-					 "Off|On", "Off|On", "")
-
-
-
-
+					 "Off|On", "Off|On", 'Off|Skip On', "")
 		while 1:
 			menu_text = ("Main menu", "Music: ", "Back Music: ",
-						 "Effect Sounds: ", "Board timeout: ", "Editor (not fuctional)")
+						 "Effect Sounds: ", "Board timeout: ",  'Skip', "Editor (not fuctional)")
 			menu = TheMenu(self.screen, base.background, menu_text, opti_text)
 			menu.from_top(100)
 
@@ -2675,11 +2698,8 @@ class MainLoop:
 
 			elif what2do == 1:  # menu quit
 				return
-			elif what2do == 2:  # menu quit
-				return
 
-
-			elif what2do == 7:  # editor
+			elif what2do == 8:  # editor
 				pygame.mixer.music.stop()
 				edi = Editor(self.screen)
 				menu_music()
@@ -2728,6 +2748,8 @@ class TheMenu(MainMenu):
 			return base.sound_on  # True False
 		elif index == 5:
 			return base.board_time_sw # True False
+		elif index == 6:
+			pass
 		return 0
 
 
