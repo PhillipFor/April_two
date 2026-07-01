@@ -2523,6 +2523,11 @@ def play_sound(mixersound):
 	if base.sound_on:
 		mixersound.play()
 
+def play_sound1(mixersound):
+	mixersound.play()
+
+
+
 
 #  STATIC Function 29 Sep 2020
 # Load all the images for the various game classes.
