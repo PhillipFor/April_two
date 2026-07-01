@@ -2526,9 +2526,6 @@ def play_sound(mixersound):
 def play_sound1(mixersound):
 	mixersound.play()
 
-
-
-
 #  STATIC Function 29 Sep 2020
 # Load all the images for the various game classes.
 # The images are stored as class variables in the corresponding classes.
