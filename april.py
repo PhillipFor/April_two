@@ -1,26 +1,24 @@
 class VersionPF:
 	number = "3.04"
-	date = '29 Jun 2026'
-	text = 'Skip maps - fix menus'
+	date = '1 JUL 26'
+	text = 'Skip maps - skip'
 
 """
 Copyright Phillip Forrestal 2020-2026
 Program name: april two
 GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
-base on
+
 
 to do:
 a. transfer map to test area - move map back to end
 b. how to select color in editor
 c. better way the select color in stoplight
-d. how to skip so maps
-e. did 29 highscore score  remove old to the begin - it at the end now
-f. 
+. 
 
 
 ::Version
-3.04 29 Jun 2026 skip maps which a to hard or easy for one hand person
+3.04 29 Jun 2026 1 Jul 26 skip maps which a to hard or easy 
 3.03 25 Jun - 28 Jun 2026 options
 3.02 27 May 2026 - 24 Jun 26 Show
 3.01 - 4 Jan 2026 Name'
@@ -380,6 +378,8 @@ staf = BS()
 
 
 class base:
+	skip = 0
+	skipoff = 1
 	transfer = None
 	edit_act = False
 	edit_play = False
@@ -1852,6 +1852,11 @@ class HighScore:
 
 
 	def display(self):
+		mess = ''
+		if base.skipoff == 1:
+			base.skip = BS.score.getint(base.level, 'skip', fallback=0)
+			if base.skip == 1:
+				mess = '**  SKIP Level  SKIP Level\n'
 		cur = ['','',0,'']
 		opp = ['','',0,'']
 
@@ -1874,10 +1879,8 @@ class HighScore:
 			ti[i] = BS.score.get(base.level, 'ti' + repr(i)).split(',')
 			sc[i] = BS.score.get(base.level, 'sc' + repr(i)).split(',')
 
-		if cur[1] == '':
-			mess = ''
-		else:
-			mess = 'Time: ' + cur[2] + '   Score:' + cur[1] + ' - ' + cur[0] + '\n'
+		if not cur[1] == '':
+			mess += 'Time: ' + cur[2] + '   Score:' + cur[1] + ' - ' + cur[0] + '\n'
 		if not opp[1] == '':
 			mess += 'Failed:          Score:' + opp[1] + ' - ' + opp[0] + '\n'
 		mess += '\nLowest TIME\n'
@@ -1953,18 +1956,20 @@ class PopWindow:
 		pygame.display.update(self.winrect)
 
 	def popwait(self, flag = False):  # 15Dec23 30Jun2026
-		base.skip = BS.score.getint(base.level, 'skip', fallback=0)
 		wait_one_sec()
 		while 1:
 			www = pygame.event.poll()
 			if flag:
-				if www.type == KEYDOWN:
-					if www.key == K_F1:
-						BS.score.set(base.level, 'skip', '1')
-						base.skip = 1
-					if www.key == K_F2:
-						BS.score.set(base.level, 'skip', '0')
-						base.skip = 0
+				if base.skipoff == 1:
+					if www.type == KEYDOWN:
+						if www.key == K_F1:
+							if base.skip == 0:
+								BS.score.set(base.level, 'skip', '1')
+								base.skip = 1
+								play_sound1(base.ping)
+						if www.key == K_F2:
+							BS.score.set(base.level, 'skip', '0')
+							base.skip = 0
 			if www.type == MOUSEBUTTONDOWN:
 				break
 		pygame.event.clear()
@@ -2605,11 +2610,11 @@ class MainLoop:
 			'April Two moving balls -- Version ' + VersionPF.number + ' ' + VersionPF.date + '  ' + VersionPF.text)
 
 		base.sound_on = BS.ex.getboolean('sys',"Effect", fallback=True) # True
-
 		base.music_on = BS.ex.getint('sys',"Music", fallback=0)  # 1  # 0 off, 1 fur elise, 2 normal
 		base.background_on = BS.ex.getint('sys',"Background", fallback=0)  # 0 off, 1 fur elise, 2 normal
 		base.board_time_sw = BS.ex.getint('sys', "board_time_sw", fallback=True)
 		base.sr = SRscreen(base.screen)
+		base.skipoff = BS.ex.getint('sys', "skipoff", fallback=0)
 
 		# self.mu = Music()
 		#base()
@@ -2677,10 +2682,10 @@ class MainLoop:
 
 	def menu_opt(self):
 		opti_text = ("", "Off|Fur Elise|Normal", "Off|Fur Elise|Normal",
-					 "Off|On", "Off|On", 'Off|Skip On', "")
+					 "Off|On", "Off|On", 'Off|On', "")
 		while 1:
 			menu_text = ("Main menu", "Music: ", "Back Music: ",
-						 "Effect Sounds: ", "Board timeout: ",  'Skip', "Editor (not fuctional)")
+						 "Effect Sounds: ", "Board timeout: ",  'Skip Level:', "Editor (not fuctional)")
 			menu = TheMenu(self.screen, base.background, menu_text, opti_text)
 			menu.from_top(100)
 
@@ -2749,7 +2754,7 @@ class TheMenu(MainMenu):
 		elif index == 5:
 			return base.board_time_sw # True False
 		elif index == 6:
-			pass
+			return BS.ex.getint('sys', "Skipoff", fallback=0)
 		return 0
 
 
@@ -2769,10 +2774,11 @@ class TheMenu(MainMenu):
 			base.sound_on = vdata  # True False
 			BS.ex.set('sys',"Effect", str(base.sound_on))
 		elif index == 5:
-
 			base.board_time_sw = vdata  # True False
 			BS.ex.set('sys',"board_time_sw", str(base.board_time_sw))
-
+		elif index == 6:
+			base.skipoff = vdata
+			BS.ex.set('sys',"skipoff", str(base.skipoff))
 
 
 
