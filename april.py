@@ -1,7 +1,7 @@
 class VersionPF:
-	number = "3.04"
-	date = '1 JUL 26'
-	text = 'Skip maps - skip'
+	number = "3.05"
+	date = '2 JUL 26'
+	text = 'Editor - select color menu'
 
 """
 Copyright Phillip Forrestal 2020-2026
@@ -378,6 +378,7 @@ staf = BS()
 
 
 class base:
+	ccc = []
 	skip = 0
 	skipoff = 1
 	transfer = None
@@ -2780,9 +2781,7 @@ class TheMenu(MainMenu):
 			BS.ex.set('sys',"board_time_sw", str(base.board_time_sw))
 		elif index == 6:
 			base.skipoff = vdata
-			BS.ex.set('sys',"skipoff", str(base.skipoff))
-
-
+			BS.ex.s
 
 	def select_extra(self):
 		self.sound.play()
@@ -2915,8 +2914,6 @@ class Editor():
 	"""
 
 	def __init__(self, screen):
-		"""
-		"""
 		staf.save()
 		base.edit_act = True
 		base.edit_play= False
@@ -3067,7 +3064,8 @@ class Editor():
 				boardtimer = menu.key_input(boardtimer, True)
 				BS.circuit.set(self.circuit, 'boardtimer', boardtimer)
 			elif what2do == 8:
-				colors = menu.key_input(colors)  # , True)
+				#colors = menu.key_input(colors)  # , True)
+				self.color_menu()
 				BS.circuit.set(self.circuit, 'colors', colors)
 			elif what2do == 9:
 				stoplight = menu.key_input(stoplight)  #, True)
@@ -3103,12 +3101,45 @@ class Editor():
 				cycle = True
 			elif what2do == 2:
 				self.editop()
-
-
-
-
 		self.type = 0
 		sys.exit
+
+
+	def color_menu(self):
+		# Creating a list of size 9 filled with 1
+		base.ccc = [1] * 9
+
+		opti_text =  ("Off|On ","Off|On ","Off|On ","Off|On ",
+		              "Off|On ", "Off|On ", "Off|On ", "Off|On ",
+		              "Off|On ", "Off|On ", "Off|On ", "Off|On ")
+		while 1:
+			menu_text = ('Black: ','White: ','Blue:  ','Green: ','Yellow:','Puple: ','Red:   ','Orange:','Crazy: ')
+			menu = The1Menu(self.screen, base.background, menu_text, opti_text)
+			menu.from_top(50)
+			menu.draw_menu(5)  # Menu line to start
+			what2do = menu.select()
+			a =7
+
+
+class The1Menu(MainMenu):
+	def __init__(self, in_screen, in_background, in_menu_text, in_option, id=False):
+		a =	MainMenu.__init__(self, in_screen, in_background, in_menu_text, in_option)
+
+
+	def in_options(self, index):  # must override if options are used
+		a = index - 1
+		return base.ccc[a]
+
+
+
+	def out_options(self, vdata, index):  # must override if options are used
+		"""
+		:param vdata: the value for that index to be stored
+		:param index: 1 base Line 1
+		"""
+		a = index - 1
+		base.ccc.insert(a,vdata)
+
 
 """
 ####################################################################
@@ -3124,5 +3155,6 @@ class Editor():
 
 # name=The Game - The name of the level - Required must be a unique id
 """
+
 if __name__ == "__main__":
 	main()
