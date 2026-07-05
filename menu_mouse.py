@@ -68,29 +68,34 @@ from pygame.locals import *
 
 
 class MainMenu:
-	def __init__(self, in_screen, in_background, in_menu_text, in_option_text="", id_text=''):
+	def __init__(self, in_screen, in_background, in_menu_text, in_option_text=""):
 		self.screen = in_screen
-		self.cursor_down = -1  # double click count
-
-		self.id = list(id_text)
-		self.idflag = True
-		if id_text == '':
-			self.idflag = False
+		#  On this background
+		self.background = in_background
 		#  What to display in menu
 		self.menu_text = list(in_menu_text)
 		self.menu_option = list(in_option_text)
-		if in_option_text == "":
-			self.option_used = False
-		else:
+		self.option_used = False
+		if not in_option_text == "":
 			self.option_used = True
+			a = []
+			for i in range(len(self.menu_option)):
+				if self.menu_option[i][0] == "|":
+					savetext = self.menu_option[i-1]
+					cnt = int(self.menu_option[i][1:])
+					for i in range(cnt):
+						a.append(savetext)
+				else:
+					a.append(self.menu_option[i])
+			self.menu_option = a
+
+		self.cursor_down = -1  # double click count
 		self.text_rend = []
 		self.cursor_rects = []  # used in mouse self.cursor_rects[ii].collidepoint(x, y):
-		#  On this background
-		self.background = in_background
 
 		# Font
 		self.menu_font_height = 24
-		self.menu_font = pygame.font.SysFont("Consolas", self.menu_font_height) # Arial Consolas Courier
+		self.menu_font = pygame.font.SysFont("Consolas", self.menu_font_height) # All characters have the same width
 
 		self.cursor_lr_margin = 5
 		self.cursor_tb_margin = 2

@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.05"
-	date = '2 JUL 26'
+	date = '4 JUL 26'
 	text = 'Editor - select color menu'
 
 """
@@ -3109,16 +3109,16 @@ class Editor():
 		# Creating a list of size 9 filled with 1
 		base.ccc = [1] * 9
 
-		opti_text =  ("Off|On ","Off|On ","Off|On ","Off|On ",
-		              "Off|On ", "Off|On ", "Off|On ", "Off|On ",
-		              "Off|On ", "Off|On ", "Off|On ", "Off|On ")
+		opti_text =  ["Off|On ","|8"]
 		while 1:
-			menu_text = ('Black: ','White: ','Blue:  ','Green: ','Yellow:','Puple: ','Red:   ','Orange:','Crazy: ')
+			menu_text = ['Black: ','White: ','Blue:  ','Green: ','Yellow:',
+			             'Puple: ','Red:   ','Orange:','Crazy: ','exit']
 			menu = The1Menu(self.screen, base.background, menu_text, opti_text)
 			menu.from_top(50)
 			menu.draw_menu(5)  # Menu line to start
 			what2do = menu.select()
-			a =7
+			print(base.ccc)
+
 
 
 class The1Menu(MainMenu):
