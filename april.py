@@ -1,3 +1,6 @@
+from operator import contains
+
+
 class VersionPF:
 	number = "3.05"
 	date = '6 JUL 26'
@@ -3063,12 +3066,12 @@ class Editor():
 			elif what2do == 7:
 				boardtimer = menu.key_input(boardtimer, True)
 				BS.circuit.set(self.circuit, 'boardtimer', boardtimer)
-			elif what2do == 8:
+			elif what2do == 8 or what2do == 9:
 				#colors = menu.key_input(colors)  # , True)
-				self.color_menu(colors)
+				self.color_menu(colors, stoplight)
 				BS.circuit.set(self.circuit, 'colors', colors)
-			elif what2do == 9:
-				stoplight = menu.key_input(stoplight)  #, True)
+
+				#stoplight = menu.key_input(stoplight)  #, True)
 				BS.circuit.set(self.circuit, 'stoplight', stoplight)
 
 
@@ -3105,14 +3108,20 @@ class Editor():
 		sys.exit
 
 
-	def color_menu(self,col):
+	def color_menu(self, col, sto, ):
 		# Creating a list of size 9 filled with 1
+
 		base.ccc = [0] * 9
+		ss = ''
+		for char in sto:
+			if char.isdigit():  # Check if the character is a number
+				ss += char
 		for i in range(len(col)): # n, n n = color
 			a = col[i]
 			if a.isdigit():
-				base.ccc[int(a)] = 1
-
+				base.ccc[int(a)] = ss.find(a) + 2
+				a = base.ccc
+				pass
 		opti_text = [""]
 		for i in range(9):
 			opti_text.append("Off|On|SL top|SL mid|SL bot")
@@ -3127,10 +3136,25 @@ class Editor():
 			if what2do == 1:
 				continue
 			elif what2do == 11:
+				col = '2,3,4,6'
+				sto = '6,4,3'
 				continue
 			elif what2do == 12:
-				print(base.ccc)
-
+				col = ''
+				t = m = b = 0
+				for i in range(9):
+					a = base.ccc[i]
+					if not a == 0:
+						col += str(i)
+					if a == 2:
+						t = str(a)
+					elif a == 3:
+						m = str(a)
+					elif a == 4:
+						b = str(a)
+				sto = list(t + m + b)
+				col = list(col)
+				return
 
 
 class The1Menu(MainMenu):
@@ -3140,7 +3164,7 @@ class The1Menu(MainMenu):
 
 	def in_options(self, index):  # must override if options are used
 		a = index - 2
-		if 0 <= a <= 9:
+		if 0 <= a <= 8:
 			return base.ccc[a]
 
 
