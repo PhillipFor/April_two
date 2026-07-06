@@ -78,16 +78,6 @@ class MainMenu:
 		self.option_used = False
 		if not in_option_text == "":
 			self.option_used = True
-			a = []
-			for i in range(len(self.menu_option)):
-				if self.menu_option[i][0] == "|":
-					savetext = self.menu_option[i-1]
-					cnt = int(self.menu_option[i][1:])
-					for i in range(cnt):
-						a.append(savetext)
-				else:
-					a.append(self.menu_option[i])
-			self.menu_option = a
 
 		self.cursor_down = -1  # double click count
 		self.text_rend = []

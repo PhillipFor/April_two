@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.05"
-	date = '4 JUL 26'
+	date = '6 JUL 26'
 	text = 'Editor - select color menu'
 
 """
@@ -3065,7 +3065,7 @@ class Editor():
 				BS.circuit.set(self.circuit, 'boardtimer', boardtimer)
 			elif what2do == 8:
 				#colors = menu.key_input(colors)  # , True)
-				self.color_menu()
+				self.color_menu(colors)
 				BS.circuit.set(self.circuit, 'colors', colors)
 			elif what2do == 9:
 				stoplight = menu.key_input(stoplight)  #, True)
@@ -3105,19 +3105,31 @@ class Editor():
 		sys.exit
 
 
-	def color_menu(self):
+	def color_menu(self,col):
 		# Creating a list of size 9 filled with 1
-		base.ccc = [1] * 9
+		base.ccc = [0] * 9
+		for i in range(len(col)): # n, n n = color
+			a = col[i]
+			if a.isdigit():
+				base.ccc[int(a)] = 1
 
-		opti_text =  ["Off|On ","|8"]
+		opti_text = [""]
+		for i in range(9):
+			opti_text.append("Off|On|SL top|SL mid|SL bot")
+		menu_text = ['Which Color, SL = Stop Light', 'Black: ', 'White: ', 'Blue:  ', 'Green: ', 'Yellow:',
+		             'Puple: ', 'Red:   ', 'Orange:', 'Crazy: ', 'Default', 'exit']
+
 		while 1:
-			menu_text = ['Black: ','White: ','Blue:  ','Green: ','Yellow:',
-			             'Puple: ','Red:   ','Orange:','Crazy: ','exit']
 			menu = The1Menu(self.screen, base.background, menu_text, opti_text)
 			menu.from_top(50)
 			menu.draw_menu(5)  # Menu line to start
 			what2do = menu.select()
-			print(base.ccc)
+			if what2do == 1:
+				continue
+			elif what2do == 11:
+				continue
+			elif what2do == 12:
+				print(base.ccc)
 
 
 
@@ -3127,8 +3139,9 @@ class The1Menu(MainMenu):
 
 
 	def in_options(self, index):  # must override if options are used
-		a = index - 1
-		return base.ccc[a]
+		a = index - 2
+		if 0 <= a <= 9:
+			return base.ccc[a]
 
 
 
@@ -3137,8 +3150,9 @@ class The1Menu(MainMenu):
 		:param vdata: the value for that index to be stored
 		:param index: 1 base Line 1
 		"""
-		a = index - 1
-		base.ccc.insert(a,vdata)
+		a = index - 2
+		if 0 <= a <= 9:
+			base.ccc.insert(a,vdata)
 
 
 """
