@@ -3067,11 +3067,8 @@ class Editor():
 				boardtimer = menu.key_input(boardtimer, True)
 				BS.circuit.set(self.circuit, 'boardtimer', boardtimer)
 			elif what2do == 8 or what2do == 9:
-				#colors = menu.key_input(colors)  # , True)
-				self.color_menu(colors, stoplight)
+				colors, stoplight = self.color_menu(colors, stoplight)
 				BS.circuit.set(self.circuit, 'colors', colors)
-
-				#stoplight = menu.key_input(stoplight)  #, True)
 				BS.circuit.set(self.circuit, 'stoplight', stoplight)
 
 
@@ -3147,14 +3144,17 @@ class Editor():
 					if not a == 0:
 						col += str(i)
 					if a == 2:
-						t = str(a)
+						t = str(i)
 					elif a == 3:
-						m = str(a)
+						m = str(i)
 					elif a == 4:
-						b = str(a)
+						b = str(i)
 				sto = list(t + m + b)
 				col = list(col)
-				return
+
+				s = ''.join(sto)
+				c = ''.join(col)
+				return c, s
 
 
 class The1Menu(MainMenu):
