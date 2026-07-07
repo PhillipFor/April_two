@@ -3106,26 +3106,22 @@ class Editor():
 
 
 	def color_menu(self, col, sto, ):
-		# Creating a list of size 9 filled with 1
-
-		base.ccc = [0] * 9
-		ss = ''
-		for char in sto:
-			if char.isdigit():  # Check if the character is a number
-				ss += char
-		for i in range(len(col)): # n, n n = color
-			a = col[i]
-			if a.isdigit():
-				base.ccc[int(a)] = ss.find(a) + 2
-				a = base.ccc
-				pass
 		opti_text = [""]
 		for i in range(9):
 			opti_text.append("Off|On|SL top|SL mid|SL bot")
 		menu_text = ['Which Color, SL = Stop Light', 'Black: ', 'White: ', 'Blue:  ', 'Green: ', 'Yellow:',
 		             'Puple: ', 'Red:   ', 'Orange:', 'Crazy: ', 'Default', 'exit']
-
 		while 1:
+			base.ccc = [0] * 9
+			ss = ''
+			for char in sto:
+				if char.isdigit():  # Check if the character is a number
+					ss += char
+			for i in range(len(col)): # n, n n = color
+				a = col[i]
+				if a.isdigit():
+					base.ccc[int(a)] = ss.find(a) + 2
+
 			menu = The1Menu(self.screen, base.background, menu_text, opti_text)
 			menu.from_top(50)
 			menu.draw_menu(5)  # Menu line to start
@@ -3133,8 +3129,8 @@ class Editor():
 			if what2do == 1:
 				continue
 			elif what2do == 11:
-				col = '2,3,4,6'
-				sto = '6,4,3'
+				col = '2346'
+				sto = '643'
 				continue
 			elif what2do == 12:
 				col = ''
@@ -3149,12 +3145,8 @@ class Editor():
 						m = str(i)
 					elif a == 4:
 						b = str(i)
-				sto = list(t + m + b)
-				col = list(col)
-
-				s = ''.join(sto)
-				c = ''.join(col)
-				return c, s
+				sto = t + m + b
+				return col, sto
 
 
 class The1Menu(MainMenu):
