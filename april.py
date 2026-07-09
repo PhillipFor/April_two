@@ -1,26 +1,25 @@
-from operator import contains
-
-
 class VersionPF:
-	number = "3.05"
-	date = '6 JUL 26'
-	text = 'Editor - select color menu'
+	number = "3.06"
+	date = '8 JUL 26'
+	text = 'Editor - transfer'
 
 """
-Copyright Phillip Forrestal 2020-2026
+Copyright Phillip Forrestal 2020-2026 Got sick in 2022, came back home in 2024
 Program name: april two
 GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 
 
 to do:
-a. transfer map to test area - move map back to end
-b. how to select color in editor
-c. better way the select color in stoplight
-. 
-
+a. transfer map to test area -
+b1. move new map back to end
+c. stoplight only if used
+b. edit score name - must be unique in main list before tranfer
+e. check all. 
+f. defauld no output
 
 ::Version
+3.05 6 Jul 2026 Color
 3.04 29 Jun 2026 1 Jul 26 skip maps which a to hard or easy 
 3.03 25 Jun - 28 Jun 2026 options
 3.02 27 May 2026 - 24 Jun 26 Show
@@ -177,9 +176,6 @@ import os
 import pygame
 from pygame.locals import *
 import sys
-
-
-
 import time
 from datetime import datetime
 from datetime import timedelta
@@ -188,17 +184,11 @@ import random
 import configparser
 from menu_mouse import MainMenu
 
-
 os.environ['SDL_VIDEO_CENTERED'] = '1'
-
-#  # Status = Status_INI('april_two.ini')
-
 
 class CONS:  # Data constants
 	ScVer = "1.0"
 	DaVer = '1.2' # ini data file
-	Max = 22
-
 
 # Game constants
 WHEEL_STEPS = 9
@@ -260,22 +250,16 @@ LAUNCH_TIMER_POS = (0, INFO_HEIGHT)
 BOARD_POS = (TIMER_WIDTH, INFO_HEIGHT + MARBLE_SIZE)
 TIMER_HEIGHT = VERT_TILES * TILE_SIZE + MARBLE_SIZE
 
-
 class BS:
 	ex = configparser.ConfigParser()
 	circuit = configparser.ConfigParser()
 	score = configparser.ConfigParser()
 	section1 = ''
 
-	# getboolean
-	#
-
 	def __init__(self):
-
 		self.type = 0
 		self.ex_file = 'ex.txt'
 		self.circuitspath = 0
-
 		# path not exist or sys
 		while 1:
 			if not os.path.exists(self.ex_file):  # check score data file exist
@@ -301,11 +285,9 @@ class BS:
 		self.std_list.append('-')
 		self.std_level = self.ex.getint('sys', 'stdlevel', fallback=0)
 
-
 		items = self.ex.get('sys', 'ranlist', fallback='-')
 		self.ran_list = str.split(items,',')
 		self.ran_level = self.ex.getint('sys', 'ranlevel', fallback=0)
-
 
 	#score
 		os.makedirs("score", exist_ok=True)  # succeeds even if directory exist.
@@ -1656,6 +1638,7 @@ class Board:
 		#  2: User requested a skip to the next level
 		#  3: User requested a skip to the previous level
 
+	@property
 	def play_level(self):
 		# Perform the first render
 		self.update()
@@ -1684,7 +1667,13 @@ class Board:
 							return 3
 			hi = HighScore(self.game.score)
 			hi.display()
-			base.transfer = base.scfilename  # set only here used in editor and set skip
+			base.transfer = [] # = base.scfilename  # set only here used in editor and set skip
+			a = BS.circuit.options(BS.section1)
+			for i in range(len(a)):
+				b = a[i]
+				c = BS.circuit.get(BS.section1,b)
+				base.transfer.append([[b],[c]])
+			pass
 		# Game Loop
 		base.gameloop = 0  #time to  play the game
 		sptime = 10 * FRAMES_PER_SEC
@@ -2046,7 +2035,7 @@ class Game:
 		while 1:
 			# Play a level
 			self.board = Board(self, BOARD_POS)
-			rc = self.board.play_level()
+			rc = self.board.play_level
 			if base.edit_act:
 				time.sleep(1)
 				self.editboard()
@@ -2784,7 +2773,7 @@ class TheMenu(MainMenu):
 			BS.ex.set('sys',"board_time_sw", str(base.board_time_sw))
 		elif index == 6:
 			base.skipoff = vdata
-			BS.ex.s
+			BS.ex.set('sys',"skipoff", str(base.skipoff))
 
 	def select_extra(self):
 		self.sound.play()
@@ -2949,11 +2938,7 @@ class Editor():
 			BS.circuit.set(self.circuit, 'version', '2.0')
 			BS.circuit.set(self.circuit, 'name', 'test')
 			BS.circuit.set(self.circuit, 'author', 'Phillip')
-			BS.circuit.set(self.circuit, 'boardtimer', '100')
-			BS.circuit.set(self.circuit, 'colors', '8, 7, 6, 5, 4, 3, 2, 1, 0')
-			BS.circuit.set(self.circuit, 'launchtime', '2')
-			BS.circuit.set(self.circuit, 'maxmarbles', '3')
-			BS.circuit.set(self.circuit, 'score', self.circuit)
+
 			self.clrlevel()
 			self.save_level()
 		BS.circuit.read(BS.circuitspath)
@@ -2978,7 +2963,6 @@ class Editor():
 		self.editmenu()
 		#self.save_level()
 
-		pass
 		exit()
 
 	# Each tile consists of three characters:  A tile type, a path descriptor
@@ -3036,7 +3020,7 @@ class Editor():
 			if int(boardtimer) <= 0:
 				bb = 'default'
 			opmenu = ('Main MENU', 'level Name: ' + self.tsname,
-			          'Score: ' + score,'Author: ' + author,
+			          'Score: ' + self.score,'Author: ' + author,
 			          'Max active marbles [default: 10] ' + maxmarbles,
 			          'Launch Timer [default: 6] ' + launchtimer,
 			          'Board Timer [default: 30 * number of wheels] ' + bb,
@@ -3053,7 +3037,7 @@ class Editor():
 				BS.circuit.set(self.circuit, 'name', self.tsname)
 			elif what2do == 3: # score
 				self.score = menu.key_input(self.score)
-				BS.circuit.set(self.circuit, 'name', self.score)
+				BS.circuit.set(self.circuit, 'score', self.score)
 			elif what2do == 4:	# author
 				author = menu.key_input(author)
 				BS.circuit.set(self.circuit, 'author', author)
@@ -3077,33 +3061,72 @@ class Editor():
 
 		while cycle:
 			#   New main menu
-			mainmenu = ('level Name: ' + self.tsname,'Options', 'Exit Program', 'Show', 'Play')
+			mainmenu = ('Editor Menu','Transfer level', 'Map Options', 'Exit Program', 'Show', 'Play')
 			# no option
 			menu = MainMenu(self.screen, base.background, mainmenu )
 			menu.from_top(100)
 
 			menu.draw_menu()  # Menu line to start
 			what2do = menu.select()
-			if what2do == 3:
-				cycle = False
-			elif what2do == 1:
-				self.tsname = menu.key_input(self.tsname)
-				BS.circuit.set(self.circuit, 'name', self.tsname )
+			if what2do == 1:
+				pass
+			elif what2do == 2:
+				self.transfer_menu()
+			elif what2do == 3:
+				self.editop()
 			elif what2do == 4:
+				cycle = False
+			elif what2do == 5:
 				base.edit_play = False
 				game = Game(self.screen, 2)
 				game.play()
 				cycle = True
-			elif what2do == 5:
+			elif what2do == 6:
 				base.edit_play = True
 				game = Game(self.screen, 2)
 				game.play()
 				cycle = True
-			elif what2do == 2:
-				self.editop()
-		self.type = 0
+
 		sys.exit
 
+
+	def transfer_menu(self):
+		cycle = True
+		while cycle:
+			#   New main menu
+			mainmenu = ('Transfer level menu', 'Transfer From Main',
+			            'Clear Map', 'Check Map', 'Transfer to Main end', 'Exit Transfer')
+			# no option
+			menu = MainMenu(self.screen, base.background, mainmenu)
+			menu.from_top(100)
+
+			menu.draw_menu()  # Menu line to start
+			what2do = menu.select()
+			if what2do == 1:
+				continue
+			elif what2do == 2:
+				self.circuit = 'ts1'
+				circuitspath = BS.circuitspath
+				BS.circuit = 0
+				BS.circuit = configparser.ConfigParser()
+				if not BS.circuit.has_section(self.circuit):
+					BS.circuit.add_section(self.circuit)
+				self.save_level()
+				BS.circuit.read(BS.circuitspath)
+
+				for i in  base.transfer:
+					a = " ".join(i[0])
+					b = " ".join(i[1])
+					BS.circuit.set(self.circuit, a,b)
+				self.save_level()
+			elif what2do == 3:
+				pass
+			elif what2do == 4:
+				pass
+			elif what2do == 5:
+				pass
+			elif what2do == 6:
+				cycle = False
 
 	def color_menu(self, col, sto, ):
 		opti_text = [""]
