@@ -331,7 +331,6 @@ g4=| 5 | 5 | 5 | 6 | f | f | f |<dv|
 g5=|&50|&51|&52|&53|&54|&55|&56|&57|
 g6=|O1 |O1 |O1 |O1 |O1 |O1 |O1 |O1 |
 
-
 [lv26]
 name=Blame Shorty
 author=Kim Gignac
@@ -373,7 +372,7 @@ g5=|>7v| a |=a | c | 3 |Oa |Of |Od |
 g6=|&33| a | a |>b | a |&a2|^b>| 9 |
 
 [lv29]
-name=Greetings, Earthling 
+name=Greetings, Earthling
 author=John-Paul Gignac <jp@gignac.org>
 colors=0,2,4,6,7
 score=lv29
@@ -517,7 +516,6 @@ g3=|#50|#51|#52|#53|#54|#55|#56|#57|
 g4=|v5 |v5 |v5 |v5 |v5 |v5 |v5 |v5 |
 g5=|O1 |O1 |O1 |O1 |O1 |O1 |O1 |O1 |
 g6=|   |   |   |   |   |   |   |   |
-
 
 [lv40]
 name=Change Rooms
@@ -689,7 +687,6 @@ g3=| 3 |<b^|#a1|<e>|>fv|#92| 3 | 9 |
 g4=| 6 | c |#66|<b^|>b<|#a3|>ev| c |
 g5=|>7^|Of |vd<|   |   | 6 |Of |vd<|
 g6=| 3 |<b^| 9 |   |   | 3 |^b<| 9 |
-
 
 [lv52]
 name=Painting Machine 1 (by Court-Jus)
@@ -1067,7 +1064,7 @@ author=Grandma Wags <wagnerd@pacifier.com>
 boardtimer=400
 launchtimer=20
 maxmarbles=5
-Colors=2,3,4,5,8
+colors=2,3,4,5,8
 score=lv78
 g1=|O6 | a | a | c |   |   |   |O5 |
 g2=| 5 |   |   | 5 |   |   |   | 5 |
@@ -1090,3 +1087,21 @@ g3=| 3 | a | a |&a5| a | a | a | c |
 g4=|   |   |   |   |   |   |   |X1 |
 g5=|   |   |   |   |   |   |   |   |
 g6=|   |   |   |   |   |   |   |   |
+
+[prf01]
+name=The Rack (by David Walker) mod 9 Jul 26 PF
+version=2.0
+score=prf01
+author=David Walker <dawalker@uiuc.edu>
+maxmarbles=65
+launchtimer=1
+boardtimer=180
+colors=2, 3, 4, 6
+stoplight=6, 4, 3
+g1=|O2 |&a5|=ea|=eb|=ec|=ed|=ce| 5 |
+g2=|O2 |#a2|^f<|vf<|^f<|vf<|^f<|vd<|
+g3=|O2 |#a3|^f<|vf<|^f<|vf<|^f<|vd<|
+g4=|O2 |#a4|^f<|vf<|^f<|vf<|^f<|vd<|
+g5=|O2 |#a6|^f<|vf<|^f<|vf<|^f<|vd<|
+g6=|   |   |=3a|=bb|=bc|=bd|=be| 9 |
+

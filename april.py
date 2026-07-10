@@ -1,6 +1,9 @@
+from glob import glob1
+
+
 class VersionPF:
 	number = "3.06"
-	date = '8 JUL 26'
+	date = '9 JUL 26'
 	text = 'Editor - transfer'
 
 """
@@ -11,12 +14,12 @@ Version 3, 29 June 2007
 
 
 to do:
-a. transfer map to test area -
-b1. move new map back to end
+a. move new map back to end
 c. stoplight only if used
 b. edit score name - must be unique in main list before tranfer
 e. check all. 
 f. defauld no output
+g. count in Replicator
 
 ::Version
 3.05 6 Jul 2026 Color
@@ -2789,7 +2792,7 @@ class TheMenu(MainMenu):
 		font = pygame.font.SysFont('arial', 22)
 
 		text = font.render(
-			"Copyright © 2025-26  Phillip Forrestal   Version: " + ver.number + " " + ver.date + " " + ver.text +
+			"Copyright © 2020-22 2024-26  Phillip Forrestal   Version: " + ver.number + " " + ver.date + " " + ver.text +
 			" - Conversion for pygame " + f"{pygame.version.ver}" + " SDL  " +  f'{pygame.version.SDL}'
 			+ " , Python (" + f"{sys.version_info.major}" + '.' + f"{sys.version_info.minor}" + ")    ", 1, (40, 40, 40))
 		self.second = ScrollText(self.screen, text, y, 2)
@@ -3006,7 +3009,7 @@ class Editor():
 	def editop(self):
 		cycle = True
 		tsversion = BS.circuit.get(self.circuit, 'version',  fallback='2.0')
-		score = BS.circuit.get(self.circuit, 'score', fallback='')
+		score1 = BS.circuit.get(self.circuit, 'score', fallback='')
 		author = BS.circuit.get(self.circuit, 'author', fallback='PRF')
 		maxmarbles = BS.circuit.get(self.circuit, 'maxmarbles', fallback='10')
 		launchtimer = BS.circuit.get(self.circuit, 'launchtimer', fallback='6')
@@ -3020,7 +3023,7 @@ class Editor():
 			if int(boardtimer) <= 0:
 				bb = 'default'
 			opmenu = ('Main MENU', 'level Name: ' + self.tsname,
-			          'Score: ' + self.score,'Author: ' + author,
+			          'Score: ' + score1,'Author: ' + author,
 			          'Max active marbles [default: 10] ' + maxmarbles,
 			          'Launch Timer [default: 6] ' + launchtimer,
 			          'Board Timer [default: 30 * number of wheels] ' + bb,
@@ -3031,13 +3034,15 @@ class Editor():
 			menu.draw_menu()  # Menu line to start
 			what2do = menu.select()
 			if what2do == 1:
+				with open(BS.circuitspath, 'w') as configfile:
+					BS.circuit.write(configfile, False)
 				cycle = False
 			elif what2do == 2:
 				self.tsname = menu.key_input(self.tsname)
 				BS.circuit.set(self.circuit, 'name', self.tsname)
 			elif what2do == 3: # score
-				self.score = menu.key_input(self.score)
-				BS.circuit.set(self.circuit, 'score', self.score)
+				score1 = menu.key_input(score1)
+				BS.circuit.set(self.circuit, 'score', score1)
 			elif what2do == 4:	# author
 				author = menu.key_input(author)
 				BS.circuit.set(self.circuit, 'author', author)
@@ -3124,7 +3129,48 @@ class Editor():
 			elif what2do == 4:
 				pass
 			elif what2do == 5:
-				pass
+				name = BS.circuit.get(self.circuit, 'name', fallback='test1')
+				tsversion = BS.circuit.get(self.circuit, 'version', fallback='2.0')
+				score1 = BS.circuit.get(self.circuit, 'score', fallback='')
+				author = BS.circuit.get(self.circuit, 'author', fallback='PRF')
+				maxmarbles = BS.circuit.get(self.circuit, 'maxmarbles', fallback='10')
+				launchtimer = BS.circuit.get(self.circuit, 'launchtimer', fallback='6')
+				boardtimer = BS.circuit.get(self.circuit, 'boardtimer', fallback='0')
+				colors = BS.circuit.get(self.circuit, 'colors', fallback=DEFAULT_COLORS)
+				stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
+				g1 = BS.circuit.get(self.circuit,  'g1')
+				g2 = BS.circuit.get(self.circuit, 'g2')
+				g3 = BS.circuit.get(self.circuit,  'g3')
+				g4 = BS.circuit.get(self.circuit,  'g4')
+				g5 = BS.circuit.get(self.circuit,  'g5')
+				g6 = BS.circuit.get(self.circuit,  'g6')
+				temp = configparser.ConfigParser()
+				tempfile = os.path.join('circuits', 'levels')
+				temp.read(tempfile)
+				if temp.has_section(score1):
+					temp = 0
+				else:
+					temp.add_section(score1)
+					temp.set(score1, 'name', name)
+					temp.set(score1,'version', tsversion)
+					temp.set(score1,'score', score1)
+					temp.set(score1,'author', author)
+					temp.set(score1,'maxmarbles', maxmarbles)
+					temp.set(score1,'launchtimer', launchtimer)
+					temp.set(score1,'boardtimer', boardtimer)
+					temp.set(score1,'colors', colors)
+					temp.set(score1,'stoplight', stoplight)
+					temp.set(score1,'g1', g1)
+					temp.set(score1,'g2', g2)
+					temp.set(score1,'g3', g3)
+					temp.set(score1,'g4', g4)
+					temp.set(score1,'g5', g5)
+					temp.set(score1,'g6', g6)
+					with open(tempfile, 'w') as configfile:
+						temp.write(configfile, False)
+					temp = tempfile = None
+
+
 			elif what2do == 6:
 				cycle = False
 
