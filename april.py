@@ -3,7 +3,7 @@ from glob import glob1
 
 class VersionPF:
 	number = "3.06"
-	date = '9 JUL 26'
+	date = '12 JUL 26'
 	text = 'Editor - transfer'
 
 """
@@ -14,12 +14,11 @@ Version 3, 29 June 2007
 
 
 to do:
-a. move new map back to end
-c. stoplight only if used
-b. edit score name - must be unique in main list before tranfer
-e. check all. 
-f. defauld no output
 g. count in Replicator
+c. stoplight only if used
+
+e. check all. 
+f. default no output in ini file
 
 ::Version
 3.05 6 Jul 2026 Color
@@ -1714,12 +1713,6 @@ class Board:
 								self.pop.popup('Game Paused\n\n')
 						else:
 							self.pop.popdown()
-					elif event.key == K_F2:
-						pass 				# toggle_fullscreen()
-					elif event.key == K_F3:
-						pass  # base.toggle_music()
-					elif event.key == K_F4:
-						pass  # toggle_sound()
 
 				elif event.type == MOUSEBUTTONDOWN:
 					self.click(pygame.mouse.get_pos())
@@ -1897,12 +1890,18 @@ class HighScore:
 
 		pop = PopWindow(base.screen)
 		pop.popup(mess)
-		pop.popwait(True)  # fix me later
+		pop.popwait(True)
 		pop.popdown()
 
 def wait_one_sec():
 	time.sleep(1)
 	pygame.event.get()  # Clear the event queue
+
+def Message(mess):
+	pop = PopWindow(base.screen)
+	pop.popup(mess + '\n\n')
+	pop.popwait(2)
+	pop.popdown()
 
 
 class PopWindow:
@@ -1951,11 +1950,11 @@ class PopWindow:
 		self.screen.blit(self.backbuf, self.winrect)
 		pygame.display.update(self.winrect)
 
-	def popwait(self, flag = False):  # 15Dec23 30Jun2026
+	def popwait(self, flag = 0):  # 15Dec23 30Jun2026
 		wait_one_sec()
 		while 1:
 			www = pygame.event.poll()
-			if flag:
+			if flag==1:
 				if base.skipoff == 1:
 					if www.type == KEYDOWN:
 						if www.key == K_F1:
@@ -1966,6 +1965,10 @@ class PopWindow:
 						if www.key == K_F2:
 							BS.score.set(base.level, 'skip', '0')
 							base.skip = 0
+			elif flag==2:
+				if www.type == KEYDOWN:
+					if www.key == K_EQUALS:
+						break
 			if www.type == MOUSEBUTTONDOWN:
 				break
 		pygame.event.clear()
@@ -2059,7 +2062,6 @@ class Game:
 
 			if rc < 0:
 				# The board was not completed
-				#base.set_level = self.level
 				if rc == -3:
 					message = 'Level Aborted.'
 				elif rc == -2:
@@ -2079,7 +2081,6 @@ class Game:
 				if a == 5:
 					# self.level += 1
 					continue
-
 				if a != -3:
 					return a
 
@@ -2171,6 +2172,8 @@ class Game:
 				main = ('Pick one, Main path', 'Up', '> Right','Down','< Left')
 			elif basemenu == 8:
 				main = ('Pick one, Second path', 'Up', '> Right','Down','< Left', 'None = Director')
+			elif basemenu == 9:
+				main = ('Enter the Count','2','3','4','5','6','7','8','9')
 			what2do = 1
 			menu = MainMenu(self.screen, base.background2, main)
 			menu.from_top(150)
@@ -2219,6 +2222,7 @@ class Game:
 				elif what2do == 8:   # Replicator
 					self.types = '*'
 					basemenu = 2
+					sec = 9
 				elif what2do == 9:
 					self.types = '.'   # Switch
 					basemenu = 2
@@ -2253,6 +2257,7 @@ class Game:
 						basemenu = sec
 						sec = thr
 						thr = 0
+					continue
 				pathsint = 0
 				if pone:
 					pathsint += 1
@@ -2336,7 +2341,9 @@ class Game:
 				else:
 					self.control = a
 					basemenu = 3
-
+			elif basemenu  == 9: # Replicator
+				self.control = 2nn
+				basemenu = 1
 
 	def x_load(self, types, paths, control): #(self, circuit, level):
 		teleporters = []
@@ -3124,6 +3131,7 @@ class Editor():
 					b = " ".join(i[1])
 					BS.circuit.set(self.circuit, a,b)
 				self.save_level()
+				play_sound1(base.extra_life)
 			elif what2do == 3:
 				pass
 			elif what2do == 4:
@@ -3149,6 +3157,8 @@ class Editor():
 				temp.read(tempfile)
 				if temp.has_section(score1):
 					temp = 0
+					play_sound1(base.incorrect)
+					Message('Score IS NOT unique')
 				else:
 					temp.add_section(score1)
 					temp.set(score1, 'name', name)
@@ -3169,6 +3179,7 @@ class Editor():
 					with open(tempfile, 'w') as configfile:
 						temp.write(configfile, False)
 					temp = tempfile = None
+					play_sound1(base.extra_life)
 
 
 			elif what2do == 6:
