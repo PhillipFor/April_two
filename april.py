@@ -1,9 +1,6 @@
-from glob import glob1
-
-
 class VersionPF:
 	number = "3.06"
-	date = '12 JUL 26'
+	date = '14 JUL 26'
 	text = 'Editor - transfer'
 
 """
@@ -14,9 +11,7 @@ Version 3, 29 June 2007
 
 
 to do:
-g. count in Replicator
 c. stoplight only if used
-
 e. check all. 
 f. default no output in ini file
 
@@ -177,6 +172,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import os
 import pygame
 from pygame.locals import *
+
 import sys
 import time
 from datetime import datetime
@@ -463,6 +459,8 @@ class Images:
 			base.marble_images.append(ImageLoad('marble-' + repr(i) + base.cbext, -1, (MARBLE_SIZE, MARBLE_SIZE)))
 
 		base.Tile_tunnels = []  # Tile.tunnels
+		base.Tile_tunnels1 = []  # Tile.tunnels
+		base.Tile_tunnels2 = []  # Tile.tunnels
 		base.Tile_plains = []  # Tile.plain_tiles
 
 		for i in range(16):
@@ -471,7 +469,8 @@ class Images:
 			tile.blit(path, (0, 0))
 			base.Tile_plains.append(tile)
 			base.Tile_tunnels.append(ImageLoad('tunnel-' + repr(i) + '.png', -1, (TILE_SIZE, TILE_SIZE)))
-
+			base.Tile_tunnels1.append(ImageLoad('tunnel-' + repr(i) + '.png', -1, (TILE_SIZE, TILE_SIZE)))
+			base.Tile_tunnels2.append(ImageLoad('tunnel-' + repr(i) + '.png', -1, (TILE_SIZE, TILE_SIZE)))
 		#  Wheel.images
 		base.Wheel_images = (
 			ImageLoad('wheel.png', -1, (TILE_SIZE, TILE_SIZE)),
@@ -941,7 +940,23 @@ class Switch(Tile):
 		play_sound(base.switch)
 
 	def draw_fore(self, surface):
-		surface.blit(base.Tile_tunnels[self.paths], self.rect.topleft)
+		bb = base.Tile_tunnels1[self.paths]
+		aa = str(self.otherdir)
+		if self.otherdir == 2:
+			aa = 'dw '
+		elif self.otherdir == 3:
+			aa = 'le  '
+		elif self.otherdir == 0:
+			aa = 'up  '
+		elif self.otherdir == 1:
+			aa = 'rg  '
+		text = base.info_font.render(aa, True, pygame.Color(
+			'black'), pygame.Color('green'))
+		textRect = text.get_rect()
+		bb.blit(text, textRect)
+
+		surface.blit(bb, self.rect.topleft)
+		bb = 0
 		surface.blit(self.images[self.curdir][self.otherdir], self.rect.topleft)
 		rc = self.switched
 		self.switched = 0
@@ -961,7 +976,14 @@ class Replicator(Tile):
 
 	def draw_fore(self, surface):
 		surface.blit(base.Tile_tunnels[self.paths], self.rect.topleft)
-		surface.blit(self.image, self.rect.topleft)
+		aa = self.image
+
+		text = base.info_font.render(str(self.count), True, pygame.Color(
+			'white'), pygame.Color('blue'))
+		textRect = text.get_rect()
+		aa.blit(text, textRect)
+
+		surface.blit(aa, self.rect.topleft)
 		return 0
 
 	def update(self, board):
@@ -995,20 +1017,23 @@ class Replicator(Tile):
 class Teleporter(Tile):
 	def __init__(self, paths, let, other=None, center=(0, 0)):
 		Tile.__init__(self, paths, center)  # Call base class intializer
+		self.let = ' ' + let + ' '
 		if paths & 5:
 			self.image = self.image_v
 		else:
 			self.image = self.image_h
-		text = base.info_font.render(let, True, pygame.Color(
-				'green'), pygame.Color('blue'))
-		textRect = text.get_rect()
-		self.image.blit(text, textRect)
+
 		self.other = None
 		if other is not None:
 			self.connect(other)
 
 	def draw_fore(self, surface):
-		surface.blit(base.Tile_tunnels[self.paths], self.rect.topleft)
+		aa = base.Tile_tunnels2[self.paths]
+		text = base.info_font.render(self.let, True, pygame.Color(
+			'white'), pygame.Color('black'))
+		textRect = text.get_rect()
+		aa.blit(text, textRect)
+		surface.blit(aa, self.rect.topleft)
 		surface.blit(self.image, self.rect.topleft)
 		return 0
 
@@ -1604,6 +1629,7 @@ class Board:
 						tile = Switch(pathsint, 3, 1)
 					elif control == 'v':
 						tile = Switch(pathsint, 3, 2)
+
 				elif types == '=':
 					if control in teleporter_names:
 						other = teleporters[teleporter_names.index(control)]
@@ -1783,8 +1809,8 @@ class HighScore:
 				aa[i] = BS.score.get(base.level, 'ti' + repr(i)).split(',')
 
 		for i in range(6):
-			bb = (datetime.now() - timedelta(days=(6 - i) * maxdays)).strftime('%Y%m%d')
-			if bb >= aa[i][3]:
+			bbb = (datetime.now() - timedelta(days=(6 - i) * maxdays)).strftime('%Y%m%d')
+			if bbb >= aa[i][3]:
 				aa[i] = cc
 
 		aa[6] = cur
