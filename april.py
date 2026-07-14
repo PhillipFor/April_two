@@ -993,12 +993,16 @@ class Replicator(Tile):
 
 
 class Teleporter(Tile):
-	def __init__(self, paths, other=None, center=(0, 0)):
+	def __init__(self, paths, let, other=None, center=(0, 0)):
 		Tile.__init__(self, paths, center)  # Call base class intializer
 		if paths & 5:
 			self.image = self.image_v
 		else:
 			self.image = self.image_h
+		text = base.info_font.render(let, True, pygame.Color(
+				'green'), pygame.Color('blue'))
+		textRect = text.get_rect()
+		self.image.blit(text, textRect)
 		self.other = None
 		if other is not None:
 			self.connect(other)
@@ -1603,9 +1607,9 @@ class Board:
 				elif types == '=':
 					if control in teleporter_names:
 						other = teleporters[teleporter_names.index(control)]
-						tile = Teleporter(pathsint, other)
+						tile = Teleporter(pathsint, control, other)
 					else:
-						tile = Teleporter(pathsint)
+						tile = Teleporter(pathsint, control)
 						teleporters.append(tile)
 						teleporter_names.append(control)
 
@@ -2342,8 +2346,8 @@ class Game:
 					self.control = a
 					basemenu = 3
 			elif basemenu  == 9: # Replicator
-				self.control = 2nn
-				basemenu = 1
+				self.control = str(what2do + 1)
+				basemenu = 3
 
 	def x_load(self, types, paths, control): #(self, circuit, level):
 		teleporters = []
@@ -2356,14 +2360,6 @@ class Game:
 		base.screen.blit(base.backdrop, (0, 0))
 		pygame.display.update()
 		pathsint = colorint = 0
-
-		#self.name = BS.circuit.get(section1,'name')
-		#base.scfilename = BS.circuit.get(section1,'score',fallback=section1)
-		#self.live_marbles_limit = BS.circuit.getint(section1,'maxmarbles',fallback=10)
-		#self.set_launch_timer( BS.circuit.getint(section1,'launchtimer',fallback=DEFAULT_LAUNCH_TIMER))
-		#boardtimer = BS.circuit.getint(section1,'boardtimer',fallback=-1)
-		#a = BS.circuit.get(section1,'colors',fallback=DEFAULT_COLORS)
-		#self.colors = []
 
 		if paths == ' ':
 			pathsint = 0
@@ -2423,6 +2419,11 @@ class Game:
 			#tile = Replicator(pathsint, colorint)
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			base.screen.blit(Replicator.image, rect)
+			#text = base.info_font.render(self.control, True, pygame.Color(
+			#'green'), pygame.Color('blue'))
+			#textRect = text.get_rect()
+			#base.screen.blit(text, rect)
+			pass
 
 		elif types == '^' or types == '>' or types == '<' or types == 'v':
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
@@ -2472,12 +2473,6 @@ class Game:
 				tel = Teleporter.image_v
 			else:
 				tel = Teleporter.image_h
-			if not self.control == ' ':
-				text = base.info_font.render(self.control, True, pygame.Color(
-					'green'), pygame.Color('blue'))
-				textRect = text.get_rect()
-				tel.blit(text, textRect)
-
 			base.screen.blit(tel, rect)
 		# Flip the display
 		pygame.display.flip()
