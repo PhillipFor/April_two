@@ -1,7 +1,7 @@
 class VersionPF:
 	number = "3.06"
-	date = '14 JUL 26'
-	text = 'Editor - transfer'
+	date = '16 JUL 26'
+	text = 'Editor'
 
 """
 Copyright Phillip Forrestal 2020-2026 Got sick in 2022, came back home in 2024
@@ -125,7 +125,6 @@ I like to add new code at the end. Program doesn't get to end
 2.01 25 Jun 2020 Find errors durning debug
 2,00 25 Jun 2020 Start
 
-h\
 GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 Copyright (c) 2020
@@ -459,8 +458,6 @@ class Images:
 			base.marble_images.append(ImageLoad('marble-' + repr(i) + base.cbext, -1, (MARBLE_SIZE, MARBLE_SIZE)))
 
 		base.Tile_tunnels = []  # Tile.tunnels
-		base.Tile_tunnels1 = []  # Tile.tunnels
-		base.Tile_tunnels2 = []  # Tile.tunnels
 		base.Tile_plains = []  # Tile.plain_tiles
 
 		for i in range(16):
@@ -469,8 +466,6 @@ class Images:
 			tile.blit(path, (0, 0))
 			base.Tile_plains.append(tile)
 			base.Tile_tunnels.append(ImageLoad('tunnel-' + repr(i) + '.png', -1, (TILE_SIZE, TILE_SIZE)))
-			base.Tile_tunnels1.append(ImageLoad('tunnel-' + repr(i) + '.png', -1, (TILE_SIZE, TILE_SIZE)))
-			base.Tile_tunnels2.append(ImageLoad('tunnel-' + repr(i) + '.png', -1, (TILE_SIZE, TILE_SIZE)))
 		#  Wheel.images
 		base.Wheel_images = (
 			ImageLoad('wheel.png', -1, (TILE_SIZE, TILE_SIZE)),
@@ -940,24 +935,24 @@ class Switch(Tile):
 		play_sound(base.switch)
 
 	def draw_fore(self, surface):
-		bb = base.Tile_tunnels1[self.paths]
-		aa = str(self.otherdir)
-		if self.otherdir == 2:
-			aa = 'dw '
-		elif self.otherdir == 3:
-			aa = 'le  '
-		elif self.otherdir == 0:
-			aa = 'up  '
-		elif self.otherdir == 1:
-			aa = 'rg  '
-		text = base.info_font.render(aa, True, pygame.Color(
-			'black'), pygame.Color('green'))
-		textRect = text.get_rect()
-		bb.blit(text, textRect)
+		bb = pygame.Surface.copy(base.Tile_tunnels[self.paths])
+		if base.edit_act:
+			aa = str(self.otherdir)
+			if self.otherdir == 2:
+				aa = ' v '
+			elif self.otherdir == 3:
+				aa = ' < '
+			elif self.otherdir == 0:
+				aa = ' ^ '
+			elif self.otherdir == 1:
+				aa = ' > '
+			text = base.info_font.render(aa, True, pygame.Color(
+				'black'), pygame.Color('green'))
+			textRect = text.get_rect()
+			bb.blit(text, textRect)
 
 		surface.blit(bb, self.rect.topleft)
-		bb = 0
-		surface.blit(self.images[self.curdir][self.otherdir], self.rect.topleft)
+		surface.blit(self.images[self.curdir][self.otherdir], self.rect)
 		rc = self.switched
 		self.switched = 0
 		return rc
@@ -976,12 +971,12 @@ class Replicator(Tile):
 
 	def draw_fore(self, surface):
 		surface.blit(base.Tile_tunnels[self.paths], self.rect.topleft)
-		aa = self.image
-
-		text = base.info_font.render(str(self.count), True, pygame.Color(
-			'white'), pygame.Color('blue'))
-		textRect = text.get_rect()
-		aa.blit(text, textRect)
+		aa = pygame.Surface.copy(self.image)
+		if base.edit_act:
+			text = base.info_font.render(' ' + str(self.count) + ' ', True, pygame.Color(
+				'white'), pygame.Color('blue'))
+			textRect = text.get_rect()
+			aa.blit(text, textRect)
 
 		surface.blit(aa, self.rect.topleft)
 		return 0
@@ -1028,12 +1023,14 @@ class Teleporter(Tile):
 			self.connect(other)
 
 	def draw_fore(self, surface):
-		aa = base.Tile_tunnels2[self.paths]
-		text = base.info_font.render(self.let, True, pygame.Color(
-			'white'), pygame.Color('black'))
-		textRect = text.get_rect()
-		aa.blit(text, textRect)
-		surface.blit(aa, self.rect.topleft)
+		aa = pygame.Surface.copy(base.Tile_tunnels[self.paths])
+		if base.edit_act:
+			text = base.info_font.render(self.let, True, pygame.Color(
+				'white'), pygame.Color('black'))
+			textRect = text.get_rect()
+			aa.blit(text, textRect)
+		surface.blit(aa, self.rect)
+		aa = 0
 		surface.blit(self.image, self.rect.topleft)
 		return 0
 
@@ -1150,9 +1147,6 @@ class Board:
 		self.wheeldid = 0
 		base.wheelnew = 0
 		base.wheeldid = 0
-
-
-
 
 		self.set_launch_timer(DEFAULT_LAUNCH_TIMER)
 		#self.set_board_timer(DEFAULT_BOARD_TIMER)
@@ -2445,11 +2439,9 @@ class Game:
 			#tile = Replicator(pathsint, colorint)
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			base.screen.blit(Replicator.image, rect)
-			#text = base.info_font.render(self.control, True, pygame.Color(
-			#'green'), pygame.Color('blue'))
-			#textRect = text.get_rect()
-			#base.screen.blit(text, rect)
-			pass
+			text = base.info_font.render(' ' + self.control + ' ', True, pygame.Color(
+			'white'), pygame.Color('blue'))
+			base.screen.blit(text, rect)
 
 		elif types == '^' or types == '>' or types == '<' or types == 'v':
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
@@ -2483,7 +2475,13 @@ class Game:
 					bb = 3
 				elif self.control == 'v':
 					bb = 2
-				base.screen.blit(Switch.images[aa][bb], rect)
+				cc = Switch.images[aa][bb]
+				text = base.info_font.render(' ' + self.control + ' ', True, pygame.Color(
+					'black'), pygame.Color('green'))
+				textRect = text.get_rect()
+				cc.blit(text, textRect)
+				base.screen.blit(cc, rect)
+
 
 		elif types == '+':  # Trigger
 			base.screen.blit(base.Trigger_image, rect)
@@ -2496,14 +2494,17 @@ class Game:
 				pathsint = 5
 
 			if pathsint & 5:
-				tel = Teleporter.image_v
+				tel = pygame.Surface.copy(Teleporter.image_v)
 			else:
-				tel = Teleporter.image_h
+				tel = pygame.Surface.copy(Teleporter.image_h)
+
+			text = base.info_font.render(' ' + self.control + ' ', True, pygame.Color(
+				'white'), pygame.Color('black'))
+			textRect = text.get_rect()
+			tel.blit(text, textRect)
 			base.screen.blit(tel, rect)
 		# Flip the display
 		pygame.display.flip()
-
-		#return 1
 
 
 def main():

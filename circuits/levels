@@ -1105,3 +1105,20 @@ g4=|O2 |#a4|^f<|vf<|^f<|vf<|^f<|vd<|
 g5=|O2 |#a6|^f<|vf<|^f<|vf<|^f<|vd<|
 g6=|   |   |=3a|=bb|=bc|=bd|=be| 9 |
 
+[lv20a]
+name=Multiplicity mod PF 16Jul26
+version=2.0
+score=lv20a
+author=John-Paul Gignac <jp@gignac.org>
+maxmarbles=10
+launchtimer=3
+boardtimer=0
+colors=2, 3, 4, 6
+stoplight=6, 4, 3
+g1=| 0 |   | 6 |Of | a | c |   |   |
+g2=|   |   |*52|*34| c |*52|   |   |
+g3=|   |   |v5 |=4b|=1b|v5 |   |   |
+g4=|   |=2a| 9 |=1c|=4c|v7>| a |O8 |
+g5=| 6 |=8a| 0 |v6 | 9 | 5 |   |   |
+g6=| 3 |O8 | 0 |O1 |   | 3 |O8 |   |
+
