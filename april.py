@@ -3,7 +3,7 @@ from dataclasses import replace
 
 class VersionPF:
 	number = "3.06"
-	date = '19 JUL 26'
+	date = '20 JUL 26'
 	text = 'Editor'
 
 """
@@ -14,10 +14,6 @@ Version 3, 29 June 2007
 
 
 to do:
-modify new levels
-fix edit optin nemu
-yes no on save levels new
-claen up
 retry,+1 on launchtimer
 kill 10 on boardtimer
 make fail on skip and a delay on 1st, no pause on 2nd
@@ -257,6 +253,7 @@ TIMER_HEIGHT = VERT_TILES * TILE_SIZE + MARBLE_SIZE
 class BS:
 	ex = configparser.ConfigParser()
 	circuit = configparser.ConfigParser()
+	new = configparser.ConfigParser()
 	score = configparser.ConfigParser()
 	section1 = ''
 
@@ -280,8 +277,11 @@ class BS:
 
 		BS.circuitspath = os.path.join('circuits')
 		BS.circuit.read(os.path.join(BS.circuitspath, 'levels'))
+		BS.new.read(os.path.join(BS.circuitspath, 'new_levels'))
 
 		self.std_list = BS.circuit.sections()
+		list = BS.new.sections()
+		self.std_list.extend(list)
 		self.std_list.append('-')
 		self.std_level = self.ex.getint('sys', 'stdlevel', fallback=0)
 
@@ -325,7 +325,8 @@ class BS:
 		# type =  1
 			a = self.ran_level + lev
 			if self.ran_list[a] == '-':
-				self.ran_list = self.circuit.sections()
+				self.ran_list = self.std_list            #self.circuit.sections()
+				self.ran_list.remove('-')
 				random.shuffle(self.ran_list)
 				self.ran_list.append('-')
 				self.ran_level = 0
@@ -1511,6 +1512,14 @@ class Board:
 
 
 	def _load(self,section1): #(self, circuit, level):
+		# which souce is used
+		lv = 0
+		if BS.circuit.has_section(section1):
+			lv = BS.circuit
+		elif BS.new.has_section(section1):
+			lv = BS.new
+		if lv == 0:
+			return
 
 		#circuit.get(section1, )
 		BS.section1 = section1 # editor use in Game
@@ -1520,12 +1529,12 @@ class Board:
 
 		base.numwheels = 0
 		# boardtimer = -1
-		self.name = BS.circuit.get(section1,'name')
-		base.scfilename = BS.circuit.get(section1,'score',fallback=section1)
-		self.live_marbles_limit = BS.circuit.getint(section1,'maxmarbles',fallback=10)
-		self.set_launch_timer( BS.circuit.getint(section1,'launchtimer',fallback=DEFAULT_LAUNCH_TIMER))
-		boardtimer = BS.circuit.getint(section1,'boardtimer',fallback=-1)
-		a = BS.circuit.get(section1,'colors',fallback=DEFAULT_COLORS)
+		self.name = lv.get(section1,'name')
+		base.scfilename = lv.get(section1,'score',fallback=section1)
+		self.live_marbles_limit = lv.getint(section1,'maxmarbles',fallback=10)
+		self.set_launch_timer( lv.getint(section1,'launchtimer',fallback=DEFAULT_LAUNCH_TIMER))
+		boardtimer = lv.getint(section1,'boardtimer',fallback=-1)
+		a = lv.get(section1,'colors',fallback=DEFAULT_COLORS)
 		self.colors = []
 		for i in a: # one char at time
 			if '0' <= i <= '7':
@@ -1535,14 +1544,14 @@ class Board:
 			elif i == '8':
 				# Crazy marbles are one-third as common
 				self.colors.append(8)
-		a = BS.circuit.get(section1,'stoplight',fallback=DEFAULT_STOPLIGHT)
+		a = lv.get(section1,'stoplight',fallback=DEFAULT_STOPLIGHT)
 		stoplight = []
 		for i in a:
 			if '0' <= i <= '7':
 				stoplight.append(int(i))
 
 		for x in range(1, 7):
-			line = BS.circuit.get(section1, 'g' + str(x))
+			line = lv.get(section1, 'g' + str(x))
 			j = x - 1
 			for i in range(HORIZ_TILES):
 
@@ -1926,10 +1935,10 @@ def wait_one_sec():
 
 def Message(mess):
 	pop = PopWindow(base.screen)
-	pop.popup(mess + '\n\n')
-	pop.popwait(2)
+	pop.popup(mess + ' Yes  No/mouse\n\n')
+	f = pop.popwait(3)
 	pop.popdown()
-
+	return f
 
 class PopWindow:
 	def __init__(self, screen):
@@ -1992,13 +2001,21 @@ class PopWindow:
 						if www.key == K_F2:
 							BS.score.set(base.level, 'skip', '0')
 							base.skip = 0
-			elif flag==2:
+			elif flag == 2:
 				if www.type == KEYDOWN:
 					if www.key == K_EQUALS:
 						break
+			elif flag == 3:
+				if www.type == KEYDOWN:
+					if www.key == K_y:
+						return True
+					elif www.key == K_n:
+						return False
+
 			if www.type == MOUSEBUTTONDOWN:
 				break
 		pygame.event.clear()
+		return False
 
 	def popkeys(self, keycode=0):
 		"""
@@ -3034,57 +3051,34 @@ class Editor():
 	# stoplight   - The colors in the stoplight (default: 6,4,3)
 	def editop(self):
 		cycle = True
+		base.check = True  # Setuo game level
+		base.stoplight = False
+		base.edit_play = True
+		game = Game(self.screen, 2)
+		game.play()
 		tsversion = BS.circuit.get(self.circuit, 'version',  fallback='2.0')
 		score1 = BS.circuit.get(self.circuit, 'score', fallback='')
 		author = BS.circuit.get(self.circuit, 'author', fallback='PRF')
 		maxmarbles = BS.circuit.get(self.circuit, 'maxmarbles', fallback='0')  # 10
-		launchtimer = BS.circuit.get(self.circuit, 'launchtimer', fallback='0') # 8
+		launchtimer = BS.circuit.get(self.circuit, 'launchtimer', fallback='0') # 6
 		boardtimer = BS.circuit.get(self.circuit, 'boardtimer', fallback='0')
 		colors = BS.circuit.get(self.circuit, 'colors', fallback=DEFAULT_COLORS)
-		stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
-
+		if base.stoplight:
+			stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
+		else:
+			stoplight = 'Not used'
 
 		while cycle:
-			dd = DEFAULT_COLORS
-			flag = True
-			for i in range(len(colors)):
-				if colors[i].isdecimal():
-					if colors[i] in dd:
-						dd = dd.replace(colors[i],'', 1)
-					else:
-						flag = False
-						break
-			if not dd == '':
-				flag = False
-			if flag:
-				dd = 'default'
-			else:
-				dd = colors
+			opmenu = ('Main MENU -- 0 = default',
+			    'level Name: ' + self.tsname,
+				'Score: ' + score1,'Author: ' + author,
+		        'Max active marbles [default: 10] ' + maxmarbles,
+			    'Launch Timer [default: 6] ' + launchtimer,
+			    'Board Timer [default: 30 * ' + str(base.numwheels) + ' (' +
+			    str(30 * base.numwheels) + ')] ' +  boardtimer,
+			    'colors [default: 2,3,4,6] ' + colors,
+			    'stoplight [default: 6,4,3] ' + stoplight)
 
-			ee = DEFAULT_STOPLIGHT
-			flag = True
-			for i in range(len(stoplight)):
-				if stoplight[i].isdecimal():
-					if stoplight[i] in ee:
-						ee = ee.replace(stoplight[i], '', 1)
-					else:
-						flag = False
-						break
-			if not ee == '':
-				flag = False
-			if flag:
-				ee = 'default'
-			else:
-				ee = stoplight
-
-
-			opmenu = ('Main MENU', 'level Name: ' + self.tsname,
-			          'Score: ' + score1,'Author: ' + author,
-			          'Max active marbles [default: 10] ' + aa,
-			          'Launch Timer [default: 6] ' + bb,
-			          'Board Timer [default: 30 * number of wheels] ' + cc,
-			          'colors [default: 2,3,4,6] ' + colors,
-			          'stoplight [default: 6,4,3] ' + stoplight,)
 			menu = MainMenu( self.screen, base.background, opmenu)
 			menu.from_top(10)
 			menu.draw_menu()  # Menu line to start
@@ -3153,15 +3147,17 @@ class Editor():
 
 	def transfer_menu(self):
 		cycle = True
+		cuson = 1
 		while cycle:
 			#   New main menu
 			mainmenu = ('Transfer level menu', 'Transfer From Main',
-			            'Clear Map', 'Check Map', 'Transfer to NEW end', 'Exit Transfer')
+			            'Clear level',
+			           'Transfer to NEW end', 'Exit Transfer')
 			# no option
 			menu = MainMenu(self.screen, base.background, mainmenu)
 			menu.from_top(100)
 
-			menu.draw_menu()  # Menu line to start
+			menu.draw_menu(cuson)  # Menu line to start
 			what2do = menu.select()
 			if what2do == 1:
 				continue
@@ -3181,11 +3177,12 @@ class Editor():
 					BS.circuit.set(self.circuit, a,b)
 				self.save_level()
 				play_sound1(base.extra_life)
+				cuson = 5
 			elif what2do == 3:
-				pass
+				cuson = 5
+				self.clrlevel()
+
 			elif what2do == 4:
-				pass
-			elif what2do == 5:
 				base.check = True  # Setuo game level
 				base.stoplight = False
 				base.edit_play = True
@@ -3207,14 +3204,24 @@ class Editor():
 				g4 = BS.circuit.get(self.circuit,  'g4')
 				g5 = BS.circuit.get(self.circuit,  'g5')
 				g6 = BS.circuit.get(self.circuit,  'g6')
+				f = True
+				temp = configparser.ConfigParser()
+				tempfile = os.path.join('circuits', 'levels')
+				temp.read(tempfile)
+				if temp.has_section(score1):
+					play_sound1(base.incorrect)
+					Message('Score IS NOT unique to Main')
+					f = False
+				temp = 0
 				temp = configparser.ConfigParser()
 				tempfile = os.path.join('circuits', 'new_levels')
 				temp.read(tempfile)
 				if temp.has_section(score1):
-					temp = 0
 					play_sound1(base.incorrect)
-					Message('Score IS NOT unique') #ask
-				else:
+					f = Message('Score IS NOT unique to NEW\n Over write: ') #ask
+					if f:
+						temp.remove_section(score1)
+				if f:
 					temp.add_section(score1)
 					temp.set(score1, 'name', name)
 					temp.set(score1,'version', tsversion)
@@ -3266,9 +3273,10 @@ class Editor():
 						temp.write(configfile, False)
 					temp = tempfile = None
 					play_sound1(base.extra_life)
+				temp = 0
+				cuson = 5
 
-
-			elif what2do == 6:
+			elif what2do == 5:
 				cycle = False
 
 	def color_menu(self, col, sto, ):
