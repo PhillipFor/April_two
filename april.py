@@ -1705,13 +1705,14 @@ class Board:
 							return 3
 			hi = HighScore(self.game.score)
 			hi.display()
-			base.transfer = [] # = base.scfilename  # set only here used in editor and set skip
-			a = BS.circuit.options(BS.section1)
-			for i in range(len(a)):
-				b = a[i]
-				c = BS.circuit.get(BS.section1,b)
-				base.transfer.append([[b],[c]])
-			pass
+			#base.transfer = [] # = base.scfilename  # set only here used in editor and set skip
+			#a = BS.circuit.options(BS.section1)
+			b = base.level
+			#for i in range(len(a)):
+			#	b = a[i]
+			#	c = BS.circuit.get(BS.section1,b)
+			#	base.transfer.append([[b],[c]])
+			#pass
 		# Game Loop
 		base.gameloop = 0  #time to  play the game
 		sptime = 10 * FRAMES_PER_SEC
@@ -2242,7 +2243,7 @@ class Game:
 					thr = 7
 				elif what2do == 2: # Wheel
 					self.types =  'O'
-					self.control = ' '
+					self.control = ' P1'
 					basemenu = 2
 					sec = 3
 				elif what2do == 3: # Painter
@@ -2299,6 +2300,8 @@ class Game:
 					pfor = not pfor
 				elif what2do == 5:
 					basemenu = 1
+					if self.control == ' P1':
+						self.control = ' '
 					if not sec == 0:
 						basemenu = sec
 						sec = thr
@@ -2415,7 +2418,9 @@ class Game:
 		tile = 0
 		aa = 0
 		if types == 'O':  #wheel
-			base.screen.blit(base.Wheel_images[0], rect)
+			if not control == ' P1':
+				base.screen.blit(base.Wheel_images[0], rect)
+
 
 		elif types == '+':
 			#tile = Trigger(self.colors)
@@ -2955,16 +2960,19 @@ class SRscreen:
 class Editor():
 	"""
 	9 Dec 2025
+	redo 22Jul26
 	"""
 	def __init__(self, screen):
+		self.level = base.level
+		if base.level is None:
+			self.level = ''
 		staf.save()
+
 		base.edit_act = True
 		base.edit_play= False
 		self.screen = screen
-		self.tsname = ''
-		self.tsauthor = ''
 
-		self.circuit = 'ts1'
+		self.test = 'test'
 		BS.circuitspath = os.path.join(BS.circuitspath, 'testlvs')
 		BS.circuit = 0
 		BS.circuit = configparser.ConfigParser()
@@ -2972,40 +2980,108 @@ class Editor():
 		flag = False
 		if os.path.isfile(BS.circuitspath):
 			BS.circuit.read(BS.circuitspath)
-			if not BS.circuit.has_section(self.circuit):
-				BS.circuit.add_section(self.circuit)
+			if not BS.circuit.has_section('test'):
+				BS.circuit.add_section('test')
 				flag = True
 		else:
 			flag = True
-
 		if flag:
-			if not BS.circuit.has_section(self.circuit):
-				BS.circuit.add_section(self.circuit)
-			BS.circuit.set(self.circuit, 'version', '2.0')
-			BS.circuit.set(self.circuit, 'name', 'test')
-			BS.circuit.set(self.circuit, 'author', 'Phillip')
-
+			if not BS.circuit.has_section('test'):
+				BS.circuit.add_section('test')
 			self.clrlevel()
-			self.save_level()
+
 		BS.circuit.read(BS.circuitspath)
+		self.read_level()
+		self.write_level(BS.circuit)
+		self.save_level()
 		self.doedit()
 
 	def clrlevel(self):
-
 		line = '|'
 		for j in range(HORIZ_TILES):
 			line += '   |'
 		for i in range(VERT_TILES):
-			BS.circuit.set(self.circuit, 'g' + str(i + 1), line)
+			BS.circuit.set('test', 'g' + str(i + 1), line)
 
 	def save_level(self):
 		with open(BS.circuitspath, 'w') as configfile:
 			BS.circuit.write(configfile, False)
 
 
-	def doedit(self ):
-		self.tsname = BS.circuit.get(self.circuit, 'name', fallback='test1')
+	def read_level(self):
+		self.tname= BS.circuit.get('test', 'name', fallback='test')
+		self.tversion = BS.circuit.get('test', 'version', fallback='2.0')
+		self.tscore = BS.circuit.get('test', 'score', fallback='')
+		self.tauthor = BS.circuit.get('test', 'author', fallback='PRF')
+		self.tmaxmarbles = BS.circuit.get('test', 'maxmarbles', fallback='10')  # 10
+		self.tlaunchtimer = BS.circuit.get('test', 'launchtimer', fallback='6')  # 6
+		self.tboardtimer = BS.circuit.get('test', 'boardtimer', fallback='0')
+		self.tcolors = BS.circuit.get('test', 'colors', fallback=DEFAULT_COLORS)
+		self.tstoplight = BS.circuit.get('test', 'stoplight', fallback=DEFAULT_STOPLIGHT)
 
+	def write_level(self, temp, a = 'test', nw = 0, sl = DEFAULT_STOPLIGHT):
+		temp.set(a, 'name', self.tname)
+		temp.set(a, 'version', self.tversion)
+		temp.set(a, 'score', self.tscore)
+		temp.set(a, 'author', self.tauthor)
+		if int(self.tmaxmarbles) >= 0 or self.tmaxmarbles == '10':  # default
+			if temp.has_option(a, 'maxmarbles'):
+				temp.remove_option(a, 'maxmarbles')
+		else:
+			temp.set(a, 'maxmarbles', self.tmaxmarbles)
+
+		if int(self.tlaunchtimer) >= 0 or self.tlaunchtimer == '10':  # default
+			if temp.has_option(a, 'launchtimer'):
+				temp.remove_option(a, 'launchtimer')
+		else:
+			temp.set(a, 'launchtimer', self.tlaunchtimer)
+
+		if int(self.tboardtimer) == 0 or int(self.tboardtimer) == (30 * nw):  # default
+			if temp.has_option(a, 'boardtimer'):
+				temp.remove_option(a, 'boardtimer')
+		else:
+			temp.set(a, 'boardtimer', self.tboardtimer)
+
+		dd = DEFAULT_COLORS
+		colors = self.tcolors
+		flag = True
+		for i in range(len(colors)):
+			if self.tcolors[i].isdecimal():
+				if colors[i] in dd:
+					dd = dd.replace(colors[i], '', 1)
+				else:
+					flag = False
+					break
+		if not dd == '':
+			flag = False
+		if flag:
+			if temp.has_option(a, 'colors'):
+				temp.remove_option(a, 'colors')
+		else:
+			temp.set(a, 'colors', self.tcolors)
+
+		flag = True
+		if (base.stoplight):
+			dd = DEFAULT_STOPLIGHT
+			for i in range(len(sl)):
+				if colors[i].isdecimal():
+					if colors[i] in dd:
+						dd = dd.replace(colors[i], '', 1)
+					else:
+						flag = False
+						break
+			if not dd == '':
+				flag = False
+		if flag:
+			if temp.has_option(a, 'stoplight'):
+				temp.remove_option(a, 'stoplight')
+		else:
+			temp.set(a, 'stoplight', sl)
+
+
+
+
+	def doedit(self ):
 		self.editmenu()
 		#self.save_level()
 
@@ -3051,33 +3127,16 @@ class Editor():
 	# stoplight   - The colors in the stoplight (default: 6,4,3)
 	def editop(self):
 		cycle = True
-		base.check = True  # Setuo game level
-		base.stoplight = False
-		base.edit_play = True
-		game = Game(self.screen, 2)
-		game.play()
-		tsversion = BS.circuit.get(self.circuit, 'version',  fallback='2.0')
-		score1 = BS.circuit.get(self.circuit, 'score', fallback='')
-		author = BS.circuit.get(self.circuit, 'author', fallback='PRF')
-		maxmarbles = BS.circuit.get(self.circuit, 'maxmarbles', fallback='0')  # 10
-		launchtimer = BS.circuit.get(self.circuit, 'launchtimer', fallback='0') # 6
-		boardtimer = BS.circuit.get(self.circuit, 'boardtimer', fallback='0')
-		colors = BS.circuit.get(self.circuit, 'colors', fallback=DEFAULT_COLORS)
-		if base.stoplight:
-			stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
-		else:
-			stoplight = 'Not used'
-
 		while cycle:
 			opmenu = ('Main MENU -- 0 = default',
-			    'level Name: ' + self.tsname,
-				'Score: ' + score1,'Author: ' + author,
-		        'Max active marbles [default: 10] ' + maxmarbles,
-			    'Launch Timer [default: 6] ' + launchtimer,
+			    'level Name: ' + self.tname,
+				'Score: ' + self.tscore,'Author: ' + self.tauthor,
+		        'Max active marbles [default: 10] ' + self.tmaxmarbles,
+			    'Launch Timer [default: 6] ' + self.tlaunchtimer,
 			    'Board Timer [default: 30 * ' + str(base.numwheels) + ' (' +
-			    str(30 * base.numwheels) + ')] ' +  boardtimer,
-			    'colors [default: 2,3,4,6] ' + colors,
-			    'stoplight [default: 6,4,3] ' + stoplight)
+			    str(30 * base.numwheels) + ')] ' +  self.tboardtimer,
+			    'colors [default: 2,3,4,6] ' + self.tcolors,
+			    'stoplight [default: 6,4,3] ' + self.tstoplight)
 
 			menu = MainMenu( self.screen, base.background, opmenu)
 			menu.from_top(10)
@@ -3146,11 +3205,16 @@ class Editor():
 
 
 	def transfer_menu(self):
+
 		cycle = True
 		cuson = 1
 		while cycle:
 			#   New main menu
-			mainmenu = ('Transfer level menu', 'Transfer From Main',
+			if self.level == '':
+				a = 'not available'
+			else:
+				a = 'Transfer From Main or New: ' + self.level
+			mainmenu = ('Transfer level menu', a,
 			            'Clear level',
 			           'Transfer to NEW end', 'Exit Transfer')
 			# no option
@@ -3162,19 +3226,29 @@ class Editor():
 			if what2do == 1:
 				continue
 			elif what2do == 2:
-				self.circuit = 'ts1'
-				circuitspath = BS.circuitspath
-				BS.circuit = 0
-				BS.circuit = configparser.ConfigParser()
-				if not BS.circuit.has_section(self.circuit):
-					BS.circuit.add_section(self.circuit)
-				self.save_level()
-				BS.circuit.read(BS.circuitspath)
+				if self.level == '':
+					continue
+				temppath = os.path.join('circuits')
+				temp = configparser.ConfigParser()
+				temp.read(os.path.join(temppath, 'levels'))
+				lv = 0
+				if temp.has_section(self.level):
+					lv = temp
+				elif BS.new.has_section(self.level):
+					lv = BS.new
+				if lv == 0:  # will the source
+					continue
 
-				for i in  base.transfer:
-					a = " ".join(i[0])
-					b = " ".join(i[1])
-					BS.circuit.set(self.circuit, a,b)
+				a = (BS.circuit.sections())  #testlvs
+				for i in a:
+					BS.circuit.remove_section(i)
+				BS.circuit.add_section("test")
+
+				a = lv.options(self.level)  # source
+				for i in a:
+					b = lv.get(self.level, i)
+					BS.circuit.set('test', i, b)
+				temp = lv = 0
 				self.save_level()
 				play_sound1(base.extra_life)
 				cuson = 5
