@@ -3,7 +3,7 @@ from dataclasses import replace
 
 class VersionPF:
 	number = "3.06"
-	date = '20 JUL 26'
+	date = '23 JUL 26'
 	text = 'Editor'
 
 """
@@ -1934,10 +1934,14 @@ def wait_one_sec():
 	time.sleep(1)
 	pygame.event.get()  # Clear the event queue
 
-def Message(mess):
+def Message(mess, no=0):
+	mes = mess
 	pop = PopWindow(base.screen)
-	pop.popup(mess + ' Yes  No/mouse\n\n')
-	f = pop.popwait(3)
+	if no == 3:
+		mes = mes + ' Yes  No/mouse'
+	mes = mes + '\n\n'
+	pop.popup(mes)
+	f = pop.popwait(no)
 	pop.popdown()
 	return f
 
@@ -3019,7 +3023,7 @@ class Editor():
 		self.tcolors = BS.circuit.get('test', 'colors', fallback=DEFAULT_COLORS)
 		self.tstoplight = BS.circuit.get('test', 'stoplight', fallback=DEFAULT_STOPLIGHT)
 
-	def write_level(self, temp, a = 'test', nw = 0, sl = DEFAULT_STOPLIGHT):
+	def write_level(self, temp, a = 'test', nw = 0):
 		temp.set(a, 'name', self.tname)
 		temp.set(a, 'version', self.tversion)
 		temp.set(a, 'score', self.tscore)
@@ -3061,9 +3065,10 @@ class Editor():
 			temp.set(a, 'colors', self.tcolors)
 
 		flag = True
-		if (base.stoplight):
+		if base.stoplight:
 			dd = DEFAULT_STOPLIGHT
-			for i in range(len(sl)):
+			color = self.tstoplight
+			for i in range(len(color)):
 				if colors[i].isdecimal():
 					if colors[i] in dd:
 						dd = dd.replace(colors[i], '', 1)
@@ -3076,7 +3081,7 @@ class Editor():
 			if temp.has_option(a, 'stoplight'):
 				temp.remove_option(a, 'stoplight')
 		else:
-			temp.set(a, 'stoplight', sl)
+			temp.set(a, 'stoplight', self.tstoplight)
 
 
 
@@ -3128,6 +3133,17 @@ class Editor():
 	def editop(self):
 		cycle = True
 		while cycle:
+			base.stoplight = False
+			self.read_level()
+			base.check = True  # Setuo game level
+			game = Game(self.screen, 2)
+			game.play()
+			base.check = False
+			if base.stoplight:
+				sl = self.tstoplight
+			else:
+				sl = 'Not Used'
+
 			opmenu = ('Main MENU -- 0 = default',
 			    'level Name: ' + self.tname,
 				'Score: ' + self.tscore,'Author: ' + self.tauthor,
@@ -3136,39 +3152,39 @@ class Editor():
 			    'Board Timer [default: 30 * ' + str(base.numwheels) + ' (' +
 			    str(30 * base.numwheels) + ')] ' +  self.tboardtimer,
 			    'colors [default: 2,3,4,6] ' + self.tcolors,
-			    'stoplight [default: 6,4,3] ' + self.tstoplight)
+			    'stoplight [default: 6,4,3] ' + sl)
 
 			menu = MainMenu( self.screen, base.background, opmenu)
 			menu.from_top(10)
 			menu.draw_menu()  # Menu line to start
 			what2do = menu.select()
 			if what2do == 1:
-				with open(BS.circuitspath, 'w') as configfile:
-					BS.circuit.write(configfile, False)
+				self.save_level()
 				cycle = False
 			elif what2do == 2:
-				self.tsname = menu.key_input(self.tsname)
-				BS.circuit.set(self.circuit, 'name', self.tsname)
+				self.tname = menu.key_input(self.tname)
+				#BS.circuit.set(self.circuit, 'name', self.tsname)
 			elif what2do == 3: # score
-				score1 = menu.key_input(score1)
-				BS.circuit.set(self.circuit, 'score', score1)
+				self.tscore = menu.key_input(self.tscore)
+				#BS.circuit.set(self.circuit, 'score', self.tscore)
 			elif what2do == 4:	# author
-				author = menu.key_input(author)
-				BS.circuit.set(self.circuit, 'author', author)
+				self.tauthor = menu.key_input(self.tauthor)
+				#BS.circuit.set(self.circuit, 'author', author)
 			elif what2do == 5: # maxmarbles
-				maxmarbles = menu.key_input(maxmarbles, True)
-				BS.circuit.set(self.circuit, 'maxmarbles', maxmarbles)
+				self.tmaxmarbles = menu.key_input(self.tmaxmarbles, True)
+				#BS.circuit.set(self.circuit, 'maxmarbles', maxmarbles)
 			elif what2do == 6:
-				launchtimer = menu.key_input(launchtimer, True)
-				BS.circuit.set(self.circuit, 'launchtimer', launchtimer)
+				self.tlaunchtimer = menu.key_input(self.tlaunchtimer, True)
+				#BS.circuit.set(self.circuit, 'launchtimer', launchtimer)
 			elif what2do == 7:
-				boardtimer = menu.key_input(boardtimer, True)
-				BS.circuit.set(self.circuit, 'boardtimer', boardtimer)
-			elif what2do == 8 or what2do == 9:
-				colors, stoplight = self.color_menu(colors, stoplight)
-				BS.circuit.set(self.circuit, 'colors', colors)
-				BS.circuit.set(self.circuit, 'stoplight', stoplight)
-
+				self.tboardtimer = menu.key_input(self.tboardtimer, True)
+				#BS.circuit.set(self.circuit, 'boardtimer', boardtimer)
+			elif what2do == 8 or (base.stoplight and what2do == 9):
+				self.tcolors, self.tstoplight = self.color_menu(self.tcolors, self.tstoplight, base.stoplight)
+				pass
+				#BS.circuit.set(self.circuit, 'colors', colors)
+				#BS.circuit.set(self.circuit, 'stoplight', stoplight)
+			self.write_level(BS.circuit)
 
 	def editmenu(self):
 		cycle = True
@@ -3257,32 +3273,39 @@ class Editor():
 				self.clrlevel()
 
 			elif what2do == 4:
-				base.check = True  # Setuo game level
 				base.stoplight = False
 				base.edit_play = True
+				base.check = True  # Setuo game level
 				game = Game(self.screen, 2)
 				game.play()
 
-				name = BS.circuit.get(self.circuit, 'name')
-				tsversion = BS.circuit.get(self.circuit, 'version', fallback='2.0')
-				score1 = BS.circuit.get(self.circuit, 'score')
-				author = BS.circuit.get(self.circuit, 'author')
-				maxmarbles = BS.circuit.get(self.circuit, 'maxmarbles', fallback='0') # 10
-				launchtimer = BS.circuit.get(self.circuit, 'launchtimer', fallback='0') #6
-				boardtimer = BS.circuit.get(self.circuit, 'boardtimer', fallback='0')
-				colors = BS.circuit.get(self.circuit, 'colors', fallback=DEFAULT_COLORS)
-				stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
-				g1 = BS.circuit.get(self.circuit,  'g1')
-				g2 = BS.circuit.get(self.circuit, 'g2')
-				g3 = BS.circuit.get(self.circuit,  'g3')
-				g4 = BS.circuit.get(self.circuit,  'g4')
-				g5 = BS.circuit.get(self.circuit,  'g5')
-				g6 = BS.circuit.get(self.circuit,  'g6')
+				self.read_level()
+				#name = BS.circuit.get(self.circuit, 'name')
+				#tsversion = BS.circuit.get(self.circuit, 'version', fallback='2.0')
+				#score1 = BS.circuit.get(self.circuit, 'score')
+				#author = BS.circuit.get(self.circuit, 'author')
+				#maxmarbles = BS.circuit.get(self.circuit, 'maxmarbles', fallback='0') # 10
+				#launchtimer = BS.circuit.get(self.circuit, 'launchtimer', fallback='0') #6
+				#boardtimer = BS.circuit.get(self.circuit, 'boardtimer', fallback='0')
+				#colors = BS.circuit.get(self.circuit, 'colors', fallback=DEFAULT_COLORS)
+				#stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
+				#g1 = BS.circuit.get(self.circuit, 'g1')
+				g = []
+				for i in range(6):
+					g.append(BS.circuit.get('test', 'g' + str(i + 1)))
+				'''
+				g1 = BS.circuit.get('test', 'g1')
+				g2 = BS.circuit.get('test', 'g2')
+				g3 = BS.circuit.get('test',  'g3')
+				g4 = BS.circuit.get('test',  'g4')
+				g5 = BS.circuit.get('test',  'g5')
+				g6 = BS.circuit.get('test',  'g6')
+				'''
 				f = True
 				temp = configparser.ConfigParser()
 				tempfile = os.path.join('circuits', 'levels')
 				temp.read(tempfile)
-				if temp.has_section(score1):
+				if temp.has_section(self.tscore):
 					play_sound1(base.incorrect)
 					Message('Score IS NOT unique to Main')
 					f = False
@@ -3290,14 +3313,17 @@ class Editor():
 				temp = configparser.ConfigParser()
 				tempfile = os.path.join('circuits', 'new_levels')
 				temp.read(tempfile)
-				if temp.has_section(score1):
-					play_sound1(base.incorrect)
-					f = Message('Score IS NOT unique to NEW\n Over write: ') #ask
-					if f:
-						temp.remove_section(score1)
 				if f:
-					temp.add_section(score1)
-					temp.set(score1, 'name', name)
+					if temp.has_section(self.tscore):
+						play_sound1(base.incorrect)
+						f = Message('Score IS NOT unique to NEW\n Over write: ', 3) #ask
+						if f:
+							temp.remove_section(self.tscore)
+				if f:
+					temp.add_section(self.tscore)
+					self.write_level( temp,self.tscore, base.numwheels )
+					'''
+					temp.set(self.tscore, 'name', name)
 					temp.set(score1,'version', tsversion)
 					temp.set(score1,'score', score1)
 					temp.set(score1,'author', author)
@@ -3336,13 +3362,17 @@ class Editor():
 						temp.set(score1,'colors', colors)
 					if (base.stoplight):
 						temp.set(score1,'stoplight', stoplight)
-
+					'''
+					for i in range(6):
+						temp.set(self.tscore,'g' + str(i + 1), g[i])
+					'''
 					temp.set(score1,'g1', g1)
 					temp.set(score1,'g2', g2)
 					temp.set(score1,'g3', g3)
 					temp.set(score1,'g4', g4)
 					temp.set(score1,'g5', g5)
 					temp.set(score1,'g6', g6)
+					'''
 					with open(tempfile, 'w') as configfile:
 						temp.write(configfile, False)
 					temp = tempfile = None
@@ -3353,18 +3383,26 @@ class Editor():
 			elif what2do == 5:
 				cycle = False
 
-	def color_menu(self, col, sto, ):
+	def color_menu(self, col, sto, flag ):
 		opti_text = [""]
-		for i in range(9):
-			opti_text.append("Off|On|SL top|SL mid|SL bot")
+		for i in range(8):
+			if flag:
+				opti_text.append("Off|On|SL top|SL mid|SL bot")
+			else:
+				opti_text.append("Off|On")
+		opti_text.append("Off|On")
+
 		menu_text = ['Which Color, SL = Stop Light', 'Black: ', 'White: ', 'Blue:  ', 'Green: ', 'Yellow:',
 		             'Puple: ', 'Red:   ', 'Orange:', 'Crazy: ', 'Default', 'exit']
 		while 1:
+
 			base.ccc = [0] * 9
 			ss = ''
-			for char in sto:
-				if char.isdigit():  # Check if the character is a number
-					ss += char
+			if flag:
+				for char in sto:
+					if char.isdigit():  # Check if the character is a number
+						ss += char
+
 			for i in range(len(col)): # n, n n = color
 				a = col[i]
 				if a.isdigit():
@@ -3382,7 +3420,7 @@ class Editor():
 				continue
 			elif what2do == 12:
 				col = ''
-				t = m = b = 0
+				t = m = b = '0'
 				for i in range(9):
 					a = base.ccc[i]
 					if not a == 0:
@@ -3416,7 +3454,9 @@ class The1Menu(MainMenu):
 		"""
 		a = index - 2
 		if 0 <= a <= 9:
-			base.ccc.insert(a,vdata)
+			#base.ccc.insert(a,vdata)
+			base.ccc[a] = vdata
+			pass
 
 
 """
