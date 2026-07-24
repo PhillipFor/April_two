@@ -3,8 +3,9 @@ from dataclasses import replace
 
 class VersionPF:
 	number = "3.06"
-	date = '23 JUL 26'
+	date = '24 JUL 26'
 	text = 'Editor'
+
 
 """
 Copyright Phillip Forrestal 2020-2026 Got sick in 2022, came back home in 2024
@@ -186,9 +187,11 @@ from menu_mouse import MainMenu
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
+
 class CONS:  # Data constants
 	ScVer = "1.0"
-	DaVer = '1.2' # ini data file
+	DaVer = '1.2'  # ini data file
+
 
 # Game constants
 WHEEL_STEPS = 9
@@ -250,6 +253,7 @@ LAUNCH_TIMER_POS = (0, INFO_HEIGHT)
 BOARD_POS = (TIMER_WIDTH, INFO_HEIGHT + MARBLE_SIZE)
 TIMER_HEIGHT = VERT_TILES * TILE_SIZE + MARBLE_SIZE
 
+
 class BS:
 	ex = configparser.ConfigParser()
 	circuit = configparser.ConfigParser()
@@ -286,28 +290,27 @@ class BS:
 		self.std_level = self.ex.getint('sys', 'stdlevel', fallback=0)
 
 		items = self.ex.get('sys', 'ranlist', fallback='-')
-		self.ran_list = str.split(items,',')
+		self.ran_list = str.split(items, ',')
 		self.ran_level = self.ex.getint('sys', 'ranlevel', fallback=0)
 
-	#score
+		# score
 		os.makedirs("score", exist_ok=True)  # succeeds even if directory exist.
 		self.scorefile = os.path.join('score', 'scores.txt')
 
 		while 1:
-			if not os.path.exists(self.scorefile):  #  check score data file exist
+			if not os.path.exists(self.scorefile):  # check score data file exist
 				BS.score.add_section('sys')
 				BS.score.set('sys', 'version', CONS.DaVer)
 				with open(self.scorefile, 'w') as configfile:
 					BS.score.write(configfile, False)
 			BS.score.read(self.scorefile)
-			a = BS.score.get('sys','version',fallback='')
+			a = BS.score.get('sys', 'version', fallback='')
 			if a == CONS.DaVer:
 				break
 			os.remove(self.scorefile)
 			BS.score = configparser.ConfigParser()
 
-
-	def lev(self, lev = 0, type1 = -1):
+	def lev(self, lev=0, type1=-1):
 		if type1 == -1:
 			type1 = self.type
 		else:
@@ -322,10 +325,10 @@ class BS:
 			a = self.std_list[self.std_level]
 
 		elif type1 == 1:
-		# type =  1
+			# type =  1
 			a = self.ran_level + lev
 			if self.ran_list[a] == '-':
-				self.ran_list = self.std_list            #self.circuit.sections()
+				self.ran_list = self.std_list  # self.circuit.sections()
 				self.ran_list.remove('-')
 				random.shuffle(self.ran_list)
 				self.ran_list.append('-')
@@ -347,16 +350,15 @@ class BS:
 		with open(self.ex_file, 'w') as configfile:
 			self.ex.write(configfile, False)
 
-
 	def save1(self):
 		with open(self.scorefile, 'w') as configfile:
-				BS.score.write(configfile)
-
+			BS.score.write(configfile)
 
 	def read1(self):
 		BS.score.read(self.scorefile)
 
-	# 24 Apr 24 Score
+# 24 Apr 24 Score
+
 
 staf = BS()
 
@@ -379,14 +381,14 @@ class base:
 	scorecur = ""  # 17Jan24
 	numwheels = 0
 	# 19Jan24
-	board_time_sw = True #False  # true on false off
+	board_time_sw = True  # False  # true on false off
 	write_highscores = None
 	extra_life = None
 	intromusic = None
 	gamemusic = None
 	furelise = None
 	background = None
-	background2 = None  #use in edit
+	background2 = None  # use in edit
 	sr = 0
 	menu_scroll = None
 	background_on = None
@@ -437,8 +439,6 @@ class base:
 
 	wheelnew = 0
 	wheeldid = 0
-
-
 
 
 # Load the fonts for various parts of the game
@@ -523,7 +523,6 @@ class Images:
 		Stoplight.smallmarbles = []
 		for im in base.marble_images:
 			Stoplight.smallmarbles.append(pygame.transform.scale(im, (STOPLIGHT_MARBLE_SIZE, STOPLIGHT_MARBLE_SIZE)))
-
 
 
 # Classes for our game objects
@@ -796,7 +795,7 @@ class Buffer(Tile):
 		if hole_color >= 0:
 			holecenter = self.rect.center
 			surface.blit(base.marble_images[hole_color],
-				(holecenter[0] - int(MARBLE_SIZE / 2), holecenter[1] - int(MARBLE_SIZE / 2)))
+			             (holecenter[0] - int(MARBLE_SIZE / 2), holecenter[1] - int(MARBLE_SIZE / 2)))
 		else:
 			surface.blit(base.Buffer_bottom, self.rect.topleft)
 
@@ -1079,8 +1078,8 @@ class Trigger(Tile):
 		if self.marbles is not None:
 			for i in range(4):
 				surface.blit(base.marble_images[self.marbles[i]],
-					(HOLECENTERS[0][i][0] + int(self.rect.left - MARBLE_SIZE / 2),
-					HOLECENTERS[0][i][1] + int(self.rect.top - MARBLE_SIZE / 2)))
+				             (HOLECENTERS[0][i][0] + int(self.rect.left - MARBLE_SIZE / 2),
+				              HOLECENTERS[0][i][1] + int(self.rect.top - MARBLE_SIZE / 2)))
 		return 1
 
 	def complete(self, board):
@@ -1094,7 +1093,7 @@ class Stoplight(Tile):
 		Tile.__init__(self, 0, center)  # Call base class intializer
 		# self.smallmarbles = None
 		# self.image = None
-		base.stoplight = True # use by Editor
+		base.stoplight = True  # use by Editor
 		self.marbles = list(colors)
 		self.current = 0
 
@@ -1116,7 +1115,6 @@ class Stoplight(Tile):
 		self.drawn = 0
 
 
-
 class Board:
 	def __init__(self, game, pos):
 		"""
@@ -1127,7 +1125,7 @@ class Board:
 		self.launcher_background = ImageLoad('launcher.png', -2, (HORIZ_TILES * TILE_SIZE, MARBLE_SIZE))
 		self.launcher_v = ImageLoad('launcher-v.png', -2, (MARBLE_SIZE, VERT_TILES * TILE_SIZE + MARBLE_SIZE))
 		self.launcher_corner = ImageLoad('launcher-corner.png', (255, 0, 0), (int((TILE_SIZE - MARBLE_SIZE)
-															 / 2 + MARBLE_SIZE), MARBLE_SIZE))
+		                                                                          / 2 + MARBLE_SIZE), MARBLE_SIZE))
 		self.launcher_entrance = ImageLoad('entrance.png', -1, (TILE_SIZE, MARBLE_SIZE))
 		self.game = game
 		self.launch_timer_height = None
@@ -1152,7 +1150,7 @@ class Board:
 		base.wheeldid = 0
 
 		self.set_launch_timer(DEFAULT_LAUNCH_TIMER)
-		#self.set_board_timer(DEFAULT_BOARD_TIMER)
+		# self.set_board_timer(DEFAULT_BOARD_TIMER)
 
 		# Create the board array
 		self.tiles = []
@@ -1167,7 +1165,7 @@ class Board:
 				BS.score.set(base.level, 'sc' + repr(i), ','.join(aa))
 
 		self._load(base.level)
-		if base.check: # Setuo game level check for tranfer
+		if base.check:  # Setuo game level check for tranfer
 			return
 		# Create The Background
 		self.background = pygame.Surface(self.screen.get_size()).convert()
@@ -1183,7 +1181,6 @@ class Board:
 		# Fill up the launch queue
 		for i in range(int(VERT_TILES * TILE_SIZE / MARBLE_SIZE + 2)):
 			self.launch_queue.append(random.choice(self.colors))
-
 
 		# Draw the backdrop
 		# backdrop = load_image('backdrop.jpg', -2, (HORIZ_TILES * TILE_SIZE, VERT_TILES * TILE_SIZE))
@@ -1224,8 +1221,8 @@ class Board:
 			rect = (LAUNCH_TIMER_POS[0], LAUNCH_TIMER_POS[1], TIMER_WIDTH, TIMER_HEIGHT)
 			self.screen.fill((0, 0, 0), rect)
 			self.screen.fill((0, 40, 255),
-							 (LAUNCH_TIMER_POS[0] + TIMER_MARGIN, LAUNCH_TIMER_POS[1] + TIMER_HEIGHT - height,
-							  TIMER_WIDTH - TIMER_MARGIN * 2, height))
+			                 (LAUNCH_TIMER_POS[0] + TIMER_MARGIN, LAUNCH_TIMER_POS[1] + TIMER_HEIGHT - height,
+			                  TIMER_WIDTH - TIMER_MARGIN * 2, height))
 			dirty_rects.append(rect)
 		else:
 			height = int(TIMER_HEIGHT * self.launch_timeout / self.launch_timeout_start)
@@ -1245,7 +1242,6 @@ class Board:
 		self.screen.blit(self.background, (0, 0))
 		self.screen.set_clip()
 		dirty_rects.append(rect)
-
 
 		# Draw the board timer
 		#  ~~~ time
@@ -1297,11 +1293,11 @@ class Board:
 		if self.launched:
 			for i in range(len(self.launch_queue)):
 				self.background.blit(base.marble_images[self.launch_queue[i]],
-									 (self.pos[0] + HORIZ_TILES * TILE_SIZE,
-									  self.pos[1] + i * MARBLE_SIZE - MARBLE_SIZE))
+				                     (self.pos[0] + HORIZ_TILES * TILE_SIZE,
+				                      self.pos[1] + i * MARBLE_SIZE - MARBLE_SIZE))
 			rect = (self.pos[0] + HORIZ_TILES * TILE_SIZE,
-					self.pos[1] - MARBLE_SIZE, MARBLE_SIZE,
-					MARBLE_SIZE + TILE_SIZE * VERT_TILES)
+			        self.pos[1] - MARBLE_SIZE, MARBLE_SIZE,
+			        MARBLE_SIZE + TILE_SIZE * VERT_TILES)
 			self.screen.set_clip(rect)
 			self.screen.blit(self.background, (0, 0))
 			self.screen.set_clip()
@@ -1316,8 +1312,6 @@ class Board:
 			for tile in row:
 				if tile.draw_fore(self.screen):
 					dirty_rects.append(tile.rect)
-
-
 
 	def update(self):
 		# Create the list of dirty rectangles
@@ -1366,7 +1360,7 @@ class Board:
 				self.board_complete = -1
 
 		# inc time
-		self.run_time +=1
+		self.run_time += 1
 
 		# Decrement the board timer
 		# if self.board_timeout > 0:  keep board time out running
@@ -1390,7 +1384,6 @@ class Board:
 		pygame.display.update(dirty_rects)
 		pass
 
-
 	def count_holes(self):
 		time.sleep(1)
 		base.total_holes = 0
@@ -1403,9 +1396,10 @@ class Board:
 						for i in tile.marbles:
 							if i < 0:
 								base.empty_holes += 1
-		#a = base.total_holes
-		#a = base.empty_holes
-		# = 1
+
+	# a = base.total_holes
+	# a = base.empty_holes
+	# = 1
 
 	def set_tile(self, x, y, tile):
 		self.tiles[y][x] = tile
@@ -1440,8 +1434,8 @@ class Board:
 	def launch_marble(self):
 		self.launch_queue.append(random.choice(self.colors))
 		self.marbles.insert(0, Marble(self.launch_queue[0],
-									  (int(self.pos[0] + TILE_SIZE * HORIZ_TILES + MARBLE_SIZE / 2),
-									   int(self.pos[1] - MARBLE_SIZE / 2)), 3))
+		                              (int(self.pos[0] + TILE_SIZE * HORIZ_TILES + MARBLE_SIZE / 2),
+		                               int(self.pos[1] - MARBLE_SIZE / 2)), 3))
 		del self.launch_queue[0]
 		self.launched = 1
 
@@ -1508,10 +1502,7 @@ class Board:
 			tile = self.tiles[tile_y][tile_x]
 			tile.click(self, tile_xr, tile_yr, tile_x, tile_y)
 
-
-
-
-	def _load(self,section1): #(self, circuit, level):
+	def _load(self, section1):  # (self, circuit, level):
 		# which souce is used
 		lv = 0
 		if BS.circuit.has_section(section1):
@@ -1521,22 +1512,22 @@ class Board:
 		if lv == 0:
 			return
 
-		#circuit.get(section1, )
-		BS.section1 = section1 # editor use in Game
+		# circuit.get(section1, )
+		BS.section1 = section1  # editor use in Game
 		teleporters = []
 		teleporter_names = []
 		stoplight = DEFAULT_STOPLIGHT
 
 		base.numwheels = 0
 		# boardtimer = -1
-		self.name = lv.get(section1,'name')
-		base.scfilename = lv.get(section1,'score',fallback=section1)
-		self.live_marbles_limit = lv.getint(section1,'maxmarbles',fallback=10)
-		self.set_launch_timer( lv.getint(section1,'launchtimer',fallback=DEFAULT_LAUNCH_TIMER))
-		boardtimer = lv.getint(section1,'boardtimer',fallback=-1)
-		a = lv.get(section1,'colors',fallback=DEFAULT_COLORS)
+		self.name = lv.get(section1, 'name')
+		base.scfilename = lv.get(section1, 'score', fallback=section1)
+		self.live_marbles_limit = lv.getint(section1, 'maxmarbles', fallback=10)
+		self.set_launch_timer(lv.getint(section1, 'launchtimer', fallback=DEFAULT_LAUNCH_TIMER))
+		boardtimer = lv.getint(section1, 'boardtimer', fallback=-1)
+		a = lv.get(section1, 'colors', fallback=DEFAULT_COLORS)
 		self.colors = []
-		for i in a: # one char at time
+		for i in a:  # one char at time
 			if '0' <= i <= '7':
 				self.colors.append(int(i))
 				self.colors.append(int(i))
@@ -1544,7 +1535,7 @@ class Board:
 			elif i == '8':
 				# Crazy marbles are one-third as common
 				self.colors.append(8)
-		a = lv.get(section1,'stoplight',fallback=DEFAULT_STOPLIGHT)
+		a = lv.get(section1, 'stoplight', fallback=DEFAULT_STOPLIGHT)
 		stoplight = []
 		for i in a:
 			if '0' <= i <= '7':
@@ -1659,22 +1650,20 @@ class Board:
 					self.marbles.append(
 						Marble(int(types), tile.rect.center, direction))
 
-
 		if boardtimer <= 0:
 			boardtimer = DEFAULT_BOARD_TIMER * base.numwheels
 		self.set_board_timer(boardtimer, section1)
 
 		return 1
 
-
-		# Return values for this function:
-		# -4: User closed the application window
-		# -3: User aborted the level
-		# -2: Board timer expired
-		# -1: Launch timer expired
-		#  1: Level completed successfully
-		#  2: User requested a skip to the next level
-		#  3: User requested a skip to the previous level
+	# Return values for this function:
+	# -4: User closed the application window
+	# -3: User aborted the level
+	# -2: Board timer expired
+	# -1: Launch timer expired
+	#  1: Level completed successfully
+	#  2: User requested a skip to the next level
+	#  3: User requested a skip to the previous level
 
 	@property
 	def play_level(self):
@@ -1705,16 +1694,16 @@ class Board:
 							return 3
 			hi = HighScore(self.game.score)
 			hi.display()
-			#base.transfer = [] # = base.scfilename  # set only here used in editor and set skip
-			#a = BS.circuit.options(BS.section1)
+			# base.transfer = [] # = base.scfilename  # set only here used in editor and set skip
+			# a = BS.circuit.options(BS.section1)
 			b = base.level
-			#for i in range(len(a)):
-			#	b = a[i]
-			#	c = BS.circuit.get(BS.section1,b)
-			#	base.transfer.append([[b],[c]])
-			#pass
+		# for i in range(len(a)):
+		#	b = a[i]
+		#	c = BS.circuit.get(BS.section1,b)
+		#	base.transfer.append([[b],[c]])
+		# pass
 		# Game Loop
-		base.gameloop = 0  #time to  play the game
+		base.gameloop = 0  # time to  play the game
 		sptime = 10 * FRAMES_PER_SEC
 
 		clock = pygame.time.Clock()
@@ -1755,10 +1744,8 @@ class Board:
 					self.click(pygame.mouse.get_pos())
 					a = 3
 			if not self.paused:
-				base.gameloop += 1 #time to  play the game
+				base.gameloop += 1  # time to  play the game
 				self.update()
-
-
 
 		if base.edit_act:
 			return -9
@@ -1766,11 +1753,11 @@ class Board:
 		self.count_holes()
 		if self.board_complete > 0:
 			play_sound(base.levelfinish)
-			hi=HighScore(self.game.score)
+			hi = HighScore(self.game.score)
 			hi.start()
 		else:
 			play_sound(base.die)
-			hi=HighScore(self.board_complete)
+			hi = HighScore(self.board_complete)
 			hi.start()
 		return self.board_complete
 
@@ -1781,15 +1768,12 @@ class HighScore:
 		self.flag = flag
 		cycle = 6
 
-
 	def start(self):
 		maxdays = 28
 
 		# last
 		cur = []
 		cc = [self.fail, '1', self.fail, '0']
-
-
 
 		cur.append(datetime.now().strftime('%d/%b/%y %H:%M'))
 
@@ -1802,16 +1786,12 @@ class HighScore:
 			BS.score.set(base.level, 'opp', ','.join(cur))
 		cur.append(datetime.now().strftime('%Y%m%d'))
 
-
-
 		aa = []
 		aa = [[0 for i in range(4)] for j in range(7)]
 
-
-
 		for i in range(6):
 			if not BS.score.has_option(base.level, 'ti' + repr(i)):
-				aa[i] = [self.fail,'1',self.fail,'0']
+				aa[i] = [self.fail, '1', self.fail, '0']
 			else:
 				aa[i] = BS.score.get(base.level, 'ti' + repr(i)).split(',')
 
@@ -1827,22 +1807,19 @@ class HighScore:
 				for i in range(6):
 					a = float(aa[i][2])
 					b = float(aa[i + 1][2])
-					if a  >= b:
+					if a >= b:
 						temp = aa[i]
 						aa[i] = aa[i + 1]
 						aa[i + 1] = temp
 
 		for i in range(6):
-			#bb = (datetime.now() - timedelta(days=(6 - i) * maxdays)).strftime('%Y%m%d')
-			#if bb >= aa[i][3]:
+			# bb = (datetime.now() - timedelta(days=(6 - i) * maxdays)).strftime('%Y%m%d')
+			# if bb >= aa[i][3]:
 			#	aa[i] = cc
 
 			BS.score.set(base.level, 'ti' + repr(i), ','.join(aa[i]))
 
-
-
 		aa = [[0 for i in range(4)] for j in range(7)]
-
 
 		for i in range(6):
 			if not BS.score.has_option(base.level, 'sc' + repr(i)):
@@ -1876,17 +1853,16 @@ class HighScore:
 		staf.save1()
 		self.display()
 
-
 	def display(self):
 		mess = ''
 		if base.skipoff == 1:
 			base.skip = BS.score.getint(base.level, 'skip', fallback=0)
 			if base.skip == 1:
 				mess = '**  SKIP Level  SKIP Level\n'
-		cur = ['','',0,'']
-		opp = ['','',0,'']
+		cur = ['', '', 0, '']
+		opp = ['', '', 0, '']
 
-		ti =  []
+		ti = []
 		ti = [[0 for i in range(4)] for j in range(8)]
 		sc = []
 		sc = [[0 for i in range(4)] for j in range(6)]
@@ -1924,15 +1900,16 @@ class HighScore:
 				mess += 'Time: ' + sc[i][2] + '   Score:' + sc[i][1] + ' - ' + sc[i][0] + '\n'
 		mess += '\n'
 
-
 		pop = PopWindow(base.screen)
 		pop.popup(mess)
 		pop.popwait(True)
 		pop.popdown()
 
+
 def wait_one_sec():
 	time.sleep(1)
 	pygame.event.get()  # Clear the event queue
+
 
 def Message(mess, no=0):
 	mes = mess
@@ -1944,6 +1921,7 @@ def Message(mess, no=0):
 	f = pop.popwait(no)
 	pop.popdown()
 	return f
+
 
 class PopWindow:
 	def __init__(self, screen):
@@ -1960,10 +1938,10 @@ class PopWindow:
 			maxwidth = max(maxwidth, obj.get_rect().width)
 			objss.append(obj)
 
-		linespacing =  base.popup_font.get_linesize()
+		linespacing = base.popup_font.get_linesize()
 		window_width = maxwidth + 40
 
-		window_height = base.popup_font.get_height()  * (len(objs) - 0)
+		window_height = base.popup_font.get_height() * (len(objs) - 0)
 		window = pygame.Surface((window_width, window_height))
 
 		self.winrect = window.get_rect()
@@ -1991,11 +1969,11 @@ class PopWindow:
 		self.screen.blit(self.backbuf, self.winrect)
 		pygame.display.update(self.winrect)
 
-	def popwait(self, flag = 0):  # 15Dec23 30Jun2026
+	def popwait(self, flag=0):  # 15Dec23 30Jun2026
 		wait_one_sec()
 		while 1:
 			www = pygame.event.poll()
-			if flag==1:
+			if flag == 1:
 				if base.skipoff == 1:
 					if www.type == KEYDOWN:
 						if www.key == K_F1:
@@ -2035,17 +2013,17 @@ class PopWindow:
 		pygame.time.wait(20)
 
 		while a == 0:
-			#base.sv = -1
+			# base.sv = -1
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					running = False
 				if event.type == KEYDOWN:
-					if event.unicode == 'a' or  event.unicode == 'A':
+					if event.unicode == 'a' or event.unicode == 'A':
 						a = 1
-					elif event.unicode == 'r' or  event.unicode == 'R':
+					elif event.unicode == 'r' or event.unicode == 'R':
 						a = 2
 
-					elif event.unicode == 't' or  event.unicode == 'T':
+					elif event.unicode == 't' or event.unicode == 'T':
 						if not BS.ex.has_section(base.level):
 							BS.ex.add_section(base.level)
 
@@ -2053,32 +2031,30 @@ class PopWindow:
 						a += 30
 						BS.ex.set(base.level, 'board_timer', str(a))
 						a = 2
-						#base.sv = base.save
-					elif event.unicode == 'y' or  event.unicode == 'Y':
+					# base.sv = base.save
+					elif event.unicode == 'y' or event.unicode == 'Y':
 						a = 4
-					elif event.unicode == 'n' or  event.unicode == 'N':
+					elif event.unicode == 'n' or event.unicode == 'N':
 						staf.lev(1)
 						a = 2
-					elif event.unicode == 'o' or  event.unicode == 'O':
+					elif event.unicode == 'o' or event.unicode == 'O':
 						a = 6
-
 
 		pygame.event.clear()
 		return a
 
 
 class Game:
-	def __init__(self, screen, in_type): # circuit, in_level:
+	def __init__(self, screen, in_type):  # circuit, in_level:
 		self.screen = screen
 		self.type = in_type
-		#self.circuit = circuit
-		#self.extra_lives = 0
+		# self.circuit = circuit
+		# self.extra_lives = 0
 		self.pop = PopWindow(self.screen)
-		self.level = 0 #in_level
+		self.level = 0  # in_level
 		self.score = 0
 		self.board = 0
 		self.gamestart = time.time()
-
 
 	def play(self):
 		# Draw the loading screen
@@ -2121,13 +2097,13 @@ class Game:
 					message = 'The launch timer has expired.'
 
 				message += '.\nR=Retry\nT=10 sec longer\nN=next\nA = Abort\n\n'
-					# '.\nPress C to continue\nPress Q to quit level\n Press N next level\n\n'
+				# '.\nPress C to continue\nPress Q to quit level\n Press N next level\n\n'
 				pop = PopWindow(base.screen)
 				pop.popup(message)
 
 				a = pop.popkeys(1)
 				pop.popdown()
-				if a == 2: #retry
+				if a == 2:  # retry
 					continue
 				if a == 5:
 					# self.level += 1
@@ -2135,7 +2111,7 @@ class Game:
 				if a != -3:
 					return a
 
-	def editplaymenu(self):   #not use maybbe later
+	def editplaymenu(self):  # not use maybbe later
 		cycle = True
 		base.sr.save()
 
@@ -2152,8 +2128,6 @@ class Game:
 				return -9
 			elif what2do == 2:  # set 0 0
 				base.sr.restore()
-
-
 
 	def editboard(self):
 		ps = BOARD_POS
@@ -2177,12 +2151,12 @@ class Game:
 		self.gline = 'g' + str(y + 1)
 		self.gline_val = BS.circuit.get(BS.section1, self.gline)
 		j = x + 1
-		for i in range(len(self.gline_val )) :
-			if self.gline_val [i] == '|':
+		for i in range(len(self.gline_val)):
+			if self.gline_val[i] == '|':
 				j -= 1
 				if j == 0:
 					break
-		self.gline_pos  = i
+		self.gline_pos = i
 		self.types = self.gline_val[i + 1]
 		self.paths = self.gline_val[i + 2]
 		self.control = self.gline_val[i + 3]
@@ -2206,25 +2180,26 @@ class Game:
 
 			#   New main menu
 			if basemenu == 1:
-				main = ('SELECT One','Pipe - Ball start','Wheel','Painter','Buffer','Filter','Teleporter',
-			            'Shredder','Replicator','Switch or Director','Trigger',
-			            'Stoplights','done')
+				main = ('SELECT One', 'Pipe - Ball start', 'Wheel', 'Painter', 'Buffer', 'Filter', 'Teleporter',
+				        'Shredder', 'Replicator', 'Switch or Director', 'Trigger',
+				        'Stoplights', 'done')
 			elif basemenu == 2:
-				main = ('TURN ON Path','Up','> Right','Down','< Left','next')
+				main = ('TURN ON Path', 'Up', '> Right', 'Down', '< Left', 'next')
 			elif basemenu == 3:
-				main = ('PICK ONE','Save', 'cancel', 'Clear')
+				main = ('PICK ONE', 'Save', 'cancel', 'Clear')
 			elif basemenu == 4:
-				main = ('PICK A COLOR','Black','White','Blue','Green','Yellow','Purple','Red','Orange')
+				main = ('PICK A COLOR', 'Black', 'White', 'Blue', 'Green', 'Yellow', 'Purple', 'Red', 'Orange')
 			elif basemenu == 5:
-				main = ('PICK A COLOR or NONE','none', 'Black','White','Blue','Green','Yellow','Purple','Red','Orange')
+				main = ('PICK A COLOR or NONE', 'none', 'Black', 'White', 'Blue', 'Green', 'Yellow', 'Purple', 'Red',
+				        'Orange')
 			elif basemenu == 6:
-				main = ('PICK A PARE','a','b','c','d','e','g')
+				main = ('PICK A PARE', 'a', 'b', 'c', 'd', 'e', 'g')
 			elif basemenu == 7:
-				main = ('Pick one, Main path', 'Up', '> Right','Down','< Left')
+				main = ('Pick one, Main path', 'Up', '> Right', 'Down', '< Left')
 			elif basemenu == 8:
-				main = ('Pick one, Second path', 'Up', '> Right','Down','< Left', 'None = Director')
+				main = ('Pick one, Second path', 'Up', '> Right', 'Down', '< Left', 'None = Director')
 			elif basemenu == 9:
-				main = ('Enter the Count','2','3','4','5','6','7','8','9')
+				main = ('Enter the Count', '2', '3', '4', '5', '6', '7', '8', '9')
 			what2do = 1
 			menu = MainMenu(self.screen, base.background2, main)
 			menu.from_top(150)
@@ -2237,24 +2212,23 @@ class Game:
 					pygame.quit()
 					sys.exit()
 
-
-		################################
+			################################
 			if basemenu == 1:
-				if what2do == 1: #pipe and where a ball starts
+				if what2do == 1:  # pipe and where a ball starts
 					self.types = ' '
 					basemenu = 2
 					sec = 5
 					thr = 7
-				elif what2do == 2: # Wheel
-					self.types =  'O'
+				elif what2do == 2:  # Wheel
+					self.types = 'O'
 					self.control = ' P1'
 					basemenu = 2
 					sec = 3
-				elif what2do == 3: # Painter
+				elif what2do == 3:  # Painter
 					self.types = '&'
 					basemenu = 2
 					sec = 4
-				elif what2do == 4: # Buffer
+				elif what2do == 4:  # Buffer
 					self.types = '@'
 					basemenu = 2
 					sec = 5
@@ -2266,16 +2240,16 @@ class Game:
 					self.types = '='  # Teleporter  does not show right or play but store is right
 					basemenu = 2
 					sec = 6
-				elif what2do == 7:    # Shredder
+				elif what2do == 7:  # Shredder
 					self.types = 'X'
 					basemenu = 2
 					sec = 3
-				elif what2do == 8:   # Replicator
+				elif what2do == 8:  # Replicator
 					self.types = '*'
 					basemenu = 2
 					sec = 9
 				elif what2do == 9:
-					self.types = '.'   # Switch
+					self.types = '.'  # Switch
 					basemenu = 2
 					sec = 7
 				elif what2do == 10:  # Trigger
@@ -2287,12 +2261,12 @@ class Game:
 					self.control = ' '
 					basemenu = 3
 
-				elif what2do == 12: # exit
+				elif what2do == 12:  # exit
 					basemenu = 3
 
 
 
-#################################################
+			#################################################
 			elif basemenu == 2:
 				if what2do == 1:
 					pone = not pone
@@ -2332,7 +2306,7 @@ class Game:
 					char_list = list(self.gline_val)
 					char_list[i] = self.types
 					char_list[i + 1] = self.paths
-					char_list[i +2] = self.control
+					char_list[i + 2] = self.control
 					self.gline_val = "".join(char_list)
 					BS.circuit.set(BS.section1, self.gline, self.gline_val)
 					with open(BS.circuitspath, 'w') as configfile:
@@ -2342,12 +2316,12 @@ class Game:
 				elif what2do == 2:
 					return
 
-####################################################################
-			elif  basemenu == 4:
+			####################################################################
+			elif basemenu == 4:
 				self.control = str(what2do - 1)
 				basemenu = 3
 
-###################################
+			###################################
 			elif basemenu == 5:
 				if what2do == 1:
 					self.control = ' '
@@ -2365,11 +2339,11 @@ class Game:
 							sec = thr
 							thr = 0
 
-#######################  does not show right or play but store is right
+			#######################  does not show right or play but store is right
 			elif basemenu == 6:
 				self.control = chr(ord('a') + (what2do - 1))
 				basemenu = 3
-#####################
+			#####################
 			elif basemenu == 7 or basemenu == 8:
 				a = 0
 
@@ -2385,7 +2359,7 @@ class Game:
 					a = ' '
 
 				if basemenu == 7:
-					if  ('0' <= self.types <= '8'):
+					if ('0' <= self.types <= '8'):
 						self.control = a
 						basemenu = 3
 					else:
@@ -2394,11 +2368,11 @@ class Game:
 				else:
 					self.control = a
 					basemenu = 3
-			elif basemenu  == 9: # Replicator
+			elif basemenu == 9:  # Replicator
 				self.control = str(what2do + 1)
 				basemenu = 3
 
-	def x_load(self, types, paths, control): #(self, circuit, level):
+	def x_load(self, types, paths, control):  # (self, circuit, level):
 		rect = pygame.Rect((350, 40, TILE_SIZE, TILE_SIZE))
 
 		base.screen.blit(base.backdrop, (0, 0))
@@ -2421,19 +2395,19 @@ class Game:
 
 		tile = 0
 		aa = 0
-		if types == 'O':  #wheel
+		if types == 'O':  # wheel
 			if not control == ' P1':
 				base.screen.blit(base.Wheel_images[0], rect)
 
 
 		elif types == '+':
-			#tile = Trigger(self.colors)
+			# tile = Trigger(self.colors)
 			base.screen.blit(base.Trigger_image, rect)
 		elif types == '!':
-			#tile = Stoplight(stoplight)
+			# tile = Stoplight(stoplight)
 			base.screen.blit(Stoplight.image, rect)
-		elif types == '&': #paint
-			#tile = Painter(pathsint, colorint)
+		elif types == '&':  # paint
+			# tile = Painter(pathsint, colorint)
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			base.screen.blit(base.Painter_images[colorint], rect)
 		elif types == '#':
@@ -2442,7 +2416,7 @@ class Game:
 			base.screen.blit(base.Filter_images[colorint], rect)
 		elif types == '@':
 			if control == ' ':
-				#tile = Buffer(pathsint)
+				# tile = Buffer(pathsint)
 				base.screen.blit(base.Tile_tunnels[pathsint], rect)
 				base.screen.blit(base.Buffer_top, rect)
 				base.screen.blit(base.Buffer_bottom, rect)
@@ -2450,22 +2424,22 @@ class Game:
 				base.screen.blit(base.Tile_tunnels[pathsint], rect)
 				base.screen.blit(base.Buffer_top, rect)
 				base.screen.blit(base.Filter_images[colorint], rect)
-				#tile = Buffer(pathsint, colorint)
+		# tile = Buffer(pathsint, colorint)
 		elif types == ' ' or ('0' <= types <= '8'):
 			base.screen.blit(base.Tile_plains[pathsint], rect)
 			if self.types != ' ':
 				base.screen.blit(base.marble_images[int(self.types)], rect.center)
-			#tile = Tile(pathsint)
+		# tile = Tile(pathsint)
 		elif types == 'X':
-			#tile = Shredder(pathsint)
+			# tile = Shredder(pathsint)
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			base.screen.blit(Shredder.image, rect)
 		elif types == '*':
-			#tile = Replicator(pathsint, colorint)
+			# tile = Replicator(pathsint, colorint)
 			base.screen.blit(base.Tile_tunnels[pathsint], rect)
 			base.screen.blit(Replicator.image, rect)
 			text = base.info_font.render(' ' + self.control + ' ', True, pygame.Color(
-			'white'), pygame.Color('blue'))
+				'white'), pygame.Color('blue'))
 			base.screen.blit(text, rect)
 
 		elif types == '^' or types == '>' or types == '<' or types == 'v':
@@ -2481,7 +2455,7 @@ class Game:
 				elif types == 'v':
 					aa = 2
 				base.screen.blit(base.Director_images[aa], rect)
-			else: # Switch
+			else:  # Switch
 				aa = 0
 				if types == '^':
 					aa = 0
@@ -2577,8 +2551,10 @@ def play_sound(mixersound):
 	if base.sound_on:
 		mixersound.play()
 
+
 def play_sound1(mixersound):
 	mixersound.play()
+
 
 #  STATIC Function 29 Sep 2020
 # Load all the images for the various game classes.
@@ -2665,15 +2641,15 @@ class MainLoop:
 		pygame.display.set_caption(
 			'April Two moving balls -- Version ' + VersionPF.number + ' ' + VersionPF.date + '  ' + VersionPF.text)
 
-		base.sound_on = BS.ex.getboolean('sys',"Effect", fallback=True) # True
-		base.music_on = BS.ex.getint('sys',"Music", fallback=0)  # 1  # 0 off, 1 fur elise, 2 normal
-		base.background_on = BS.ex.getint('sys',"Background", fallback=0)  # 0 off, 1 fur elise, 2 normal
+		base.sound_on = BS.ex.getboolean('sys', "Effect", fallback=True)  # True
+		base.music_on = BS.ex.getint('sys', "Music", fallback=0)  # 1  # 0 off, 1 fur elise, 2 normal
+		base.background_on = BS.ex.getint('sys', "Background", fallback=0)  # 0 off, 1 fur elise, 2 normal
 		base.board_time_sw = BS.ex.getint('sys', "board_time_sw", fallback=True)
 		base.sr = SRscreen(base.screen)
 		base.skipoff = BS.ex.getint('sys', "skipoff", fallback=0)
 
 		# self.mu = Music()
-		#base()
+		# base()
 		Sound()
 		Font()
 		Images()
@@ -2686,18 +2662,15 @@ class MainLoop:
 		if base.colorblind:
 			base.cbext = '-cb.png'
 
-
 	def ExitGame(self):
 		staf.save()
-
-
 
 	def mainloop(self):
 		cycle = True
 		while cycle:
-		#   New main menu
-			mainmenu = 'Serial Level','Radom Level', 'Exit', 'Options','Edit'
-		# no option
+			#   New main menu
+			mainmenu = 'Serial Level', 'Radom Level', 'Exit', 'Options', 'Edit'
+			# no option
 			menu_music()
 			menu = TheMenu(self.screen, base.background, mainmenu, '')
 
@@ -2709,7 +2682,7 @@ class MainLoop:
 				return
 			elif what2do == 1:
 				background_music()
-				game = Game(self.screen, 0) #'all-boards', base.set_level
+				game = Game(self.screen, 0)  # 'all-boards', base.set_level
 				a = game.play()
 				if a == -4:
 					self.ExitGame()
@@ -2738,10 +2711,10 @@ class MainLoop:
 
 	def menu_opt(self):
 		opti_text = ("", "Off|Fur Elise|Normal", "Off|Fur Elise|Normal",
-					 "Off|On", "Off|On", 'Off|On', "")
+		             "Off|On", "Off|On", 'Off|On', "")
 		while 1:
 			menu_text = ("Main menu", "Music: ", "Back Music: ",
-						 "Effect Sounds: ", "Board timeout: ",  'Skip Level:', "Editor (not fuctional)")
+			             "Effect Sounds: ", "Board timeout: ", 'Skip Level:', "Editor (not fuctional)")
 			menu = TheMenu(self.screen, base.background, menu_text, opti_text)
 			menu.from_top(100)
 
@@ -2764,6 +2737,7 @@ class MainLoop:
 				pygame.mixer.music.stop()
 				edi = Editor(self.screen)
 				menu_music()
+
 
 class ScrollText:
 	def __init__(self, screen, textimage, y, speed, offset=10):
@@ -2792,7 +2766,7 @@ class ScrollText:
 
 class TheMenu(MainMenu):
 	def __init__(self, in_screen, in_background, in_menu_text, in_option, id=False):
-		a =	MainMenu.__init__(self, in_screen, in_background, in_menu_text, in_option)
+		a = MainMenu.__init__(self, in_screen, in_background, in_menu_text, in_option)
 		self.first = 0
 		self.second = 0
 		self.sound = base.menu_scroll
@@ -2808,11 +2782,10 @@ class TheMenu(MainMenu):
 		elif index == 4:
 			return base.sound_on  # True False
 		elif index == 5:
-			return base.board_time_sw # True False
+			return base.board_time_sw  # True False
 		elif index == 6:
 			return BS.ex.getint('sys', "Skipoff", fallback=0)
 		return 0
-
 
 	def out_options(self, vdata, index):  # must override if options are used
 		"""
@@ -2821,20 +2794,20 @@ class TheMenu(MainMenu):
 		"""
 		if index == 2:
 			base.music_on = vdata
-			BS.ex.set('sys',"Music",str(base.music_on))
+			BS.ex.set('sys', "Music", str(base.music_on))
 			menu_music()
 		elif index == 3:
 			base.background_on = vdata
-			BS.ex.set('sys',"Background", str(base.background_on))
+			BS.ex.set('sys', "Background", str(base.background_on))
 		elif index == 4:
 			base.sound_on = vdata  # True False
-			BS.ex.set('sys',"Effect", str(base.sound_on))
+			BS.ex.set('sys', "Effect", str(base.sound_on))
 		elif index == 5:
 			base.board_time_sw = vdata  # True False
-			BS.ex.set('sys',"board_time_sw", str(base.board_time_sw))
+			BS.ex.set('sys', "board_time_sw", str(base.board_time_sw))
 		elif index == 6:
 			base.skipoff = vdata
-			BS.ex.set('sys',"skipoff", str(base.skipoff))
+			BS.ex.set('sys', "skipoff", str(base.skipoff))
 
 	def select_extra(self):
 		self.sound.play()
@@ -2851,20 +2824,21 @@ class TheMenu(MainMenu):
 
 		text = font.render(
 			"Copyright © 2020-22 2024-26  Phillip Forrestal   Version: " + ver.number + " " + ver.date + " " + ver.text +
-			" - Conversion for pygame " + f"{pygame.version.ver}" + " SDL  " +  f'{pygame.version.SDL}'
-			+ " , Python (" + f"{sys.version_info.major}" + '.' + f"{sys.version_info.minor}" + ")    ", 1, (40, 40, 40))
+			" - Conversion for pygame " + f"{pygame.version.ver}" + " SDL  " + f'{pygame.version.SDL}'
+			+ " , Python (" + f"{sys.version_info.major}" + '.' + f"{sys.version_info.minor}" + ")    ", 1,
+			(40, 40, 40))
 		self.second = ScrollText(self.screen, text, y, 2)
 
 		y = 525
 		font = pygame.font.SysFont('arial', 20)
 		text = font.render("Copyright © 2003  John-Paul Gignac. Version 1.13    Soundtrack by Matthias Le Bidan.    "
-						   "Board designs contributed by Mike Brenneman and Kim Gignac.    "
-						   "To contribute your own board designs, see the website:    "
-						   "http://pathological.sourceforge.net/    "
-						   "Logo by Carrie Bloomfield.    Other graphics based on artwork by Mike Brenneman.    "
-						   "Project motivated by Paul Prescod.    Thanks to all my friends who helped make this project a success!    "
-						   "This program is free software; you can redistribute it and/or modify it under the terms of "
-						   "the GNU General Public License.  See the LICENSE file for details.", 1, (60, 60, 60))
+		                   "Board designs contributed by Mike Brenneman and Kim Gignac.    "
+		                   "To contribute your own board designs, see the website:    "
+		                   "http://pathological.sourceforge.net/    "
+		                   "Logo by Carrie Bloomfield.    Other graphics based on artwork by Mike Brenneman.    "
+		                   "Project motivated by Paul Prescod.    Thanks to all my friends who helped make this project a success!    "
+		                   "This program is free software; you can redistribute it and/or modify it under the terms of "
+		                   "the GNU General Public License.  See the LICENSE file for details.", 1, (60, 60, 60))
 		self.first = ScrollText(self.screen, text, y, 3)
 
 		# Title
@@ -2887,13 +2861,13 @@ class Options:
 		base.screenshot = 0
 		base.fullscreen = 0
 		base.colorblind = 1
-		base.cbext = '.png' #  	base.cbext = '-cb.png'
+		base.cbext = '.png'  # base.cbext = '-cb.png'
 		#	base.sound_on =  1  # True
 		# base.music_on = 1  # 1  # 0 off, 1 fur elise, 2 normal
 		# base.background_on = 2  # 0 off, 1 fur elise, 2 normal
 		base.music_loaded = 0
 		#  base.write_highscores = "highscores"
-		base.set_level = 0 # 1st level
+		base.set_level = 0  # 1st level
 
 
 class MusicItem:
@@ -2949,12 +2923,10 @@ class SRscreen:
 		base.background2 = 0
 		self.winrect = 0
 
-
 	def save(self):
 		self.winrect = self.screen.get_rect()
 		base.background2 = pygame.Surface(self.winrect.size).convert()
 		base.background2.blit(self.screen, (0, 0), self.winrect)
-
 
 	def restore(self):
 		self.screen.blit(base.background2, self.winrect)
@@ -2973,7 +2945,7 @@ class Editor():
 		staf.save()
 
 		base.edit_act = True
-		base.edit_play= False
+		base.edit_play = False
 		self.screen = screen
 
 		self.test = 'test'
@@ -3011,9 +2983,8 @@ class Editor():
 		with open(BS.circuitspath, 'w') as configfile:
 			BS.circuit.write(configfile, False)
 
-
 	def read_level(self):
-		self.tname= BS.circuit.get('test', 'name', fallback='test')
+		self.tname = BS.circuit.get('test', 'name', fallback='test')
 		self.tversion = BS.circuit.get('test', 'version', fallback='2.0')
 		self.tscore = BS.circuit.get('test', 'score', fallback='')
 		self.tauthor = BS.circuit.get('test', 'author', fallback='PRF')
@@ -3023,7 +2994,7 @@ class Editor():
 		self.tcolors = BS.circuit.get('test', 'colors', fallback=DEFAULT_COLORS)
 		self.tstoplight = BS.circuit.get('test', 'stoplight', fallback=DEFAULT_STOPLIGHT)
 
-	def write_level(self, temp, a = 'test', nw = 0):
+	def write_level(self, temp: object, a='test', nw=0):
 		temp.set(a, 'name', self.tname)
 		temp.set(a, 'version', self.tversion)
 		temp.set(a, 'score', self.tscore)
@@ -3065,31 +3036,26 @@ class Editor():
 			temp.set(a, 'colors', self.tcolors)
 
 		flag = True
-		if base.stoplight:
-			dd = DEFAULT_STOPLIGHT
-			color = self.tstoplight
-			for i in range(len(color)):
-				if colors[i].isdecimal():
-					if colors[i] in dd:
-						dd = dd.replace(colors[i], '', 1)
-					else:
-						flag = False
-						break
-			if not dd == '':
-				flag = False
+
+		dd = DEFAULT_STOPLIGHT
+		color = self.tstoplight
+		for i in range(len(color)):
+			if colors[i].isdecimal():
+				if colors[i] in dd:
+					dd = dd.replace(colors[i], '', 1)
+				else:
+					flag = False
+					break
+		if not dd == '':
+			flag = False
 		if flag:
 			if temp.has_option(a, 'stoplight'):
 				temp.remove_option(a, 'stoplight')
 		else:
 			temp.set(a, 'stoplight', self.tstoplight)
 
-
-
-
-	def doedit(self ):
+	def doedit(self):
 		self.editmenu()
-		#self.save_level()
-
 		exit()
 
 	# Each tile consists of three characters:  A tile type, a path descriptor
@@ -3145,16 +3111,16 @@ class Editor():
 				sl = 'Not Used'
 
 			opmenu = ('Main MENU -- 0 = default',
-			    'level Name: ' + self.tname,
-				'Score: ' + self.tscore,'Author: ' + self.tauthor,
-		        'Max active marbles [default: 10] ' + self.tmaxmarbles,
-			    'Launch Timer [default: 6] ' + self.tlaunchtimer,
-			    'Board Timer [default: 30 * ' + str(base.numwheels) + ' (' +
-			    str(30 * base.numwheels) + ')] ' +  self.tboardtimer,
-			    'colors [default: 2,3,4,6] ' + self.tcolors,
-			    'stoplight [default: 6,4,3] ' + sl)
+			          'level Name: ' + self.tname,
+			          'Score: ' + self.tscore, 'Author: ' + self.tauthor,
+			          'Max active marbles [default: 10] ' + self.tmaxmarbles,
+			          'Launch Timer [default: 6] ' + self.tlaunchtimer,
+			          'Board Timer [default: 30 * ' + str(base.numwheels) + ' (' +
+			          str(30 * base.numwheels) + ')] ' + self.tboardtimer,
+			          'colors [default: 2,3,4,6] ' + self.tcolors,
+			          'stoplight [default: 6,4,3] ' + sl)
 
-			menu = MainMenu( self.screen, base.background, opmenu)
+			menu = MainMenu(self.screen, base.background, opmenu)
 			menu.from_top(10)
 			menu.draw_menu()  # Menu line to start
 			what2do = menu.select()
@@ -3163,27 +3129,19 @@ class Editor():
 				cycle = False
 			elif what2do == 2:
 				self.tname = menu.key_input(self.tname)
-				#BS.circuit.set(self.circuit, 'name', self.tsname)
-			elif what2do == 3: # score
+			elif what2do == 3:  # score
 				self.tscore = menu.key_input(self.tscore)
-				#BS.circuit.set(self.circuit, 'score', self.tscore)
-			elif what2do == 4:	# author
+			elif what2do == 4:  # author
 				self.tauthor = menu.key_input(self.tauthor)
-				#BS.circuit.set(self.circuit, 'author', author)
-			elif what2do == 5: # maxmarbles
+			elif what2do == 5:  # maxmarbles
 				self.tmaxmarbles = menu.key_input(self.tmaxmarbles, True)
-				#BS.circuit.set(self.circuit, 'maxmarbles', maxmarbles)
 			elif what2do == 6:
 				self.tlaunchtimer = menu.key_input(self.tlaunchtimer, True)
-				#BS.circuit.set(self.circuit, 'launchtimer', launchtimer)
 			elif what2do == 7:
 				self.tboardtimer = menu.key_input(self.tboardtimer, True)
-				#BS.circuit.set(self.circuit, 'boardtimer', boardtimer)
 			elif what2do == 8 or (base.stoplight and what2do == 9):
 				self.tcolors, self.tstoplight = self.color_menu(self.tcolors, self.tstoplight, base.stoplight)
-				pass
-				#BS.circuit.set(self.circuit, 'colors', colors)
-				#BS.circuit.set(self.circuit, 'stoplight', stoplight)
+
 			self.write_level(BS.circuit)
 
 	def editmenu(self):
@@ -3191,9 +3149,9 @@ class Editor():
 
 		while cycle:
 			#   New main menu
-			mainmenu = ('Editor Menu','Transfer level', 'Map Options', 'Exit Program', 'Show', 'Play')
+			mainmenu = ('Editor Menu', 'Transfer level', 'Map Options', 'Exit Program', 'Show', 'Play')
 			# no option
-			menu = MainMenu(self.screen, base.background, mainmenu )
+			menu = MainMenu(self.screen, base.background, mainmenu)
 			menu.from_top(100)
 
 			menu.draw_menu()  # Menu line to start
@@ -3219,7 +3177,6 @@ class Editor():
 
 		sys.exit
 
-
 	def transfer_menu(self):
 
 		cycle = True
@@ -3232,7 +3189,7 @@ class Editor():
 				a = 'Transfer From Main or New: ' + self.level
 			mainmenu = ('Transfer level menu', a,
 			            'Clear level',
-			           'Transfer to NEW end', 'Exit Transfer')
+			            'Transfer to NEW end', 'Exit Transfer')
 			# no option
 			menu = MainMenu(self.screen, base.background, mainmenu)
 			menu.from_top(100)
@@ -3255,7 +3212,7 @@ class Editor():
 				if lv == 0:  # will the source
 					continue
 
-				a = (BS.circuit.sections())  #testlvs
+				a = (BS.circuit.sections())  # testlvs
 				for i in a:
 					BS.circuit.remove_section(i)
 				BS.circuit.add_section("test")
@@ -3280,27 +3237,10 @@ class Editor():
 				game.play()
 
 				self.read_level()
-				#name = BS.circuit.get(self.circuit, 'name')
-				#tsversion = BS.circuit.get(self.circuit, 'version', fallback='2.0')
-				#score1 = BS.circuit.get(self.circuit, 'score')
-				#author = BS.circuit.get(self.circuit, 'author')
-				#maxmarbles = BS.circuit.get(self.circuit, 'maxmarbles', fallback='0') # 10
-				#launchtimer = BS.circuit.get(self.circuit, 'launchtimer', fallback='0') #6
-				#boardtimer = BS.circuit.get(self.circuit, 'boardtimer', fallback='0')
-				#colors = BS.circuit.get(self.circuit, 'colors', fallback=DEFAULT_COLORS)
-				#stoplight = BS.circuit.get(self.circuit, 'stoplight', fallback=DEFAULT_STOPLIGHT)
-				#g1 = BS.circuit.get(self.circuit, 'g1')
 				g = []
 				for i in range(6):
 					g.append(BS.circuit.get('test', 'g' + str(i + 1)))
-				'''
-				g1 = BS.circuit.get('test', 'g1')
-				g2 = BS.circuit.get('test', 'g2')
-				g3 = BS.circuit.get('test',  'g3')
-				g4 = BS.circuit.get('test',  'g4')
-				g5 = BS.circuit.get('test',  'g5')
-				g6 = BS.circuit.get('test',  'g6')
-				'''
+
 				f = True
 				temp = configparser.ConfigParser()
 				tempfile = os.path.join('circuits', 'levels')
@@ -3316,63 +3256,16 @@ class Editor():
 				if f:
 					if temp.has_section(self.tscore):
 						play_sound1(base.incorrect)
-						f = Message('Score IS NOT unique to NEW\n Over write: ', 3) #ask
+						f = Message('Score IS NOT unique to NEW\n Over write: ', 3)  # ask
 						if f:
 							temp.remove_section(self.tscore)
 				if f:
 					temp.add_section(self.tscore)
-					self.write_level( temp,self.tscore, base.numwheels )
-					'''
-					temp.set(self.tscore, 'name', name)
-					temp.set(score1,'version', tsversion)
-					temp.set(score1,'score', score1)
-					temp.set(score1,'author', author)
-					if int(maxmarbles) >= 0 or maxmarbles == '10': # default
-						if temp.has_option(score1,'maxmarbles'):
-							temp.remove_option(score1,'maxmarbles')
-					else:
-						temp.set(score1,'maxmarbles', maxmarbles)
+					self.write_level(temp, self.tscore, base.numwheels)
 
-					if int(launchtimer) >= 0 or launchtimer == '10': # default
-						if temp.has_option(score1, 'launchtimer'):
-							temp.remove_option(score1,'launchtimer')
-					else:
-						temp.set(score1,'launchtimer', launchtimer)
-
-					if int(boardtimer) >= 0:  # default
-						if temp.has_option(score1, 'boardtimer'):
-							temp.remove_option(score1, 'boardtimer')
-					else:
-						temp.set(score1,'boardtimer', boardtimer)
-					dd = DEFAULT_COLORS
-					flag = True
-					for i in range(len(colors)):
-						if colors[i].isdecimal():
-							if colors[i] in dd:
-								dd = dd.replace(colors[i], '', 1)
-							else:
-								flag = False
-								break
-					if not dd == '':
-						flag = False
-					if flag:
-						if temp.has_option(score1, 'colors'):
-							temp.remove_option(score1, 'colors')
-					else:
-						temp.set(score1,'colors', colors)
-					if (base.stoplight):
-						temp.set(score1,'stoplight', stoplight)
-					'''
 					for i in range(6):
-						temp.set(self.tscore,'g' + str(i + 1), g[i])
-					'''
-					temp.set(score1,'g1', g1)
-					temp.set(score1,'g2', g2)
-					temp.set(score1,'g3', g3)
-					temp.set(score1,'g4', g4)
-					temp.set(score1,'g5', g5)
-					temp.set(score1,'g6', g6)
-					'''
+						temp.set(self.tscore, 'g' + str(i + 1), g[i])
+
 					with open(tempfile, 'w') as configfile:
 						temp.write(configfile, False)
 					temp = tempfile = None
@@ -3383,7 +3276,7 @@ class Editor():
 			elif what2do == 5:
 				cycle = False
 
-	def color_menu(self, col, sto, flag ):
+	def color_menu(self, col, sto, flag):
 		opti_text = [""]
 		for i in range(8):
 			if flag:
@@ -3403,7 +3296,7 @@ class Editor():
 					if char.isdigit():  # Check if the character is a number
 						ss += char
 
-			for i in range(len(col)): # n, n n = color
+			for i in range(len(col)):  # n, n n = color
 				a = col[i]
 				if a.isdigit():
 					base.ccc[int(a)] = ss.find(a) + 2
@@ -3437,15 +3330,12 @@ class Editor():
 
 class The1Menu(MainMenu):
 	def __init__(self, in_screen, in_background, in_menu_text, in_option, id=False):
-		a =	MainMenu.__init__(self, in_screen, in_background, in_menu_text, in_option)
-
+		a = MainMenu.__init__(self, in_screen, in_background, in_menu_text, in_option)
 
 	def in_options(self, index):  # must override if options are used
 		a = index - 2
 		if 0 <= a <= 8:
 			return base.ccc[a]
-
-
 
 	def out_options(self, vdata, index):  # must override if options are used
 		"""
@@ -3454,7 +3344,7 @@ class The1Menu(MainMenu):
 		"""
 		a = index - 2
 		if 0 <= a <= 9:
-			#base.ccc.insert(a,vdata)
+			# base.ccc.insert(a,vdata)
 			base.ccc[a] = vdata
 			pass
 
