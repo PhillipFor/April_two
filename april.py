@@ -1,10 +1,7 @@
-from dataclasses import replace
-
-
 class VersionPF:
-	number = "3.06"
-	date = '24 JUL 26'
-	text = 'Editor'
+	number = "3.08"
+	date = '25 JUL 26'
+	text = 'Board and launchtimer more at falure'
 
 
 """
@@ -16,10 +13,10 @@ Version 3, 29 June 2007
 
 to do:
 retry,+1 on launchtimer
-kill 10 on boardtimer
-make fail on skip and a delay on 1st, no pause on 2nd
 
 ::Version
+3.07 25 Jul 26 Skip delay 
+3.06 24 Jul 26 Editor
 3.05 6 Jul 2026 Color
 3.04 29 Jun 2026 1 Jul 26 skip maps which a to hard or easy 
 3.03 25 Jun - 28 Jun 2026 options
@@ -175,6 +172,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import os
 import pygame
 from pygame.locals import *
+from dataclasses import replace
 
 import sys
 import time
@@ -357,6 +355,7 @@ class BS:
 	def read1(self):
 		BS.score.read(self.scorefile)
 
+
 # 24 Apr 24 Score
 
 
@@ -364,6 +363,7 @@ staf = BS()
 
 
 class base:
+	atime = 0
 	check = False  # editor
 	stoplight = False
 	ccc = []
@@ -1692,19 +1692,13 @@ class Board:
 							return 2
 						elif event.key == ord('b'):
 							return 3
+			base.atime = 5
 			hi = HighScore(self.game.score)
 			hi.display()
-			# base.transfer = [] # = base.scfilename  # set only here used in editor and set skip
-			# a = BS.circuit.options(BS.section1)
 			b = base.level
-		# for i in range(len(a)):
-		#	b = a[i]
-		#	c = BS.circuit.get(BS.section1,b)
-		#	base.transfer.append([[b],[c]])
-		# pass
-		# Game Loop
+
 		base.gameloop = 0  # time to  play the game
-		sptime = 10 * FRAMES_PER_SEC
+		sptime = 5 * FRAMES_PER_SEC
 
 		clock = pygame.time.Clock()
 		self.board_complete = base.skip
@@ -1750,6 +1744,10 @@ class Board:
 		if base.edit_act:
 			return -9
 		# Play the end sound
+		if base.skip:
+			hi = HighScore(-1)
+			hi.start()
+			return self.board_complete
 		self.count_holes()
 		if self.board_complete > 0:
 			play_sound(base.levelfinish)
@@ -1766,7 +1764,6 @@ class HighScore:
 	def __init__(self, flag):
 		self.fail = '99999'
 		self.flag = flag
-		cycle = 6
 
 	def start(self):
 		maxdays = 28
@@ -1851,6 +1848,7 @@ class HighScore:
 			BS.score.set(base.level, 'sc' + repr(i), ','.join(aa[i]))
 
 		staf.save1()
+		base.atime = 0
 		self.display()
 
 	def display(self):
@@ -1971,10 +1969,15 @@ class PopWindow:
 
 	def popwait(self, flag=0):  # 15Dec23 30Jun2026
 		wait_one_sec()
+		skt = (time.time() + base.atime  )
 		while 1:
 			www = pygame.event.poll()
 			if flag == 1:
 				if base.skipoff == 1:
+					if base.skip:
+						if time.time() > skt:
+							break
+
 					if www.type == KEYDOWN:
 						if www.key == K_F1:
 							if base.skip == 0:
@@ -2938,6 +2941,7 @@ class Editor():
 	9 Dec 2025
 	redo 22Jul26
 	"""
+
 	def __init__(self, screen):
 		self.level = base.level
 		if base.level is None:
