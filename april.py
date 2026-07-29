@@ -1,8 +1,7 @@
 class VersionPF:
 	number = "3.08"
-	date = '25 JUL 26'
-	text = 'Board and launchtimer more at falure'
-
+	date = '29 JUL 26'
+	text = 'Esc lrvels'
 
 """
 Copyright Phillip Forrestal 2020-2026 Got sick in 2022, came back home in 2024
@@ -12,9 +11,11 @@ Version 3, 29 June 2007
 
 
 to do:
+Board and launchtimer more at falure
 retry,+1 on launchtimer
 
 ::Version
+3.08 29 Jul 26 add delay if failure
 3.07 25 Jul 26 Skip delay 
 3.06 24 Jul 26 Editor
 3.05 6 Jul 2026 Color
@@ -342,6 +343,8 @@ class BS:
 		elif type1 == 2:
 			ed_list = self.circuit.sections()
 			a = ed_list[0]
+		set_launch_timer_ex = 0
+		set_board_timer_ex = 0
 		return a
 
 	def save(self):
@@ -361,8 +364,27 @@ class BS:
 
 staf = BS()
 
+def wait_one_sec():
+	time.sleep(1)
+	pygame.event.get()  # Clear the event queue
+
+def Message(mess, no=0):
+	mes = mess
+	pop = PopWindow(base.screen)
+	if no == 3:
+		mes = mes + ' Yes  No/mouse'
+	mes = mes + '\n\n'
+	pop.popup(mes)
+	f = pop.popwait(no)
+	pop.popdown()
+	return f
 
 class base:
+	lkl = 0
+	lkb = 0
+	lk = 0
+	set_launch_timer_ex = 0
+	set_board_timer_ex = 0
 	atime = 0
 	check = False  # editor
 	stoplight = False
@@ -1384,6 +1406,7 @@ class Board:
 		pygame.display.update(dirty_rects)
 		pass
 
+
 	def count_holes(self):
 		time.sleep(1)
 		base.total_holes = 0
@@ -1422,14 +1445,6 @@ class Board:
 		self.launch_timeout_start = (MARBLE_SIZE + (HORIZ_TILES * TILE_SIZE - MARBLE_SIZE) * passes) / MARBLE_SPEED
 		self.launch_timer_height = None
 
-	def set_board_timer(self, seconds, sect):
-		a = 0
-		if BS.ex.has_section(base.level):
-			a = BS.ex.getint(sect, 'board_timer')
-		# a = BS.ex.add_section(base.level)
-		self.board_timer = seconds + a
-		self.board_timeout_start = (seconds + a) * FRAMES_PER_SEC
-		self.board_timeout = self.board_timeout_start
 
 	def launch_marble(self):
 		self.launch_queue.append(random.choice(self.colors))
@@ -1523,7 +1538,11 @@ class Board:
 		self.name = lv.get(section1, 'name')
 		base.scfilename = lv.get(section1, 'score', fallback=section1)
 		self.live_marbles_limit = lv.getint(section1, 'maxmarbles', fallback=10)
-		self.set_launch_timer(lv.getint(section1, 'launchtimer', fallback=DEFAULT_LAUNCH_TIMER))
+		self.set_launch_timer = (lv.getint(section1, 'launchtimer', fallback=DEFAULT_LAUNCH_TIMER))
+		base.set_launch_timer_ex += base.set_launch_timer_ex + (base.lk * base.lkl)
+		self.set_launch_timer += base.set_launch_timer_ex
+		self.launch_timer = self.set_launch_timer
+
 		boardtimer = lv.getint(section1, 'boardtimer', fallback=-1)
 		a = lv.get(section1, 'colors', fallback=DEFAULT_COLORS)
 		self.colors = []
@@ -1652,7 +1671,14 @@ class Board:
 
 		if boardtimer <= 0:
 			boardtimer = DEFAULT_BOARD_TIMER * base.numwheels
-		self.set_board_timer(boardtimer, section1)
+		a = lv.getint(section1, 'board_timer',fallback=boardtimer)
+		seconds = 0 #fug
+		self.board_timer = seconds + a
+		self.board_timeout_start = (seconds + a) * FRAMES_PER_SEC
+		self.board_timeout = self.board_timeout_start
+		base.set_board_timer_ex += (base.lk * base.lkb)
+		aa = self.board_timeout_start / 10
+		self.board_timeout += base.set_board_timer_ex * aa
 
 		return 1
 
@@ -1688,6 +1714,8 @@ class Board:
 					if event.type == MOUSEBUTTONDOWN:
 						a = False
 					elif event.type == KEYDOWN:
+						if event.key == K_ESCAPE:
+							return -3
 						if event.key == ord('n'):
 							return 2
 						elif event.key == ord('b'):
@@ -1896,29 +1924,9 @@ class HighScore:
 				else:
 					sc[i][2] = convert1(int(float(sc[i][2])))
 				mess += 'Time: ' + sc[i][2] + '   Score:' + sc[i][1] + ' - ' + sc[i][0] + '\n'
-		mess += '\n'
-
-		pop = PopWindow(base.screen)
-		pop.popup(mess)
-		pop.popwait(True)
-		pop.popdown()
+		Message(mess)
 
 
-def wait_one_sec():
-	time.sleep(1)
-	pygame.event.get()  # Clear the event queue
-
-
-def Message(mess, no=0):
-	mes = mess
-	pop = PopWindow(base.screen)
-	if no == 3:
-		mes = mes + ' Yes  No/mouse'
-	mes = mes + '\n\n'
-	pop.popup(mes)
-	f = pop.popwait(no)
-	pop.popdown()
-	return f
 
 
 class PopWindow:
@@ -1998,53 +2006,27 @@ class PopWindow:
 					elif www.key == K_n:
 						return False
 
+			elif flag == 4:
+				base.lk = 0
+				if www.type == KEYDOWN:
+					a =  0
+					if www.key == K_a:
+						a = 1
+					elif www.key == K_r:
+						a = 2
+					elif www.key == K_l:
+						base.lk = 1
+						a = 2
+					if a != 0:
+						return a
+
 			if www.type == MOUSEBUTTONDOWN:
 				break
 		pygame.event.clear()
 		return False
 
-	def popkeys(self, keycode=0):
-		"""
-		keycode = 1
-			q = quit - return 1 menu
-			r = restart -
-			c = continue -
-						rc = self.board_dialog(message + '\nGame Over.\nClick to continue', rc != -3) # menu
-					return rc # rc = 1
-		"""
-		a = 0
-		pygame.time.wait(20)
 
-		while a == 0:
-			# base.sv = -1
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					running = False
-				if event.type == KEYDOWN:
-					if event.unicode == 'a' or event.unicode == 'A':
-						a = 1
-					elif event.unicode == 'r' or event.unicode == 'R':
-						a = 2
 
-					elif event.unicode == 't' or event.unicode == 'T':
-						if not BS.ex.has_section(base.level):
-							BS.ex.add_section(base.level)
-
-						a = BS.ex.getint(base.level, 'board_timer', fallback=0)
-						a += 30
-						BS.ex.set(base.level, 'board_timer', str(a))
-						a = 2
-					# base.sv = base.save
-					elif event.unicode == 'y' or event.unicode == 'Y':
-						a = 4
-					elif event.unicode == 'n' or event.unicode == 'N':
-						staf.lev(1)
-						a = 2
-					elif event.unicode == 'o' or event.unicode == 'O':
-						a = 6
-
-		pygame.event.clear()
-		return a
 
 
 class Game:
@@ -2093,18 +2075,24 @@ class Game:
 			if rc < 0:
 				# The board was not completed
 				if rc == -3:
-					message = 'Level Aborted.'
-				elif rc == -2:
+					return -3
+
+				if rc == -2:
 					message = 'The board timer has expired.'
+					mmm = 'board timer 10%'
+					base.lk = 0
+					base.lkb = 1
 				else:
 					message = 'The launch timer has expired.'
-
-				message += '.\nR=Retry\nT=10 sec longer\nN=next\nA = Abort\n\n'
+					mmm = 'launch timer 1 count'
+					base.lkb = 0
+					base.lkl = 1
+				message += '.\nR=Retry\nL= Retry. The ' + mmm + ' longer\nN=next\nA = Abort\n\n'
 				# '.\nPress C to continue\nPress Q to quit level\n Press N next level\n\n'
+
 				pop = PopWindow(base.screen)
 				pop.popup(message)
-
-				a = pop.popkeys(1)
+				a = pop.popwait(4)
 				pop.popdown()
 				if a == 2:  # retry
 					continue
@@ -2114,23 +2102,6 @@ class Game:
 				if a != -3:
 					return a
 
-	def editplaymenu(self):  # not use maybbe later
-		cycle = True
-		base.sr.save()
-
-		while cycle:
-			#   New main menu
-			mainmenu = ('Return to Edit Menu', 'Set 0,0', '')
-			# no option
-			menu = MainMenu(self.screen, base.background2, mainmenu)  # base.background
-			menu.from_top(100)
-
-			menu.draw_menu()  # Menu line to start
-			what2do = menu.select()
-			if what2do == 1:
-				return -9
-			elif what2do == 2:  # set 0 0
-				base.sr.restore()
 
 	def editboard(self):
 		ps = BOARD_POS

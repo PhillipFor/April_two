@@ -228,7 +228,7 @@ class MainMenu:
 			for event in pygame.event.get():
 				if event.type is QUIT:
 					return -1
-				elif event.type == KEYDOWN:   #  ~~~~~~~~~~~~~~~ need override to turn off  THINK ABOUT 0A15
+				elif event.type == KEYDOWN:
 					if event.key == K_ESCAPE:
 						return -2
 
