@@ -1,6 +1,6 @@
 class VersionPF:
-	number = "3.08"
-	date = '29 JUL 26'
+	number = "3.09"
+	date = '30 JUL 26'
 	text = 'Esc lrvels'
 
 """
@@ -8,11 +8,6 @@ Copyright Phillip Forrestal 2020-2026 Got sick in 2022, came back home in 2024
 Program name: april two
 GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
-
-
-to do:
-Board and launchtimer more at falure
-retry,+1 on launchtimer
 
 ::Version
 3.08 29 Jul 26 add delay if failure
@@ -343,8 +338,7 @@ class BS:
 		elif type1 == 2:
 			ed_list = self.circuit.sections()
 			a = ed_list[0]
-		set_launch_timer_ex = 0
-		set_board_timer_ex = 0
+
 		return a
 
 	def save(self):
@@ -451,6 +445,7 @@ class base:
 	marble_images = None
 	set_level = 0
 	level = None
+	level_cmp = -1
 
 	# Score 14 Dec 23
 	scfilename = None
@@ -1179,6 +1174,11 @@ class Board:
 		self.tiles = [[0] * HORIZ_TILES for i in range(VERT_TILES)]  # Added 2 Jul 2020
 
 		base.level = staf.lev(0, game.type)
+		if base.level != base.level_cmp:  #check if level change
+			base.level_cmp = base.level
+			set_launch_timer_ex = 0
+			set_board_timer_ex = 0
+
 		if not BS.score.has_section(base.level):
 			BS.score.add_section(base.level)
 			aa = ['99999', '1', '99999', '0']
@@ -1538,10 +1538,13 @@ class Board:
 		self.name = lv.get(section1, 'name')
 		base.scfilename = lv.get(section1, 'score', fallback=section1)
 		self.live_marbles_limit = lv.getint(section1, 'maxmarbles', fallback=10)
-		self.set_launch_timer = (lv.getint(section1, 'launchtimer', fallback=DEFAULT_LAUNCH_TIMER))
-		base.set_launch_timer_ex += base.set_launch_timer_ex + (base.lk * base.lkl)
-		self.set_launch_timer += base.set_launch_timer_ex
-		self.launch_timer = self.set_launch_timer
+		set_launch_timer1 = (lv.getint(section1, 'launchtimer', fallback=DEFAULT_LAUNCH_TIMER))
+		base.set_launch_timer_ex = base.set_launch_timer_ex + (base.lk * base.lkl)
+		base.lkl = 0
+		set_launch_timer1 += base.set_launch_timer_ex
+		#self.launch_timer = self.set_launch_timer1
+		self.set_launch_timer(set_launch_timer1)
+		aaa = set_launch_timer1
 
 		boardtimer = lv.getint(section1, 'boardtimer', fallback=-1)
 		a = lv.get(section1, 'colors', fallback=DEFAULT_COLORS)
@@ -1672,14 +1675,15 @@ class Board:
 		if boardtimer <= 0:
 			boardtimer = DEFAULT_BOARD_TIMER * base.numwheels
 		a = lv.getint(section1, 'board_timer',fallback=boardtimer)
-		seconds = 0 #fug
+		seconds = 30 #fug
 		self.board_timer = seconds + a
 		self.board_timeout_start = (seconds + a) * FRAMES_PER_SEC
 		self.board_timeout = self.board_timeout_start
 		base.set_board_timer_ex += (base.lk * base.lkb)
+		base.lkb = 0
 		aa = self.board_timeout_start / 10
 		self.board_timeout += base.set_board_timer_ex * aa
-
+		aaa = base.set_board_timer_ex
 		return 1
 
 	# Return values for this function:
