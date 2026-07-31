@@ -1984,7 +1984,7 @@ class PopWindow:
 		skt = (time.time() + base.atime  )
 		while 1:
 			www = pygame.event.poll()
-			if flag == 1:
+			if flag == 0:
 				if base.skipoff == 1:
 					if base.skip:
 						if time.time() > skt:
