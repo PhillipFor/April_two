@@ -1,7 +1,7 @@
 class VersionPF:
 	number = "3.09"
-	date = '30 JUL 26'
-	text = 'Esc lrvels'
+	date = '1 Aug 26'
+	text = 'Esc levels'
 
 """
 Copyright Phillip Forrestal 2020-2026 Got sick in 2022, came back home in 2024
@@ -369,7 +369,7 @@ def Message(mess, no=0):
 		mes = mes + ' Yes  No/mouse'
 	mes = mes + '\n\n'
 	pop.popup(mes)
-	f = pop.popwait(no)
+	f = pop.popwait(4)
 	pop.popdown()
 	return f
 
@@ -1724,7 +1724,7 @@ class Board:
 							return 2
 						elif event.key == ord('b'):
 							return 3
-			base.atime = 5
+			base.atime = 4
 			hi = HighScore(self.game.score)
 			hi.display()
 			b = base.level
@@ -1928,8 +1928,11 @@ class HighScore:
 				else:
 					sc[i][2] = convert1(int(float(sc[i][2])))
 				mess += 'Time: ' + sc[i][2] + '   Score:' + sc[i][1] + ' - ' + sc[i][0] + '\n'
-		Message(mess)
-
+		mess += '\n\n'
+		pop = PopWindow(base.screen)
+		pop.popup(mess)
+		pop.popwait(1)
+		pop.popdown()
 
 
 
@@ -1981,15 +1984,16 @@ class PopWindow:
 
 	def popwait(self, flag=0):  # 15Dec23 30Jun2026
 		wait_one_sec()
-		skt = (time.time() + base.atime  )
+		skt = (time.time() + base.atime)
 		while 1:
 			www = pygame.event.poll()
-			if flag == 0:
+			if flag == 1:
 				if base.skipoff == 1:
 					if base.skip:
 						if time.time() > skt:
 							break
-
+					if www.type == MOUSEBUTTONDOWN:
+						break
 					if www.type == KEYDOWN:
 						if www.key == K_F1:
 							if base.skip == 0:
@@ -2021,11 +2025,14 @@ class PopWindow:
 					elif www.key == K_l:
 						base.lk = 1
 						a = 2
+					elif www.key == K_n:
+						staf.lev(1)
+						a = 2
 					if a != 0:
+						pygame.event.clear()
 						return a
 
-			if www.type == MOUSEBUTTONDOWN:
-				break
+
 		pygame.event.clear()
 		return False
 
@@ -2098,13 +2105,18 @@ class Game:
 				pop.popup(message)
 				a = pop.popwait(4)
 				pop.popdown()
+				rc = 0
 				if a == 2:  # retry
 					continue
-				if a == 5:
-					# self.level += 1
+				if a == 1:  #A
+					rc = -3
+					return rc
 					continue
-				if a != -3:
-					return a
+				if a == 3:
+					staf.lev(1)
+					continue
+		pygame.event.clear()
+		return a
 
 
 	def editboard(self):
