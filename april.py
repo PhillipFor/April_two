@@ -1,7 +1,7 @@
 class VersionPF:
 	number = "3.09"
-	date = '1 Aug 26'
-	text = 'Esc levels'
+	date = '13 Aug 26'
+	text = 'Esc levels fix no skip'
 
 """
 Copyright Phillip Forrestal 2020-2026 Got sick in 2022, came back home in 2024
@@ -2031,6 +2031,8 @@ class PopWindow:
 					if a != 0:
 						pygame.event.clear()
 						return a
+			if www.type == MOUSEBUTTONDOWN:
+				break
 
 
 		pygame.event.clear()
