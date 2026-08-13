@@ -1,0 +1,55 @@
+[lv20aa]
+name=Multiplicity
+version=2.0
+score=lv20aa
+author=John-Paul Gignac <jp@gignac.org>
+boardtimer=60
+g1=|   |   | 6 |Of | a | c |   |   |
+g2=|   |   |*52|*34| c |*52|   |   |
+g3=|   |   | 5 | 6 | 9 | 5 |   |   |
+g4=|   |   |v5 | 3 | c |v5 |   |   |
+g5=|   |   |O1 |v6 | 9 |O1 |   |   |
+g6=|   |   |   |O1 |   |   |   |   |
+
+[prf011]
+name=off
+version=2.0
+score=prf011
+author=prf
+boardtimer=120
+colors=0126
+stoplight=012
+g1=|63>| a | a | c |   |   |   |   |
+g2=|   |!  |X2 |Of |X8 |   |   |   |
+g3=|   |   |   |>7v|Oc |   |   |   |
+g4=|   |   |   |>7v|O9 |   |   |   |
+g5=|   |   |   |X1 |   |   |   |   |
+g6=|   |   |   |   |   |   |   |   |
+
+[pf03]
+name=Split Ends - Added
+version=2.0
+score=pf03
+author=Mike Brenneman & PF
+stoplight=642
+g1=|O7 | c |O5 |   |   |O5 |   |   |
+g2=|@5 |@53| 5 |   |   | 5 |   |   |
+g3=|@53|@5 | 3 |Oc |O6 | 9 |!  |   |
+g4=|O7 | 9 |   | 5 | 5 |   |   |   |
+g5=| 5 |O2 |&a4| 9 | 3 |&a3|O8 |X4 |
+g6=| 3 | a |0a<|0a>|1a>|1a<| a | 9 |
+
+[prf001]
+name=Long pipe 25Jul26
+version=2.0
+score=prf001
+author=PRF
+boardtimer=200
+stoplight=643
+g1=| 6 | a | a |O9 |O2 | a | a | c |
+g2=| 5 | 6 | c | 6 |Oe |<a |Oe | 9 |
+g3=| 3 | 9 | 5 | 5 | 5 | 0 | 3 | c |
+g4=| 6 | c | 3 | 9 |v7>|Oe | c | 5 |
+g5=| 5 | 3 | a | a | 9 | 5 | 5 | 5 |
+g6=| 3 | a | a | a | a | 9 | 3 | 9 |
+
