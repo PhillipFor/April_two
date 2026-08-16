@@ -1,6 +1,6 @@
 class VersionPF:
 	number = "3.09"
-	date = '13 Aug 26'
+	date = '16 Aug 26'
 	text = 'Esc levels fix no skip'
 
 """
@@ -321,19 +321,27 @@ class BS:
 		elif type1 == 1:
 			# type =  1
 			a = self.ran_level + lev
-			if self.ran_list[a] == '-':
-				self.ran_list = self.std_list  # self.circuit.sections()
-				self.ran_list.remove('-')
-				random.shuffle(self.ran_list)
-				self.ran_list.append('-')
-				self.ran_level = 0
-				a = ",".join(map(str, self.ran_list))
-				self.ex.set('sys', 'ranlist', a)
-			else:
-				self.ran_level += lev
+			bad = False # if level does not exist remove outside loop
+			while 1:
+				if bad or self.ran_list[a] == '-':
+					bad = False
+					self.ran_list = self.std_list  # self.circuit.sections()
+					self.ran_list.remove('-')
+					random.shuffle(self.ran_list)
+					self.ran_list.append('-')
+					self.ran_level = 0
+					a = ",".join(map(str, self.ran_list))
+					self.ex.set('sys', 'ranlist', a)
+				else:
+					self.ran_level += lev
 
-			self.ex.set('sys', 'ranlevel', str(self.ran_level))
-			a = self.ran_list[self.ran_level]
+				self.ex.set('sys', 'ranlevel', str(self.ran_level))
+				a = self.ran_list[self.ran_level]
+
+				if a in self.std_list:
+					break
+				else:
+					bad = True
 
 		elif type1 == 2:
 			ed_list = self.circuit.sections()
@@ -1525,7 +1533,7 @@ class Board:
 		elif BS.new.has_section(section1):
 			lv = BS.new
 		if lv == 0:
-			return
+			return False
 
 		# circuit.get(section1, )
 		BS.section1 = section1  # editor use in Game
@@ -1684,7 +1692,7 @@ class Board:
 		aa = self.board_timeout_start / 10
 		self.board_timeout += base.set_board_timer_ex * aa
 		aaa = base.set_board_timer_ex
-		return 1
+		return
 
 	# Return values for this function:
 	# -4: User closed the application window

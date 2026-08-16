@@ -40,17 +40,3 @@ g4=| 6 | c | 3 | 9 |v7>|Oe | c | 5 |
 g5=| 5 | 3 | a | a | 9 | 5 | 5 | 5 |
 g6=| 3 | a | a | a | a | 9 | 3 | 9 |
 
-[lv20aa]
-name=Multiplicity
-version=2.0
-score=lv20aa
-author=John-Paul Gignac <jp@gignac.org>
-boardtimer=60
-stoplight=643
-g1=|   |   |   |   |   |   |   |   |
-g2=|   |   |   |   |   |   |   |   |
-g3=|   |   |   |   |   |   |   |   |
-g4=|   |   |   |   |   |   |   |   |
-g5=|   |   |   |   |   |   |   |   |
-g6=|   |   |   |   |   |   |   |   |
-
