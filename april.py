@@ -1,7 +1,7 @@
 class VersionPF:
 	number = "3.09"
-	date = '16 Aug 26'
-	text = 'Esc levels fix no skip'
+	date = '22 Aug 26'
+	text = 'Fix error levels'
 
 """
 Copyright Phillip Forrestal 2020-2026 Got sick in 2022, came back home in 2024
@@ -1184,8 +1184,8 @@ class Board:
 		base.level = staf.lev(0, game.type)
 		if base.level != base.level_cmp:  #check if level change
 			base.level_cmp = base.level
-			set_launch_timer_ex = 0
-			set_board_timer_ex = 0
+			base.set_launch_timer_ex = 0
+			base.set_board_timer_ex = 0
 
 		if not BS.score.has_section(base.level):
 			BS.score.add_section(base.level)
@@ -2669,7 +2669,7 @@ class MainLoop:
 		cycle = True
 		while cycle:
 			#   New main menu
-			mainmenu = 'Serial Level', 'Radom Level', 'Exit', 'Options', 'Edit'
+			mainmenu = 'Serial Level', 'Radom Level', 'Exit', 'Options' # , 'Edit'
 			# no option
 			menu_music()
 			menu = TheMenu(self.screen, base.background, mainmenu, '')
@@ -2701,8 +2701,8 @@ class MainLoop:
 				self.ExitGame()
 				return
 
-			elif what2do == 5:
-				Editor(base.screen)
+			#elif what2do == 5:
+				#Editor(base.screen)
 				pass
 
 			else:
@@ -2714,7 +2714,7 @@ class MainLoop:
 		             "Off|On", "Off|On", 'Off|On', "")
 		while 1:
 			menu_text = ("Main menu", "Music: ", "Back Music: ",
-			             "Effect Sounds: ", "Board timeout: ", 'Skip Level:', "Editor (not fuctional)")
+			             "Effect Sounds: ", "Board timeout: ", 'Skip Level:', "Editor")
 			menu = TheMenu(self.screen, base.background, menu_text, opti_text)
 			menu.from_top(100)
 
@@ -2733,10 +2733,10 @@ class MainLoop:
 			elif what2do == 1:  # menu quit
 				return
 
-			elif what2do == 8:  # editor
+			elif what2do == 7:  # editor
 				pygame.mixer.music.stop()
-				edi = Editor(self.screen)
-				menu_music()
+				Editor(self.screen)
+
 
 
 class ScrollText:
@@ -2940,10 +2940,10 @@ class Editor():
 	"""
 
 	def __init__(self, screen):
+		staf.save()
 		self.level = base.level
 		if base.level is None:
 			self.level = ''
-		staf.save()
 
 		base.edit_act = True
 		base.edit_play = False
@@ -2960,8 +2960,7 @@ class Editor():
 			if not BS.circuit.has_section('test'):
 				BS.circuit.add_section('test')
 				flag = True
-		else:
-			flag = True
+
 		if flag:
 			if not BS.circuit.has_section('test'):
 				BS.circuit.add_section('test')
@@ -3229,6 +3228,8 @@ class Editor():
 			elif what2do == 3:
 				cuson = 5
 				self.clrlevel()
+				self.write_level(BS.circuit)
+				self.save_level()
 
 			elif what2do == 4:
 				base.stoplight = False
