@@ -1,8 +1,7 @@
 class VersionPF:
-	number = "3.09"
-	date = '22 Aug 26'
-	text = 'Fix error levels'
-
+	number = "3.10"
+	date = '2 Sep 26'
+	text = 'Start New Rev' # Show extra & score'
 """
 Copyright Phillip Forrestal 2020-2026 Got sick in 2022, came back home in 2024
 Program name: april two
@@ -10,6 +9,8 @@ GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 
 ::Version
+3.10 2 Sep 26 Start New Rev
+3.09 22 Aug 22 Fix errors
 3.08 29 Jul 26 add delay if failure
 3.07 25 Jul 26 Skip delay 
 3.06 24 Jul 26 Editor
@@ -303,6 +304,14 @@ class BS:
 				break
 			os.remove(self.scorefile)
 			BS.score = configparser.ConfigParser()
+
+
+	def new_list(self):
+		self.ran_list = BS.new.sections()
+		self.ran_list.reverse()
+		self.ran_list.append('-')
+		self.ran_level = 0
+
 
 	def lev(self, lev=0, type1=-1):
 		if type1 == -1:
@@ -2711,10 +2720,11 @@ class MainLoop:
 
 	def menu_opt(self):
 		opti_text = ("", "Off|Fur Elise|Normal", "Off|Fur Elise|Normal",
-		             "Off|On", "Off|On", 'Off|On', "")
+		             "Off|On", "Off|On", 'Off|On', "", '')
 		while 1:
 			menu_text = ("Main menu", "Music: ", "Back Music: ",
-			             "Effect Sounds: ", "Board timeout: ", 'Skip Level:', "Editor")
+			             "Effect Sounds: ", "Board timeout: ", 'Skip Level:',
+			             "Editor", 'New Rev')
 			menu = TheMenu(self.screen, base.background, menu_text, opti_text)
 			menu.from_top(100)
 
@@ -2737,6 +2747,13 @@ class MainLoop:
 				pygame.mixer.music.stop()
 				Editor(self.screen)
 
+			elif what2do == 8:
+				staf.new_list()
+				background_music()
+				game = Game(self.screen, 1)  # 'all-boards', base.set_level)
+				game.play()
+				menu_music()
+				return
 
 
 class ScrollText:
